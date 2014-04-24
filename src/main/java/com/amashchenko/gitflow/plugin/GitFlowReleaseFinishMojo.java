@@ -31,19 +31,23 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
         try {
             // git branch --list release/*
             final String releaseBranches = executeGitCommandReturn("branch",
-                    "--list", "release/*");
+                    "--list", gitFlowConfig.getReleaseBranchPrefix() + "*");
 
             String releaseVersion = null;
 
             // TODO improve that
             if (StringUtils.isNotBlank(releaseBranches)
-                    && StringUtils.countMatches(releaseBranches, "release/") > 1) {
+                    && StringUtils.countMatches(releaseBranches,
+                            gitFlowConfig.getReleaseBranchPrefix()) > 1) {
                 throw new MojoFailureException(
                         "More than one release branch exists. Cannot finish release.");
             } else {
                 // remove * in case current branch is the release branch
                 releaseVersion = releaseBranches.trim().substring(
-                        releaseBranches.indexOf("release/") + 8);
+                        releaseBranches.indexOf(gitFlowConfig
+                                .getReleaseBranchPrefix())
+                                + gitFlowConfig.getReleaseBranchPrefix()
+                                        .length());
             }
 
             if (StringUtils.isBlank(releaseVersion)) {
@@ -51,21 +55,23 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout master
-            executeGitCommand("checkout", "master");
+            executeGitCommand("checkout", gitFlowConfig.getProductionBranch());
 
             // git merge --no-ff release/...
-            executeGitCommand("merge", "--no-ff", "release/" + releaseVersion);
+            executeGitCommand("merge", "--no-ff",
+                    gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
 
             // TODO v
             // git tag -a ...
-            executeGitCommand("tag", "-a", "v" + releaseVersion, "-m",
-                    "tagging release");
+            executeGitCommand("tag", "-a", gitFlowConfig.getVersionTagPrefix()
+                    + releaseVersion, "-m", "tagging release");
 
             // git checkout develop
-            executeGitCommand("checkout", "develop");
+            executeGitCommand("checkout", gitFlowConfig.getDevelopmentBranch());
 
             // git merge --no-ff release/...
-            executeGitCommand("merge", "--no-ff", "release/" + releaseVersion);
+            executeGitCommand("merge", "--no-ff",
+                    gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
 
             String nextSnapshotVersion = null;
             // get next snapshot version
@@ -94,7 +100,8 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                     "updating poms for next development version");
 
             // git branch -d release/...
-            executeGitCommand("branch", "-d", "release/" + releaseVersion);
+            executeGitCommand("branch", "-d",
+                    gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
         } catch (CommandLineException e) {
             e.printStackTrace();
         }

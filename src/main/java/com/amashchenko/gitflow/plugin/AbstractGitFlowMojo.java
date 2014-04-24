@@ -18,6 +18,7 @@ package com.amashchenko.gitflow.plugin;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
@@ -26,6 +27,9 @@ import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
 public abstract class AbstractGitFlowMojo extends AbstractMojo {
+
+    @Parameter(defaultValue = "${gitFlowConfig}")
+    protected GitFlowConfig gitFlowConfig;
 
     private final String gitExec = "git"
             + (Os.isFamily(Os.FAMILY_WINDOWS) ? ".exe" : "");

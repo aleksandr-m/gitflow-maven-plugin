@@ -62,7 +62,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             // git branch --list release/*
             final String releaseBranches = executeGitCommandReturn("branch",
-                    "--list", "release/*");
+                    "--list", gitFlowConfig.getReleaseBranchPrefix() + "*");
 
             if (StringUtils.isNotBlank(releaseBranches)) {
                 throw new MojoFailureException(
@@ -70,7 +70,9 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout -b release/... develop
-            executeGitCommand("checkout", "-b", "release/" + version, "develop");
+            executeGitCommand("checkout", "-b",
+                    gitFlowConfig.getReleaseBranchPrefix() + version,
+                    gitFlowConfig.getDevelopmentBranch());
 
             // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
             executeMvnCommand(VERSIONS_MAVEN_PLUGIN + ":set", "-DnewVersion="
