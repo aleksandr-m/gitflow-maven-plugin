@@ -69,14 +69,14 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                         "Release branch already exists. Cannot start release.");
             }
 
-            // git checkout -b ...
-            executeGitCommand("checkout", "-b", "release/" + version);
+            // git checkout -b release/... develop
+            executeGitCommand("checkout", "-b", "release/" + version, "develop");
 
             // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
             executeMvnCommand(VERSIONS_MAVEN_PLUGIN + ":set", "-DnewVersion="
                     + version, "-DgenerateBackupPoms=false");
 
-            // git commit -a -m updating poms for ... release
+            // git commit -a -m updating poms for release
             executeGitCommand("commit", "-a", "-m", "updating poms for release");
         } catch (CommandLineException e) {
             e.printStackTrace();
