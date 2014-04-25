@@ -33,6 +33,10 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             // check uncommitted changes
             checkUncommittedChanges();
 
+            // need to be in develop to get correct project version
+            // git checkout develop
+            executeGitCommand("checkout", gitFlowConfig.getDevelopmentBranch());
+
             String defaultVersion = "1.0.0";
             // get default release version
             try {
@@ -57,12 +61,13 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 version = defaultVersion;
             }
 
-            // git for-each-ref refs/heads/release
-            final String releaseBranches = executeGitCommandReturn(
+            // git for-each-ref --count=1 refs/heads/release/*
+            final String releaseBranch = executeGitCommandReturn(
                     "for-each-ref", "--count=1",
-                    "refs/heads/" + gitFlowConfig.getReleaseBranchPrefix());
+                    "refs/heads/" + gitFlowConfig.getReleaseBranchPrefix()
+                            + "*");
 
-            if (StringUtils.isNotBlank(releaseBranches)) {
+            if (StringUtils.isNotBlank(releaseBranch)) {
                 throw new MojoFailureException(
                         "Release branch already exists. Cannot start release.");
             }
