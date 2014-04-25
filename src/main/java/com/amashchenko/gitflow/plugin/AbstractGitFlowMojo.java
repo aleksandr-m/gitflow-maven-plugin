@@ -20,6 +20,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.components.interactivity.Prompter;
 import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
@@ -43,6 +44,15 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     @Component
     protected MavenProject project;
+    @Component
+    protected Prompter prompter;
+
+    protected void checkUncommittedChanges() throws MojoFailureException {
+        if (executeGitHasUncommitted()) {
+            throw new MojoFailureException(
+                    "You have some uncommitted files. Commit or discard local changes in order to proceed.");
+        }
+    }
 
     protected boolean executeGitHasUncommitted() {
         try {

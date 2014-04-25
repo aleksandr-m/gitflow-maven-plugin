@@ -17,11 +17,9 @@ package com.amashchenko.gitflow.plugin;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.apache.maven.shared.release.versions.VersionParseException;
-import org.codehaus.plexus.components.interactivity.Prompter;
 import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
@@ -29,17 +27,11 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 @Mojo(name = "release-start", aggregator = true)
 public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
-    @Component
-    private Prompter prompter;
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             // check uncommitted changes
-            if (executeGitHasUncommitted()) {
-                throw new MojoFailureException(
-                        "You have some uncommitted files. Commit or discard local changes to proceed.");
-            }
+            checkUncommittedChanges();
 
             String defaultVersion = "1.0.0";
             // get default release version
@@ -67,7 +59,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             // git for-each-ref refs/heads/release
             final String releaseBranches = executeGitCommandReturn(
-                    "for-each-ref",
+                    "for-each-ref", "--count=1",
                     "refs/heads/" + gitFlowConfig.getReleaseBranchPrefix());
 
             if (StringUtils.isNotBlank(releaseBranches)) {

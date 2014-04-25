@@ -30,15 +30,13 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             // check uncommitted changes
-            if (executeGitHasUncommitted()) {
-                throw new MojoFailureException(
-                        "You have some uncommitted files. Commit or discard local changes to proceed.");
-            }
+            checkUncommittedChanges();
 
-            // git for-each-ref refs/heads/release
+            // git for-each-ref --format='%(refname:short)' refs/heads/release/*
             final String releaseBranches = executeGitCommandReturn(
-                    "for-each-ref",
-                    "refs/heads/" + gitFlowConfig.getReleaseBranchPrefix());
+                    "for-each-ref", "--format=\"%(refname:short)\"",
+                    "refs/heads/" + gitFlowConfig.getReleaseBranchPrefix()
+                            + "*");
 
             String releaseVersion = null;
 
@@ -48,7 +46,6 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 throw new MojoFailureException(
                         "More than one release branch exists. Cannot finish release.");
             } else {
-                // remove * in case current branch is the release branch
                 releaseVersion = releaseBranches.trim().substring(
                         releaseBranches.indexOf(gitFlowConfig
                                 .getReleaseBranchPrefix())
@@ -67,7 +64,6 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             executeGitCommand("merge", "--no-ff",
                     gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
 
-            // TODO v
             // git tag -a ...
             executeGitCommand("tag", "-a", gitFlowConfig.getVersionTagPrefix()
                     + releaseVersion, "-m", "tagging release");
