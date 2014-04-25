@@ -44,6 +44,24 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Component
     protected MavenProject project;
 
+    protected boolean executeGitHasUncommitted() {
+        try {
+            // diff-index
+            executeGitCommand("diff-index", "--quiet", "HEAD");
+
+            // check untracked files
+            String untracked = executeGitCommandReturn("ls-files", "--others",
+                    "--exclude-standard", "--error-unmatch");
+            if (StringUtils.isNotBlank(untracked)) {
+                return true;
+            }
+        } catch (Exception e) {
+            return true;
+        }
+
+        return false;
+    }
+
     protected String executeGitCommandReturn(final String... args)
             throws CommandLineException, MojoFailureException {
         return executeCommand(cmdGit, false, true, args);

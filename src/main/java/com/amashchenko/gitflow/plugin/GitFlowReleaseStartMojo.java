@@ -35,6 +35,11 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
+            // check uncommitted changes
+            if (executeGitHasUncommitted()) {
+                throw new MojoFailureException(
+                        "You have some uncommitted files. Commit or discard local changes to proceed.");
+            }
 
             String defaultVersion = "1.0.0";
             // get default release version
@@ -60,9 +65,10 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 version = defaultVersion;
             }
 
-            // git branch --list release/*
-            final String releaseBranches = executeGitCommandReturn("branch",
-                    "--list", gitFlowConfig.getReleaseBranchPrefix() + "*");
+            // git for-each-ref refs/heads/release
+            final String releaseBranches = executeGitCommandReturn(
+                    "for-each-ref",
+                    "refs/heads/" + gitFlowConfig.getReleaseBranchPrefix());
 
             if (StringUtils.isNotBlank(releaseBranches)) {
                 throw new MojoFailureException(

@@ -29,13 +29,19 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            // git branch --list release/*
-            final String releaseBranches = executeGitCommandReturn("branch",
-                    "--list", gitFlowConfig.getReleaseBranchPrefix() + "*");
+            // check uncommitted changes
+            if (executeGitHasUncommitted()) {
+                throw new MojoFailureException(
+                        "You have some uncommitted files. Commit or discard local changes to proceed.");
+            }
+
+            // git for-each-ref refs/heads/release
+            final String releaseBranches = executeGitCommandReturn(
+                    "for-each-ref",
+                    "refs/heads/" + gitFlowConfig.getReleaseBranchPrefix());
 
             String releaseVersion = null;
 
-            // TODO improve that
             if (StringUtils.isNotBlank(releaseBranches)
                     && StringUtils.countMatches(releaseBranches,
                             gitFlowConfig.getReleaseBranchPrefix()) > 1) {
