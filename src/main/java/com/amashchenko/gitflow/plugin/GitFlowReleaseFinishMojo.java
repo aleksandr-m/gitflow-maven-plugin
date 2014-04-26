@@ -75,11 +75,14 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             executeGitCommand("merge", "--no-ff",
                     gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
 
+            // get current project version from pom
+            String currentVersion = getCurrentProjectVersion();
+
             String nextSnapshotVersion = null;
             // get next snapshot version
             try {
                 DefaultVersionInfo versionInfo = new DefaultVersionInfo(
-                        project.getVersion());
+                        currentVersion);
                 nextSnapshotVersion = versionInfo.getNextVersion()
                         .getSnapshotVersionString();
             } catch (VersionParseException e) {

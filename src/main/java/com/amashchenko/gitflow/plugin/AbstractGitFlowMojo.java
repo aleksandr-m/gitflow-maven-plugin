@@ -15,6 +15,10 @@
  */
 package com.amashchenko.gitflow.plugin;
 
+import java.io.FileReader;
+
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
@@ -43,9 +47,27 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected static final String VERSIONS_MAVEN_PLUGIN = "org.codehaus.mojo:versions-maven-plugin:2.1";
 
     @Component
-    protected MavenProject project;
+    private MavenProject project;
     @Component
     protected Prompter prompter;
+
+    /**
+     * Gets current project version from pom.xml file.
+     * 
+     * @return Current project version.
+     * @throws MojoFailureException
+     */
+    protected String getCurrentProjectVersion() throws MojoFailureException {
+        try {
+            // read pom.xml
+            MavenXpp3Reader reader = new MavenXpp3Reader();
+            Model model = reader.read(new FileReader(project.getFile()
+                    .getAbsoluteFile()));
+            return model.getVersion();
+        } catch (Exception e) {
+            throw new MojoFailureException("", e);
+        }
+    }
 
     protected void checkUncommittedChanges() throws MojoFailureException {
         if (executeGitHasUncommitted()) {
@@ -90,7 +112,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private String executeCommand(final Commandline cmd, final boolean showOut,
             final boolean returnOut, final String... args)
             throws CommandLineException, MojoFailureException {
-        getLog().info(cmd.getExecutable() + " " + StringUtils.join(args, " "));
+        if (getLog().isDebugEnabled()) {
+            getLog().debug(
+                    cmd.getExecutable() + " " + StringUtils.join(args, " "));
+        }
 
         cmd.clearArgs();
         cmd.addArguments(args);

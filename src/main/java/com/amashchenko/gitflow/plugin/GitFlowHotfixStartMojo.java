@@ -41,10 +41,13 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             // FIXME hotfix version, potential same version as in current
             // release branch
 
+            // get current project version from pom
+            String currentVersion = getCurrentProjectVersion();
+
             // get default hotfix version
             try {
                 DefaultVersionInfo versionInfo = new DefaultVersionInfo(
-                        project.getVersion());
+                        currentVersion);
                 defaultVersion = versionInfo.getNextVersion()
                         .getReleaseVersionString();
             } catch (VersionParseException e) {
