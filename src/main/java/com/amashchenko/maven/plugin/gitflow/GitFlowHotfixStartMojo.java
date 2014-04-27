@@ -38,8 +38,6 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             executeGitCommand("checkout", gitFlowConfig.getProductionBranch());
 
             String defaultVersion = "1.0.1";
-            // FIXME hotfix version, potential same version as in current
-            // release branch
 
             // get current project version from pom
             String currentVersion = getCurrentProjectVersion();

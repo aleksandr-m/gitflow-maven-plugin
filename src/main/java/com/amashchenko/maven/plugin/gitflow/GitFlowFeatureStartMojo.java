@@ -15,9 +15,12 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.shared.release.versions.DefaultVersionInfo;
+import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
@@ -31,10 +34,10 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             // check uncommitted changes
             checkUncommittedChanges();
 
-            String version = null;
+            String featureName = null;
             try {
-                while (StringUtils.isBlank(version)) {
-                    version = prompter
+                while (StringUtils.isBlank(featureName)) {
+                    featureName = prompter
                             .prompt("What is a name of feature branch? "
                                     + gitFlowConfig.getFeatureBranchPrefix());
                 }
@@ -42,11 +45,13 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                 getLog().error(e);
             }
 
+            featureName = StringUtils.deleteWhitespace(featureName);
+
             // git for-each-ref refs/heads/feature/...
             final String featureBranch = executeGitCommandReturn(
                     "for-each-ref",
                     "refs/heads/" + gitFlowConfig.getFeatureBranchPrefix()
-                            + version);
+                            + featureName);
 
             if (StringUtils.isNotBlank(featureBranch)) {
                 throw new MojoFailureException(
@@ -55,18 +60,33 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
 
             // git checkout -b ... develop
             executeGitCommand("checkout", "-b",
-                    gitFlowConfig.getFeatureBranchPrefix() + version,
+                    gitFlowConfig.getFeatureBranchPrefix() + featureName,
                     gitFlowConfig.getDevelopmentBranch());
 
-            // TODO
-            /*
-                        // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-                        executeMvnCommand(VERSIONS_MAVEN_PLUGIN + ":set", "-DnewVersion="
-                                + version, "-DgenerateBackupPoms=false");
+            // get current project version from pom
+            String currentVersion = getCurrentProjectVersion();
 
-            // git commit -a -m updating poms for ... release
-            executeGitCommand("commit", "-a", "-m", "updating poms for release");
-            */
+            String version = null;
+            try {
+                DefaultVersionInfo versionInfo = new DefaultVersionInfo(
+                        currentVersion);
+                version = versionInfo.getReleaseVersionString() + "-"
+                        + featureName + "-" + Artifact.SNAPSHOT_VERSION;
+            } catch (VersionParseException e) {
+                if (getLog().isDebugEnabled()) {
+                    getLog().debug(e);
+                }
+            }
+
+            if (StringUtils.isNotBlank(version)) {
+                // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
+                executeMvnCommand(VERSIONS_MAVEN_PLUGIN + ":set",
+                        "-DnewVersion=" + version, "-DgenerateBackupPoms=false");
+
+                // git commit -a -m updating poms for feature branch
+                executeGitCommand("commit", "-a", "-m",
+                        "updating poms for feature branch");
+            }
         } catch (CommandLineException e) {
             e.printStackTrace();
         }

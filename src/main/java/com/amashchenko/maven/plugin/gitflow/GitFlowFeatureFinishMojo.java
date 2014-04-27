@@ -65,25 +65,44 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 getLog().error(e);
             }
 
-            String featureName = null;
+            String featureBranchName = null;
             if (featureNumber != null) {
                 int num = Integer.parseInt(featureNumber);
-                featureName = branches[num - 1];
+                featureBranchName = branches[num - 1];
             }
 
-            if (StringUtils.isBlank(featureName)) {
+            if (StringUtils.isBlank(featureBranchName)) {
                 throw new MojoFailureException(
-                        "Feature name to finish is blank.");
+                        "Feature branch name to finish is blank.");
             }
 
             // git checkout develop
             executeGitCommand("checkout", gitFlowConfig.getDevelopmentBranch());
 
             // git merge --no-ff feature/...
-            executeGitCommand("merge", "--no-ff", featureName);
+            executeGitCommand("merge", "--no-ff", featureBranchName);
+
+            // get current project version from pom
+            String currentVersion = getCurrentProjectVersion();
+
+            String featureName = featureBranchName.replaceFirst(
+                    gitFlowConfig.getFeatureBranchPrefix(), "");
+
+            if (currentVersion.contains("-" + featureName)) {
+                String version = currentVersion.replaceFirst("-" + featureName,
+                        "");
+
+                // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
+                executeMvnCommand(VERSIONS_MAVEN_PLUGIN + ":set",
+                        "-DnewVersion=" + version, "-DgenerateBackupPoms=false");
+
+                // git commit -a -m updating poms for development branch
+                executeGitCommand("commit", "-a", "-m",
+                        "updating poms for development branch");
+            }
 
             // git branch -d feature/...
-            executeGitCommand("branch", "-d", featureName);
+            executeGitCommand("branch", "-d", featureBranchName);
         } catch (CommandLineException e) {
             e.printStackTrace();
         }
