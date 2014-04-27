@@ -31,25 +31,66 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
+/**
+ * Abstract git flow mojo.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
 public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
+    /** Git flow configuration. */
     @Parameter(defaultValue = "${gitFlowConfig}")
     protected GitFlowConfig gitFlowConfig;
 
-    private final String gitExec = "git"
-            + (Os.isFamily(Os.FAMILY_WINDOWS) ? ".exe" : "");
-    private final Commandline cmdGit = new Commandline(gitExec);
+    /**
+     * The path to the Maven executable. Defaults to either "mvn" or "mvn.bat"
+     * depending on the operating system.
+     */
+    @Parameter(property = "mvnExecutable")
+    private String mvnExecutable;
+    /**
+     * The path to the Git executable. Defaults to either "git" or "git.exe"
+     * depending on the operating system.
+     */
+    @Parameter(property = "gitExecutable")
+    private String gitExecutable;
 
-    private final String mvnExec = "mvn"
-            + (Os.isFamily(Os.FAMILY_WINDOWS) ? ".bat" : "");
-    private final Commandline cmdMvn = new Commandline(mvnExec);
+    /** Command line for Git executable. */
+    private final Commandline cmdGit = new Commandline();
+    /** Command line for Maven executable. */
+    private final Commandline cmdMvn = new Commandline();
 
+    /** Versions Maven plugin full name. */
     protected static final String VERSIONS_MAVEN_PLUGIN = "org.codehaus.mojo:versions-maven-plugin:2.1";
 
+    /** Maven project. */
     @Component
     private MavenProject project;
+    /** Default prompter. */
     @Component
     protected Prompter prompter;
+
+    /**
+     * Initializes command line executables.
+     * 
+     */
+    private void initExecutables() {
+        if (StringUtils.isBlank(cmdMvn.getExecutable())) {
+            if (StringUtils.isBlank(mvnExecutable)) {
+                mvnExecutable = "mvn"
+                        + (Os.isFamily(Os.FAMILY_WINDOWS) ? ".bat" : "");
+            }
+            cmdMvn.setExecutable(mvnExecutable);
+        }
+        if (StringUtils.isBlank(cmdGit.getExecutable())) {
+            if (StringUtils.isBlank(gitExecutable)) {
+                gitExecutable = "git"
+                        + (Os.isFamily(Os.FAMILY_WINDOWS) ? ".exe" : "");
+            }
+            cmdGit.setExecutable(gitExecutable);
+        }
+    }
 
     /**
      * Gets current project version from pom.xml file.
@@ -69,6 +110,11 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
     }
 
+    /**
+     * Checks uncommitted changes.
+     * 
+     * @throws MojoFailureException
+     */
     protected void checkUncommittedChanges() throws MojoFailureException {
         if (executeGitHasUncommitted()) {
             throw new MojoFailureException(
@@ -76,6 +122,12 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
     }
 
+    /**
+     * Executes Git commands to check for uncommitted changes.
+     * 
+     * @return <code>true</code> when there are uncommitted changes,
+     *         <code>false</code> otherwise.
+     */
     protected boolean executeGitHasUncommitted() {
         try {
             // diff-index
@@ -94,24 +146,67 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         return false;
     }
 
+    /**
+     * Executes Git command and returns output.
+     * 
+     * @param args
+     *            Git command line arguments.
+     * @return Command output.
+     * @throws CommandLineException
+     * @throws MojoFailureException
+     */
     protected String executeGitCommandReturn(final String... args)
             throws CommandLineException, MojoFailureException {
         return executeCommand(cmdGit, false, true, args);
     }
 
+    /**
+     * Executes Git command.
+     * 
+     * @param args
+     *            Git command line arguments.
+     * @throws CommandLineException
+     * @throws MojoFailureException
+     */
     protected void executeGitCommand(final String... args)
             throws CommandLineException, MojoFailureException {
         executeCommand(cmdGit, true, false, args);
     }
 
+    /**
+     * Executes Maven command.
+     * 
+     * @param args
+     *            Maven command line arguments.
+     * @throws CommandLineException
+     * @throws MojoFailureException
+     */
     protected void executeMvnCommand(final String... args)
             throws CommandLineException, MojoFailureException {
         executeCommand(cmdMvn, true, false, args);
     }
 
+    /**
+     * Executes command line.
+     * 
+     * @param cmd
+     *            Command line.
+     * @param showOut
+     *            Whether to print output.
+     * @param returnOut
+     *            Whether to return output.
+     * @param args
+     *            Command line arguments.
+     * @return Output of the command or empty String depending on the @param
+     *         returnOut value.
+     * @throws CommandLineException
+     * @throws MojoFailureException
+     */
     private String executeCommand(final Commandline cmd, final boolean showOut,
             final boolean returnOut, final String... args)
             throws CommandLineException, MojoFailureException {
+        initExecutables();
+
         if (getLog().isDebugEnabled()) {
             getLog().debug(
                     cmd.getExecutable() + " " + StringUtils.join(args, " "));

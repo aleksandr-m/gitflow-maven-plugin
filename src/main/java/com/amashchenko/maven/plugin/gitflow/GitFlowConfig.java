@@ -15,6 +15,12 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+/**
+ * Git flow configuration.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
 public class GitFlowConfig {
     private String productionBranch;
     private String developmentBranch;
