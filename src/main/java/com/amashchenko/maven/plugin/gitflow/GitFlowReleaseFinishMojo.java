@@ -57,6 +57,12 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 throw new MojoFailureException("Release version is blank.");
             }
 
+            // git checkout release/...
+            executeGitCommand("checkout", releaseBranches.trim());
+
+            // mvn clean install
+            executeMvnCommand("clean", "install");
+
             // git checkout master
             executeGitCommand("checkout", gitFlowConfig.getProductionBranch());
 

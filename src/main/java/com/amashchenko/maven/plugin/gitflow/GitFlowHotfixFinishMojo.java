@@ -66,29 +66,35 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 getLog().error(e);
             }
 
-            String hotfixName = null;
+            String hotfixBranchName = null;
             if (hotfixNumber != null) {
                 int num = Integer.parseInt(hotfixNumber);
-                hotfixName = branches[num - 1];
+                hotfixBranchName = branches[num - 1];
             }
 
-            if (StringUtils.isBlank(hotfixName)) {
+            if (StringUtils.isBlank(hotfixBranchName)) {
                 throw new MojoFailureException(
                         "Hotfix name to finish is blank.");
             }
+
+            // git checkout hotfix/...
+            executeGitCommand("checkout", hotfixBranchName);
+
+            // mvn clean install
+            executeMvnCommand("clean", "install");
 
             // git checkout master
             executeGitCommand("checkout", gitFlowConfig.getProductionBranch());
 
             // git merge --no-ff hotfix/...
-            executeGitCommand("merge", "--no-ff", hotfixName);
+            executeGitCommand("merge", "--no-ff", hotfixBranchName);
 
             // git tag -a ...
             executeGitCommand(
                     "tag",
                     "-a",
                     gitFlowConfig.getVersionTagPrefix()
-                            + hotfixName.replaceFirst(
+                            + hotfixBranchName.replaceFirst(
                                     gitFlowConfig.getHotfixBranchPrefix(), ""),
                     "-m", "tagging hotfix");
 
@@ -105,14 +111,14 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 // git checkout release
                 executeGitCommand("checkout", releaseBranch);
                 // git merge --no-ff hotfix/...
-                executeGitCommand("merge", "--no-ff", hotfixName);
+                executeGitCommand("merge", "--no-ff", hotfixBranchName);
             } else {
                 // git checkout develop
                 executeGitCommand("checkout",
                         gitFlowConfig.getDevelopmentBranch());
 
                 // git merge --no-ff hotfix/...
-                executeGitCommand("merge", "--no-ff", hotfixName);
+                executeGitCommand("merge", "--no-ff", hotfixBranchName);
 
                 // get current project version from pom
                 String currentVersion = getCurrentProjectVersion();
@@ -146,7 +152,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             }
 
             // git branch -d hotfix/...
-            executeGitCommand("branch", "-d", hotfixName);
+            executeGitCommand("branch", "-d", hotfixBranchName);
         } catch (CommandLineException e) {
             e.printStackTrace();
         }

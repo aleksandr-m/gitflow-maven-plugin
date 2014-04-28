@@ -76,6 +76,12 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                         "Feature branch name to finish is blank.");
             }
 
+            // git checkout feature/...
+            executeGitCommand("checkout", featureBranchName);
+
+            // mvn clean install
+            executeMvnCommand("clean", "install");
+
             // git checkout develop
             executeGitCommand("checkout", gitFlowConfig.getDevelopmentBranch());
 
