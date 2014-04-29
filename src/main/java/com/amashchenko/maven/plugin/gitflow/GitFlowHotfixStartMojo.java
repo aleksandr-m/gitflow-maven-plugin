@@ -13,35 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.amashchenko.gitflow.plugin;
+package com.amashchenko.maven.plugin.gitflow;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.apache.maven.shared.release.versions.VersionParseException;
-import org.codehaus.plexus.components.interactivity.Prompter;
 import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
-@Mojo(name = "release-start", aggregator = true)
-public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
-
-    @Component
-    private Prompter prompter;
+/**
+ * The git flow hotfix start mojo.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
+@Mojo(name = "hotfix-start", aggregator = true)
+public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
+            // check uncommitted changes
+            checkUncommittedChanges();
 
-            String defaultVersion = "1.0.0";
-            // get default release version
+            // need to be in master to get correct project version
+            // git checkout master
+            executeGitCommand("checkout", gitFlowConfig.getProductionBranch());
+
+            String defaultVersion = "1.0.1";
+
+            // get current project version from pom
+            String currentVersion = getCurrentProjectVersion();
+
+            // get default hotfix version
             try {
                 DefaultVersionInfo versionInfo = new DefaultVersionInfo(
-                        project.getVersion());
-                defaultVersion = versionInfo.getReleaseVersionString();
+                        currentVersion);
+                defaultVersion = versionInfo.getNextVersion()
+                        .getReleaseVersionString();
             } catch (VersionParseException e) {
                 if (getLog().isDebugEnabled()) {
                     getLog().debug(e);
@@ -50,8 +62,8 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             String version = null;
             try {
-                version = prompter.prompt("release version [" + defaultVersion
-                        + "]");
+                version = prompter.prompt("What is the hotfix version? ["
+                        + defaultVersion + "]");
             } catch (PrompterException e) {
                 getLog().error(e);
             }
@@ -60,24 +72,27 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 version = defaultVersion;
             }
 
-            // git branch --list release/*
-            final String releaseBranches = executeGitCommandReturn("branch",
-                    "--list", "release/*");
+            // git for-each-ref refs/heads/hotfix/...
+            final String hotfixBranch = executeGitCommandReturn("for-each-ref",
+                    "refs/heads/" + gitFlowConfig.getHotfixBranchPrefix()
+                            + version);
 
-            if (StringUtils.isNotBlank(releaseBranches)) {
+            if (StringUtils.isNotBlank(hotfixBranch)) {
                 throw new MojoFailureException(
-                        "Release branch already exists. Cannot start release.");
+                        "Hotfix branch with that name already exists. Cannot start hotfix.");
             }
 
-            // git checkout -b ...
-            executeGitCommand("checkout", "-b", "release/" + version);
+            // git checkout -b hotfix/... master
+            executeGitCommand("checkout", "-b",
+                    gitFlowConfig.getHotfixBranchPrefix() + version,
+                    gitFlowConfig.getProductionBranch());
 
             // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
             executeMvnCommand(VERSIONS_MAVEN_PLUGIN + ":set", "-DnewVersion="
                     + version, "-DgenerateBackupPoms=false");
 
-            // git commit -a -m updating poms for ... release
-            executeGitCommand("commit", "-a", "-m", "updating poms for release");
+            // git commit -a -m updating poms for hotfix
+            executeGitCommand("commit", "-a", "-m", "updating poms for hotfix");
         } catch (CommandLineException e) {
             e.printStackTrace();
         }

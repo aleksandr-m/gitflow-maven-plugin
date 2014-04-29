@@ -17,13 +17,13 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.amashchenko</groupId>
+    <groupId>com.amashchenko.maven.plugin</groupId>
     <artifactId>gitflow-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <name>gitflow-maven-plugin</name>
-    <version>1.0.0-alpha1</version>
+    <version>1.0.1-alpha1-SNAPSHOT</version>
 
-    <description>git-flow maven plugin.</description>
+    <description>Git-Flow maven plugin, which runs Git and Maven commands from command line.</description>
  
     <inceptionYear>2014</inceptionYear>
 
@@ -41,8 +41,31 @@
         </developer>
     </developers>
 
+    <url>${url}</url>
+ 
+    <scm>
+        <url>${url}</url>
+        <connection>${scm.url}</connection>
+        <developerConnection>${scm.url}</developerConnection>
+    </scm>
+    
+    <distributionManagement>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Nexus Release Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <scm.url>scm:git:git@github.com:aleksandr-m/gitflow-maven-plugin.git</scm.url>
+        <url>https://github.com/aleksandr-m/gitflow-maven-plugin</url>
     </properties>
 
     <build>
@@ -80,6 +103,56 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.4</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
