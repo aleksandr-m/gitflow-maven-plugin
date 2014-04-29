@@ -25,6 +25,12 @@ import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
+/**
+ * The git flow feature start mojo.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
 @Mojo(name = "feature-start", aggregator = true)
 public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
 

@@ -25,6 +25,12 @@ import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
+/**
+ * The git flow feature finish mojo.
+ * 
+ * @author Aleksandr Mashchenko
+ * 
+ */
 @Mojo(name = "feature-finish", aggregator = true)
 public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
