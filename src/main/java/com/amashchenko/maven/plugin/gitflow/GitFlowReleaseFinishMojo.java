@@ -53,7 +53,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                         "More than one release branch exists. Cannot finish release.");
             } else {
                 releaseVersion = releaseBranches.trim().substring(
-                        releaseBranches.indexOf(gitFlowConfig
+                        releaseBranches.lastIndexOf(gitFlowConfig
                                 .getReleaseBranchPrefix())
                                 + gitFlowConfig.getReleaseBranchPrefix()
                                         .length());
