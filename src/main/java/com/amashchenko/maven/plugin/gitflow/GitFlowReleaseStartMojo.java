@@ -33,6 +33,7 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 @Mojo(name = "release-start", aggregator = true)
 public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
+    /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
@@ -87,7 +88,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                     gitFlowConfig.getDevelopmentBranch());
 
             // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-            executeMvnCommand(VERSIONS_MAVEN_PLUGIN + ":set", "-DnewVersion="
+            executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, "-DnewVersion="
                     + version, "-DgenerateBackupPoms=false");
 
             // git commit -a -m updating poms for release

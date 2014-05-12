@@ -34,6 +34,7 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 @Mojo(name = "feature-start", aggregator = true)
 public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
 
+    /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
@@ -86,7 +87,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
 
             if (StringUtils.isNotBlank(version)) {
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-                executeMvnCommand(VERSIONS_MAVEN_PLUGIN + ":set",
+                executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL,
                         "-DnewVersion=" + version, "-DgenerateBackupPoms=false");
 
                 // git commit -a -m updating poms for feature branch

@@ -29,7 +29,10 @@ import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
+import org.codehaus.plexus.util.cli.CommandLineUtils.StringStreamConsumer;
 import org.codehaus.plexus.util.cli.Commandline;
+import org.codehaus.plexus.util.cli.DefaultConsumer;
+import org.codehaus.plexus.util.cli.StreamConsumer;
 
 /**
  * Abstract git flow mojo.
@@ -61,8 +64,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** Command line for Maven executable. */
     private final Commandline cmdMvn = new Commandline();
 
-    /** Versions Maven plugin full name. */
-    protected static final String VERSIONS_MAVEN_PLUGIN = "org.codehaus.mojo:versions-maven-plugin:2.1";
+    /** A full name of the versions-maven-plugin set goal. */
+    protected static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:2.1:set";
 
     /** Maven project. */
     @Component
@@ -134,8 +137,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             executeGitCommand("diff-index", "--quiet", "HEAD");
 
             // check untracked files
-            String untracked = executeGitCommandReturn("ls-files", "--others",
-                    "--exclude-standard", "--error-unmatch");
+            final String untracked = executeGitCommandReturn("ls-files",
+                    "--others", "--exclude-standard", "--error-unmatch");
             if (StringUtils.isNotBlank(untracked)) {
                 return true;
             }
@@ -157,7 +160,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected String executeGitCommandReturn(final String... args)
             throws CommandLineException, MojoFailureException {
-        return executeCommand(cmdGit, false, true, args);
+        return executeCommand(cmdGit, true, args);
     }
 
     /**
@@ -170,7 +173,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void executeGitCommand(final String... args)
             throws CommandLineException, MojoFailureException {
-        executeCommand(cmdGit, true, false, args);
+        executeCommand(cmdGit, false, args);
     }
 
     /**
@@ -183,7 +186,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void executeMvnCommand(final String... args)
             throws CommandLineException, MojoFailureException {
-        executeCommand(cmdMvn, true, false, args);
+        executeCommand(cmdMvn, false, args);
     }
 
     /**
@@ -191,10 +194,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * 
      * @param cmd
      *            Command line.
-     * @param showOut
-     *            Whether to print output.
      * @param returnOut
-     *            Whether to return output.
+     *            Whether to return output. When <code>true</code> the output
+     *            will not be printed into the console and will be returned from
+     *            this method.
      * @param args
      *            Command line arguments.
      * @return Output of the command or empty String depending on the @param
@@ -202,7 +205,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws CommandLineException
      * @throws MojoFailureException
      */
-    private String executeCommand(final Commandline cmd, final boolean showOut,
+    private String executeCommand(final Commandline cmd,
             final boolean returnOut, final String... args)
             throws CommandLineException, MojoFailureException {
         initExecutables();
@@ -215,24 +218,25 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         cmd.clearArgs();
         cmd.addArguments(args);
 
-        CommandLineUtils.StringStreamConsumer out = new CommandLineUtils.StringStreamConsumer();
-        CommandLineUtils.StringStreamConsumer err = new CommandLineUtils.StringStreamConsumer();
-        final int exitCode = CommandLineUtils.executeCommandLine(cmd, out, err);
-
-        if (showOut) {
-            final String output = out.getOutput();
-            if (!StringUtils.isEmpty(output)) {
-                getLog().info(output);
-            }
+        StreamConsumer out = null;
+        if (returnOut) {
+            out = new CommandLineUtils.StringStreamConsumer();
+        } else {
+            out = new DefaultConsumer();
         }
+
+        CommandLineUtils.StringStreamConsumer err = new CommandLineUtils.StringStreamConsumer();
+
+        // execute
+        final int exitCode = CommandLineUtils.executeCommandLine(cmd, out, err);
 
         if (exitCode != 0) {
             throw new MojoFailureException(err.getOutput());
         }
 
         String ret = "";
-        if (returnOut) {
-            ret = out.getOutput();
+        if (returnOut && out instanceof StringStreamConsumer) {
+            ret = ((StringStreamConsumer) out).getOutput();
         }
         return ret;
     }
