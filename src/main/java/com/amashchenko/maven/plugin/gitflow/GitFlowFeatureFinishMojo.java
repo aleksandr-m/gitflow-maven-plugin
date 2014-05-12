@@ -34,6 +34,7 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 @Mojo(name = "feature-finish", aggregator = true)
 public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
+    /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
@@ -50,7 +51,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 throw new MojoFailureException("There is no feature branches.");
             }
 
-            String[] branches = featureBranches.split("\\r?\\n");
+            final String[] branches = featureBranches.split("\\r?\\n");
 
             List<String> numberedList = new ArrayList<String>();
             StringBuffer str = new StringBuffer(
@@ -95,14 +96,14 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             executeGitCommand("merge", "--no-ff", featureBranchName);
 
             // get current project version from pom
-            String currentVersion = getCurrentProjectVersion();
+            final String currentVersion = getCurrentProjectVersion();
 
-            String featureName = featureBranchName.replaceFirst(
+            final String featureName = featureBranchName.replaceFirst(
                     gitFlowConfig.getFeatureBranchPrefix(), "");
 
             if (currentVersion.contains("-" + featureName)) {
-                String version = currentVersion.replaceFirst("-" + featureName,
-                        "");
+                final String version = currentVersion.replaceFirst("-"
+                        + featureName, "");
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL,

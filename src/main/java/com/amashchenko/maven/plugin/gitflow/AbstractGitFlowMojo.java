@@ -137,8 +137,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             executeGitCommand("diff-index", "--quiet", "HEAD");
 
             // check untracked files
-            String untracked = executeGitCommandReturn("ls-files", "--others",
-                    "--exclude-standard", "--error-unmatch");
+            final String untracked = executeGitCommandReturn("ls-files",
+                    "--others", "--exclude-standard", "--error-unmatch");
             if (StringUtils.isNotBlank(untracked)) {
                 return true;
             }
