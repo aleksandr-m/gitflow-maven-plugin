@@ -148,7 +148,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 }
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-                executeMvnCommand(VERSIONS_MAVEN_PLUGIN + ":set",
+                executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL,
                         "-DnewVersion=" + nextSnapshotVersion,
                         "-DgenerateBackupPoms=false");
 

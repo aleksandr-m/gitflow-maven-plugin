@@ -88,7 +88,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                     gitFlowConfig.getProductionBranch());
 
             // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-            executeMvnCommand(VERSIONS_MAVEN_PLUGIN + ":set", "-DnewVersion="
+            executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, "-DnewVersion="
                     + version, "-DgenerateBackupPoms=false");
 
             // git commit -a -m updating poms for hotfix

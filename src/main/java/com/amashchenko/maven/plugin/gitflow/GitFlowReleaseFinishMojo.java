@@ -109,7 +109,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             }
 
             // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-            executeMvnCommand(VERSIONS_MAVEN_PLUGIN + ":set", "-DnewVersion="
+            executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, "-DnewVersion="
                     + nextSnapshotVersion, "-DgenerateBackupPoms=false");
 
             // git commit -a -m updating poms for ... release

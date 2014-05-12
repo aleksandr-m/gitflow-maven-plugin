@@ -105,7 +105,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                         "");
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-                executeMvnCommand(VERSIONS_MAVEN_PLUGIN + ":set",
+                executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL,
                         "-DnewVersion=" + version, "-DgenerateBackupPoms=false");
 
                 // git commit -a -m updating poms for development branch
