@@ -64,7 +64,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** Command line for Maven executable. */
     private final Commandline cmdMvn = new Commandline();
 
-    /** Versions Maven plugin full name. */
+    /** A full name of the versions-maven-plugin set goal. */
     protected static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:2.1:set";
 
     /** Maven project. */

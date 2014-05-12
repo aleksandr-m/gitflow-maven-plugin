@@ -18,6 +18,7 @@ package com.amashchenko.maven.plugin.gitflow;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.util.StringUtils;
@@ -31,6 +32,10 @@ import org.codehaus.plexus.util.cli.CommandLineException;
  */
 @Mojo(name = "release-finish", aggregator = true)
 public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
+
+    /** Whether to skip tagging the release in Git. */
+    @Parameter(property = "skipTag", defaultValue = "false")
+    private boolean skipTag = false;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -76,9 +81,12 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             executeGitCommand("merge", "--no-ff",
                     gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
 
-            // git tag -a ...
-            executeGitCommand("tag", "-a", gitFlowConfig.getVersionTagPrefix()
-                    + releaseVersion, "-m", "tagging release");
+            if (!skipTag) {
+                // git tag -a ...
+                executeGitCommand("tag", "-a",
+                        gitFlowConfig.getVersionTagPrefix() + releaseVersion,
+                        "-m", "tagging release");
+            }
 
             // git checkout develop
             executeGitCommand("checkout", gitFlowConfig.getDevelopmentBranch());

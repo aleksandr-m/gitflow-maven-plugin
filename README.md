@@ -16,7 +16,7 @@ The plugin is available from Maven central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.0.1-alpha1</version>
+                <version>1.0.1-alpha2</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -35,9 +35,9 @@ The plugin is available from Maven central.
 - `gitflow:hotfix-finish` - Merges a hotfix branch.
 
     
-# Plugin parameters   
+# Plugin common parameters
 
-All parameters are optional. The `gitFlowConfig` parameters defaults are same as in below example.
+All parameters are optional. The `gitFlowConfig` parameters defaults are the same as in below example.
 Maven and Git executables are assumed to be in the PATH, if executables are not available in the PATH or you want to use different version use `mvnExecutable` and `gitExecutable` parameters.
    
     <configuration>
@@ -53,3 +53,8 @@ Maven and Git executables are assumed to be in the PATH, if executables are not 
             <versionTagPrefix></versionTagPrefix>
         </gitFlowConfig>
     </configuration>
+
+## Additional goal parameters
+
+The `gitflow:release-finish` and `gitflow:hotfix-finish` goals have `skipTag` parameter. This parameter controls whether the release/hotfix will be tagged in Git.
+The default value is `false` (e.i. the release/hotfix will be tagged).

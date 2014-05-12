@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.components.interactivity.PrompterException;
@@ -35,6 +36,10 @@ import org.codehaus.plexus.util.cli.CommandLineException;
  */
 @Mojo(name = "hotfix-finish", aggregator = true)
 public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
+
+    /** Whether to skip tagging the hotfix in Git. */
+    @Parameter(property = "skipTag", defaultValue = "false")
+    private boolean skipTag = false;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -95,14 +100,16 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             // git merge --no-ff hotfix/...
             executeGitCommand("merge", "--no-ff", hotfixBranchName);
 
-            // git tag -a ...
-            executeGitCommand(
-                    "tag",
-                    "-a",
-                    gitFlowConfig.getVersionTagPrefix()
-                            + hotfixBranchName.replaceFirst(
-                                    gitFlowConfig.getHotfixBranchPrefix(), ""),
-                    "-m", "tagging hotfix");
+            if (!skipTag) {
+                // git tag -a ...
+                executeGitCommand(
+                        "tag",
+                        "-a",
+                        gitFlowConfig.getVersionTagPrefix()
+                                + hotfixBranchName.replaceFirst(
+                                        gitFlowConfig.getHotfixBranchPrefix(),
+                                        ""), "-m", "tagging hotfix");
+            }
 
             // check whether release branch exists
             // git for-each-ref --count=1 --format="%(refname:short)"
