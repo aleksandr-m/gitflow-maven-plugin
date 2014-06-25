@@ -1,4 +1,4 @@
-<!-- 
+<!--
 /*
  * Copyright 2014 Aleksandr Mashchenko.
  *
@@ -21,10 +21,10 @@
     <artifactId>gitflow-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <name>gitflow-maven-plugin</name>
-    <version>1.0.1-alpha2</version>
+    <version>1.0.1-alpha2-nfon</version>
 
     <description>Git-Flow maven plugin, which runs Git and Maven commands from command line.</description>
- 
+
     <inceptionYear>2014</inceptionYear>
 
     <licenses>
@@ -33,7 +33,7 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
-    </licenses> 
+    </licenses>
 
     <developers>
         <developer>
@@ -42,13 +42,13 @@
     </developers>
 
     <url>${url}</url>
- 
+
     <scm>
         <url>${url}</url>
         <connection>${scm.url}</connection>
         <developerConnection>${scm.url}</developerConnection>
     </scm>
-    
+
     <distributionManagement>
         <repository>
             <id>sonatype-nexus-staging</id>

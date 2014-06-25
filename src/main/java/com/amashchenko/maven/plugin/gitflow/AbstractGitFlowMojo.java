@@ -36,9 +36,9 @@ import org.codehaus.plexus.util.cli.StreamConsumer;
 
 /**
  * Abstract git flow mojo.
- * 
+ *
  * @author Aleksandr Mashchenko
- * 
+ *
  */
 public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
@@ -76,7 +76,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Initializes command line executables.
-     * 
+     *
      */
     private void initExecutables() {
         if (StringUtils.isBlank(cmdMvn.getExecutable())) {
@@ -97,7 +97,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Gets current project version from pom.xml file.
-     * 
+     *
      * @return Current project version.
      * @throws MojoFailureException
      */
@@ -115,7 +115,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Checks uncommitted changes.
-     * 
+     *
      * @throws MojoFailureException
      */
     protected void checkUncommittedChanges() throws MojoFailureException {
@@ -127,7 +127,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes Git commands to check for uncommitted changes.
-     * 
+     *
      * @return <code>true</code> when there are uncommitted changes,
      *         <code>false</code> otherwise.
      */
@@ -137,8 +137,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             executeGitCommand("diff-index", "--quiet", "HEAD");
 
             // check untracked files
-            final String untracked = executeGitCommandReturn("ls-files",
-                    "--others", "--exclude-standard", "--error-unmatch");
+            final String untracked = executeGitCommandReturn("st",
+                    "--short");
             if (StringUtils.isNotBlank(untracked)) {
                 return true;
             }
@@ -151,7 +151,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes Git command and returns output.
-     * 
+     *
      * @param args
      *            Git command line arguments.
      * @return Command output.
@@ -165,7 +165,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes Git command.
-     * 
+     *
      * @param args
      *            Git command line arguments.
      * @throws CommandLineException
@@ -178,7 +178,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes Maven command.
-     * 
+     *
      * @param args
      *            Maven command line arguments.
      * @throws CommandLineException
@@ -191,7 +191,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes command line.
-     * 
+     *
      * @param cmd
      *            Command line.
      * @param returnOut
