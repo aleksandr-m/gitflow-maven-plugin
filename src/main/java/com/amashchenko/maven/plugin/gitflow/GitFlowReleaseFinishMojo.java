@@ -37,6 +37,10 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipTag", defaultValue = "false")
     private boolean skipTag = false;
 
+    /** Whether to keep release branch after finish. */
+    @Parameter(property = "keepBranch", defaultValue = "false")
+    private boolean keepBranch = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -125,9 +129,11 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             executeGitCommand("commit", "-a", "-m",
                     "updating poms for next development version");
 
-            // git branch -d release/...
-            executeGitCommand("branch", "-d",
-                    gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
+            if (!keepBranch) {
+                // git branch -d release/...
+                executeGitCommand("branch", "-d",
+                        gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
+            }
         } catch (CommandLineException e) {
             e.printStackTrace();
         }
