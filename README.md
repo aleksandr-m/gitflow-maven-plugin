@@ -57,4 +57,7 @@ Maven and Git executables are assumed to be in the PATH, if executables are not 
 ## Additional goal parameters
 
 The `gitflow:release-finish` and `gitflow:hotfix-finish` goals have `skipTag` parameter. This parameter controls whether the release/hotfix will be tagged in Git.
-The default value is `false` (e.i. the release/hotfix will be tagged).
+The default value is `false` (i.e. the release/hotfix will be tagged).
+
+All `-finish` goals have `keepBranch` parameter which controls whether created support branch will be kept in Git after the goal finishes.
+The default value is `false` (i.e. the supporting branch will be deleted).
