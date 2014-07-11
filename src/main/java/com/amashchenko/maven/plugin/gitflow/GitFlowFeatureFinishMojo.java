@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
@@ -33,6 +34,10 @@ import org.codehaus.plexus.util.cli.CommandLineException;
  */
 @Mojo(name = "feature-finish", aggregator = true)
 public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
+
+    /** Whether to keep feature branch after finish. */
+    @Parameter(property = "keepBranch", defaultValue = "false")
+    private boolean keepBranch = false;
 
     /** {@inheritDoc} */
     @Override
@@ -55,7 +60,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
             List<String> numberedList = new ArrayList<String>();
             StringBuffer str = new StringBuffer(
-                    "feature branch name to finish: [");
+                    "Choose feature branch name to finish: [");
             for (int i = 0; i < branches.length; i++) {
                 str.append((i + 1) + ". " + branches[i] + " ");
                 numberedList.add("" + (i + 1));
@@ -114,8 +119,10 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                         "updating poms for development branch");
             }
 
-            // git branch -d feature/...
-            executeGitCommand("branch", "-d", featureBranchName);
+            if (!keepBranch) {
+                // git branch -d feature/...
+                executeGitCommand("branch", "-d", featureBranchName);
+            }
         } catch (CommandLineException e) {
             e.printStackTrace();
         }

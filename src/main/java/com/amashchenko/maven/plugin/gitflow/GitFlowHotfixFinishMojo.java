@@ -41,6 +41,10 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipTag", defaultValue = "false")
     private boolean skipTag = false;
 
+    /** Whether to keep hotfix branch after finish. */
+    @Parameter(property = "keepBranch", defaultValue = "false")
+    private boolean keepBranch = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -61,7 +65,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
             List<String> numberedList = new ArrayList<String>();
             StringBuffer str = new StringBuffer(
-                    "hotfix branch name to finish: [");
+                    "Choose hotfix branch name to finish: [");
             for (int i = 0; i < branches.length; i++) {
                 str.append((i + 1) + ". " + branches[i] + " ");
                 numberedList.add("" + (i + 1));
@@ -165,8 +169,10 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                         "updating poms for next development version");
             }
 
-            // git branch -d hotfix/...
-            executeGitCommand("branch", "-d", hotfixBranchName);
+            if (!keepBranch) {
+                // git branch -d hotfix/...
+                executeGitCommand("branch", "-d", hotfixBranchName);
+            }
         } catch (CommandLineException e) {
             e.printStackTrace();
         }

@@ -16,7 +16,7 @@ The plugin is available from Maven central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.0.1-alpha2</version>
+                <version>1.0.1-alpha3</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -57,4 +57,7 @@ Maven and Git executables are assumed to be in the PATH, if executables are not 
 ## Additional goal parameters
 
 The `gitflow:release-finish` and `gitflow:hotfix-finish` goals have `skipTag` parameter. This parameter controls whether the release/hotfix will be tagged in Git.
-The default value is `false` (e.i. the release/hotfix will be tagged).
+The default value is `false` (i.e. the release/hotfix will be tagged).
+
+All `-finish` goals have `keepBranch` parameter which controls whether created support branch will be kept in Git after the goal finishes.
+The default value is `false` (i.e. the supporting branch will be deleted).

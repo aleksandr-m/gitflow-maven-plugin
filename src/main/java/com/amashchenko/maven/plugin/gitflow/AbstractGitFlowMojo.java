@@ -117,8 +117,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * Checks uncommitted changes.
      * 
      * @throws MojoFailureException
+     * @throws CommandLineException
      */
-    protected void checkUncommittedChanges() throws MojoFailureException {
+    protected void checkUncommittedChanges() throws MojoFailureException,
+            CommandLineException {
         if (executeGitHasUncommitted()) {
             throw new MojoFailureException(
                     "You have some uncommitted files. Commit or discard local changes in order to proceed.");
@@ -130,23 +132,47 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * 
      * @return <code>true</code> when there are uncommitted changes,
      *         <code>false</code> otherwise.
+     * @throws CommandLineException
+     * @throws MojoFailureException
      */
-    protected boolean executeGitHasUncommitted() {
-        try {
-            // diff-index
-            executeGitCommand("diff-index", "--quiet", "HEAD");
+    protected boolean executeGitHasUncommitted() throws MojoFailureException,
+            CommandLineException {
+        boolean uncommited = false;
 
-            // check untracked files
-            final String untracked = executeGitCommandReturn("ls-files",
-                    "--others", "--exclude-standard", "--error-unmatch");
-            if (StringUtils.isNotBlank(untracked)) {
-                return true;
+        // 1 if there were differences and 0 means no differences
+
+        // git diff --no-ext-diff --ignore-submodules --quiet --exit-code
+        final String diffExitCode = executeGitCommandExitCode("diff",
+                "--no-ext-diff", "--ignore-submodules", "--quiet",
+                "--exit-code");
+
+        if ("0".equals(diffExitCode)) {
+            // git diff-index --cached --quiet --ignore-submodules HEAD --
+            final String diffIndexExitCode = executeGitCommandExitCode(
+                    "diff-index", "--cached", "--quiet", "--ignore-submodules",
+                    "HEAD", "--");
+            if (!"0".equals(diffIndexExitCode)) {
+                uncommited = true;
             }
-        } catch (Exception e) {
-            return true;
+        } else {
+            uncommited = true;
         }
 
-        return false;
+        return uncommited;
+    }
+
+    /**
+     * Executes Git command and returns exit code.
+     * 
+     * @param args
+     *            Git command line arguments.
+     * @return Command output.
+     * @throws CommandLineException
+     * @throws MojoFailureException
+     */
+    protected String executeGitCommandExitCode(final String... args)
+            throws CommandLineException, MojoFailureException {
+        return executeCommand(cmdGit, true, true, args);
     }
 
     /**
@@ -160,7 +186,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected String executeGitCommandReturn(final String... args)
             throws CommandLineException, MojoFailureException {
-        return executeCommand(cmdGit, true, args);
+        return executeCommand(cmdGit, true, false, args);
     }
 
     /**
@@ -173,7 +199,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void executeGitCommand(final String... args)
             throws CommandLineException, MojoFailureException {
-        executeCommand(cmdGit, false, args);
+        executeCommand(cmdGit, false, false, args);
     }
 
     /**
@@ -186,7 +212,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void executeMvnCommand(final String... args)
             throws CommandLineException, MojoFailureException {
-        executeCommand(cmdMvn, false, args);
+        executeCommand(cmdMvn, false, false, args);
     }
 
     /**
@@ -198,16 +224,24 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *            Whether to return output. When <code>true</code> the output
      *            will not be printed into the console and will be returned from
      *            this method.
+     * @param returnExitCode
+     *            If <code>true</code> the exit code of the command will be
+     *            returned, if <code>false</code> the output of the command will
+     *            be returned. Will not have effect if the
+     *            <code>returnOut</code> parameter is set to <code>false</code>.
      * @param args
      *            Command line arguments.
-     * @return Output of the command or empty String depending on the @param
-     *         returnOut value.
+     * @return Output of the command or exit code or empty String depending on
+     *         the parameters values.
      * @throws CommandLineException
      * @throws MojoFailureException
+     *             If <code>returnExitCode</code> is <code>false</code> and
+     *             command exit code is NOT equals to 0.
      */
     private String executeCommand(final Commandline cmd,
-            final boolean returnOut, final String... args)
-            throws CommandLineException, MojoFailureException {
+            final boolean returnOut, final boolean returnExitCode,
+            final String... args) throws CommandLineException,
+            MojoFailureException {
         initExecutables();
 
         if (getLog().isDebugEnabled()) {
@@ -230,13 +264,18 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         // execute
         final int exitCode = CommandLineUtils.executeCommandLine(cmd, out, err);
 
-        if (exitCode != 0) {
+        // throw error on NOT 0 exit code only if returnExitCode is false
+        if (!returnExitCode && exitCode != 0) {
             throw new MojoFailureException(err.getOutput());
         }
 
         String ret = "";
-        if (returnOut && out instanceof StringStreamConsumer) {
-            ret = ((StringStreamConsumer) out).getOutput();
+        if (returnOut) {
+            if (returnExitCode) {
+                ret = "" + exitCode;
+            } else if (out instanceof StringStreamConsumer) {
+                ret = ((StringStreamConsumer) out).getOutput();
+            }
         }
         return ret;
     }
