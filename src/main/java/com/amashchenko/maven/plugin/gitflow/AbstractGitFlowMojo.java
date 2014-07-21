@@ -24,6 +24,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.components.interactivity.Prompter;
 import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
@@ -73,6 +74,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** Default prompter. */
     @Component
     protected Prompter prompter;
+    /** Maven settings. */
+    @Component
+    protected Settings settings;
 
     /**
      * Initializes command line executables.
@@ -105,9 +109,15 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         try {
             // read pom.xml
             MavenXpp3Reader reader = new MavenXpp3Reader();
-            Model model = reader.read(new FileReader(project.getFile()
-                    .getAbsoluteFile()));
-            return model.getVersion();
+            FileReader fr = new FileReader(project.getFile().getAbsoluteFile());
+            try {
+                Model model = reader.read(fr);
+                return model.getVersion();
+            } finally {
+                if (fr != null) {
+                    fr.close();
+                }
+            }
         } catch (Exception e) {
             throw new MojoFailureException("", e);
         }

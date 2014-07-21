@@ -71,11 +71,13 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             }
 
             String version = null;
-            try {
-                version = prompter.prompt("What is release version? ["
-                        + defaultVersion + "]");
-            } catch (PrompterException e) {
-                getLog().error(e);
+            if (settings.getInteractiveMode()) {
+                try {
+                    version = prompter.prompt("What is release version? ["
+                            + defaultVersion + "]");
+                } catch (PrompterException e) {
+                    getLog().error(e);
+                }
             }
 
             if (StringUtils.isBlank(version)) {
