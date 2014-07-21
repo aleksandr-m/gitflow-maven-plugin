@@ -56,9 +56,10 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
             String releaseVersion = null;
 
-            if (StringUtils.isNotBlank(releaseBranches)
-                    && StringUtils.countMatches(releaseBranches,
-                            gitFlowConfig.getReleaseBranchPrefix()) > 1) {
+            if (StringUtils.isBlank(releaseBranches)) {
+                throw new MojoFailureException("There is no release branch.");
+            } else if (StringUtils.countMatches(releaseBranches,
+                    gitFlowConfig.getReleaseBranchPrefix()) > 1) {
                 throw new MojoFailureException(
                         "More than one release branch exists. Cannot finish release.");
             } else {
