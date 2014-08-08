@@ -21,7 +21,7 @@
     <artifactId>gitflow-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <name>gitflow-maven-plugin</name>
-    <version>1.0.1-alpha4-SNAPSHOT</version>
+    <version>1.0.1-alpha5-SNAPSHOT</version>
 
     <description>Git-Flow Maven Plugin, which runs Git and Maven commands from the command line.</description>
  
