@@ -69,13 +69,13 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:2.1:set";
 
     /** Maven project. */
-    @Component
+    @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
     /** Default prompter. */
     @Component
     protected Prompter prompter;
     /** Maven settings. */
-    @Component
+    @Parameter(defaultValue = "${settings}", readonly = true)
     protected Settings settings;
 
     /**
