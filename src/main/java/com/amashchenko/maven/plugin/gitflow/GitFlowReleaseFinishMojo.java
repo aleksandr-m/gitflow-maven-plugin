@@ -56,9 +56,10 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
             String releaseVersion = null;
 
-            if (StringUtils.isNotBlank(releaseBranches)
-                    && StringUtils.countMatches(releaseBranches,
-                            gitFlowConfig.getReleaseBranchPrefix()) > 1) {
+            if (StringUtils.isBlank(releaseBranches)) {
+                throw new MojoFailureException("There is no release branch.");
+            } else if (StringUtils.countMatches(releaseBranches,
+                    gitFlowConfig.getReleaseBranchPrefix()) > 1) {
                 throw new MojoFailureException(
                         "More than one release branch exists. Cannot finish release.");
             } else {
@@ -101,12 +102,12 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                     gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
 
             // get current project version from pom
-            String currentVersion = getCurrentProjectVersion();
+            final String currentVersion = getCurrentProjectVersion();
 
             String nextSnapshotVersion = null;
             // get next snapshot version
             try {
-                DefaultVersionInfo versionInfo = new DefaultVersionInfo(
+                final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
                         currentVersion);
                 nextSnapshotVersion = versionInfo.getNextVersion()
                         .getSnapshotVersionString();
@@ -135,7 +136,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                         gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
             }
         } catch (CommandLineException e) {
-            e.printStackTrace();
+            getLog().error(e);
         }
     }
 }

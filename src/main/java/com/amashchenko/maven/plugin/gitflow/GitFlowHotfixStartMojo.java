@@ -47,11 +47,11 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             String defaultVersion = "1.0.1";
 
             // get current project version from pom
-            String currentVersion = getCurrentProjectVersion();
+            final String currentVersion = getCurrentProjectVersion();
 
             // get default hotfix version
             try {
-                DefaultVersionInfo versionInfo = new DefaultVersionInfo(
+                final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
                         currentVersion);
                 defaultVersion = versionInfo.getNextVersion()
                         .getReleaseVersionString();
@@ -95,7 +95,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             // git commit -a -m updating poms for hotfix
             executeGitCommand("commit", "-a", "-m", "updating poms for hotfix");
         } catch (CommandLineException e) {
-            e.printStackTrace();
+            getLog().error(e);
         }
     }
 }

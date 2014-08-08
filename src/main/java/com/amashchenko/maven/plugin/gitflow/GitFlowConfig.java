@@ -22,11 +22,17 @@ package com.amashchenko.maven.plugin.gitflow;
  * 
  */
 public class GitFlowConfig {
+    /** Name of the production branch. */
     private String productionBranch;
+    /** Name of the development branch. */
     private String developmentBranch;
+    /** Prefix of the feature branch. */
     private String featureBranchPrefix;
+    /** Prefix of the release branch. */
     private String releaseBranchPrefix;
+    /** Prefix of the hotfix branch. */
     private String hotfixBranchPrefix;
+    /** Prefix of the version tag. */
     private String versionTagPrefix;
 
     public GitFlowConfig() {

@@ -71,11 +71,11 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                     gitFlowConfig.getDevelopmentBranch());
 
             // get current project version from pom
-            String currentVersion = getCurrentProjectVersion();
+            final String currentVersion = getCurrentProjectVersion();
 
             String version = null;
             try {
-                DefaultVersionInfo versionInfo = new DefaultVersionInfo(
+                final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
                         currentVersion);
                 version = versionInfo.getReleaseVersionString() + "-"
                         + featureName + "-" + Artifact.SNAPSHOT_VERSION;
@@ -95,7 +95,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                         "updating poms for feature branch");
             }
         } catch (CommandLineException e) {
-            e.printStackTrace();
+            getLog().error(e);
         }
     }
 }
