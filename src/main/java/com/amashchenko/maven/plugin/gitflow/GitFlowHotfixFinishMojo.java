@@ -70,7 +70,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 str.append((i + 1) + ". " + branches[i] + " ");
                 numberedList.add("" + (i + 1));
             }
-            str.append("]");
+            str.append(']');
 
             String hotfixNumber = null;
             try {
@@ -139,12 +139,12 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 executeGitCommand("merge", "--no-ff", hotfixBranchName);
 
                 // get current project version from pom
-                String currentVersion = getCurrentProjectVersion();
+                final String currentVersion = getCurrentProjectVersion();
 
                 String nextSnapshotVersion = null;
                 // get next snapshot version
                 try {
-                    DefaultVersionInfo versionInfo = new DefaultVersionInfo(
+                    final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
                             currentVersion);
                     nextSnapshotVersion = versionInfo.getNextVersion()
                             .getSnapshotVersionString();
@@ -174,7 +174,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 executeGitCommand("branch", "-d", hotfixBranchName);
             }
         } catch (CommandLineException e) {
-            e.printStackTrace();
+            getLog().error(e);
         }
     }
 }

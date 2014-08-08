@@ -65,7 +65,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 str.append((i + 1) + ". " + branches[i] + " ");
                 numberedList.add("" + (i + 1));
             }
-            str.append("]");
+            str.append(']');
 
             String featureNumber = null;
             try {
@@ -124,7 +124,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 executeGitCommand("branch", "-d", featureBranchName);
             }
         } catch (CommandLineException e) {
-            e.printStackTrace();
+            getLog().error(e);
         }
     }
 }

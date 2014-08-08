@@ -56,12 +56,12 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             executeGitCommand("checkout", gitFlowConfig.getDevelopmentBranch());
 
             // get current project version from pom
-            String currentVersion = getCurrentProjectVersion();
+            final String currentVersion = getCurrentProjectVersion();
 
             String defaultVersion = "1.0.0";
             // get default release version
             try {
-                DefaultVersionInfo versionInfo = new DefaultVersionInfo(
+                final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
                         currentVersion);
                 defaultVersion = versionInfo.getReleaseVersionString();
             } catch (VersionParseException e) {
@@ -96,7 +96,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             // git commit -a -m updating poms for release
             executeGitCommand("commit", "-a", "-m", "updating poms for release");
         } catch (CommandLineException e) {
-            e.printStackTrace();
+            getLog().error(e);
         }
     }
 }
