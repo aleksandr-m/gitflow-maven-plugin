@@ -97,7 +97,9 @@
                         <goals>
                             <goal>helpmojo</goal>
                         </goals>
-                        <phase>process-classes</phase>
+                        <configuration>
+                            <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -158,7 +160,7 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>3.2.2</version>
+            <version>3.2.3</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
