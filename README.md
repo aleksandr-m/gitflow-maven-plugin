@@ -33,17 +33,21 @@ The plugin is available from Maven central.
 - `gitflow:feature-finish` - Merges a feature branch.
 - `gitflow:hotfix-start` - Starts a hotfix branch and updates pom(s) with hotfix version.
 - `gitflow:hotfix-finish` - Merges a hotfix branch.
+- `gitflow:help` - Displays help information on plugin.
 
 
 # Plugin Common Parameters
 
 All parameters are optional. The `gitFlowConfig` parameters defaults are the same as in below example.
 Maven and Git executables are assumed to be in the PATH, if executables are not available in the PATH or you want to use different version use `mvnExecutable` and `gitExecutable` parameters.
-   
+The `installProject` parameter controls whether the Maven `install` goal will be called during the mojo execution. The default value for this parameter is `false` (i.e. the project will NOT be installed).
+
     <configuration>
         <mvnExecutable>path_to_maven_executable</mvnExecutable>
         <gitExecutable>path_to_git_executable</gitExecutable>
-                  
+
+        <installProject>false</installProject>
+
         <gitFlowConfig>
             <productionBranch>master</productionBranch>
             <developmentBranch>develop</developmentBranch>
@@ -62,6 +66,8 @@ The default value is `false` (i.e. the release/hotfix will be tagged).
 All `-finish` goals have `keepBranch` parameter which controls whether created support branch will be kept in Git after the goal finishes.
 The default value is `false` (i.e. the supporting branch will be deleted).
 
+All `-finish` goals have `skipTestProject` parameter which controls whether Maven `test` goal will be called before merging branches.
+The default value is `false` (i.e. the project will be tested before merging branches).
 
 # Non-interactive Release
 

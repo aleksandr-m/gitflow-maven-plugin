@@ -47,7 +47,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(defaultValue = "${gitFlowConfig}")
     protected GitFlowConfig gitFlowConfig;
 
-    /** Whether to call Maven install goal after mojo execution. */
+    /** Whether to call Maven install goal during the mojo execution. */
     @Parameter(property = "installProject", defaultValue = "false")
     protected boolean installProject = false;
 
