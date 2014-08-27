@@ -63,6 +63,9 @@ The `installProject` parameter controls whether the Maven `install` goal will be
 The `gitflow:release-finish` and `gitflow:hotfix-finish` goals have `skipTag` parameter. This parameter controls whether the release/hotfix will be tagged in Git.
 The default value is `false` (i.e. the release/hotfix will be tagged).
 
+The `gitflow:feature-start` goal has `skipFeatureVersion` parameter which controls whether the feature name will be appended to the project version or not.
+The default value is `false` (i.e. the feature name will be appended to the project version, e.g. `1.0.0-feature_name-SNAPSHOT`).
+
 All `-finish` goals have `keepBranch` parameter which controls whether created support branch will be kept in Git after the goal finishes.
 The default value is `false` (i.e. the supporting branch will be deleted).
 
