@@ -45,6 +45,10 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "keepBranch", defaultValue = "false")
     private boolean keepBranch = false;
 
+    /** Whether to skip calling Maven test goal before merging the branch. */
+    @Parameter(property = "skipTestProject", defaultValue = "false")
+    private boolean skipTestProject = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -96,8 +100,10 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             // git checkout hotfix/...
             executeGitCommand("checkout", hotfixBranchName);
 
-            // mvn clean install
-            executeMvnCommand("clean", "install");
+            if (!skipTestProject) {
+                // mvn clean test
+                executeMvnCommand("clean", "test");
+            }
 
             // git checkout master
             executeGitCommand("checkout", gitFlowConfig.getProductionBranch());
@@ -167,6 +173,11 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 // git commit -a -m updating poms for next development version
                 executeGitCommand("commit", "-a", "-m",
                         "updating poms for next development version");
+            }
+
+            if (installProject) {
+                // mvn clean install
+                executeMvnCommand("clean", "install");
             }
 
             if (!keepBranch) {

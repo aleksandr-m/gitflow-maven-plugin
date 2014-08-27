@@ -94,6 +94,11 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
             // git commit -a -m updating poms for hotfix
             executeGitCommand("commit", "-a", "-m", "updating poms for hotfix");
+
+            if (installProject) {
+                // mvn clean install
+                executeMvnCommand("clean", "install");
+            }
         } catch (CommandLineException e) {
             getLog().error(e);
         }

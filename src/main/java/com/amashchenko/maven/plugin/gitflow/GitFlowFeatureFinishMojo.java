@@ -39,6 +39,10 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "keepBranch", defaultValue = "false")
     private boolean keepBranch = false;
 
+    /** Whether to skip calling Maven test goal before merging the branch. */
+    @Parameter(property = "skipTestProject", defaultValue = "false")
+    private boolean skipTestProject = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -91,8 +95,10 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             // git checkout feature/...
             executeGitCommand("checkout", featureBranchName);
 
-            // mvn clean install
-            executeMvnCommand("clean", "install");
+            if (!skipTestProject) {
+                // mvn clean test
+                executeMvnCommand("clean", "test");
+            }
 
             // git checkout develop
             executeGitCommand("checkout", gitFlowConfig.getDevelopmentBranch());
@@ -117,6 +123,11 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 // git commit -a -m updating poms for development branch
                 executeGitCommand("commit", "-a", "-m",
                         "updating poms for development branch");
+            }
+
+            if (installProject) {
+                // mvn clean install
+                executeMvnCommand("clean", "install");
             }
 
             if (!keepBranch) {

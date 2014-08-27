@@ -94,6 +94,11 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                 executeGitCommand("commit", "-a", "-m",
                         "updating poms for feature branch");
             }
+
+            if (installProject) {
+                // mvn clean install
+                executeMvnCommand("clean", "install");
+            }
         } catch (CommandLineException e) {
             getLog().error(e);
         }
