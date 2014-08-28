@@ -16,7 +16,7 @@ The plugin is available from Maven central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.0.1-alpha4</version>
+                <version>1.0.5</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
