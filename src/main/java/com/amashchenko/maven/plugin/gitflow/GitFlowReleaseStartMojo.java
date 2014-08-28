@@ -95,6 +95,11 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             // git commit -a -m updating poms for release
             executeGitCommand("commit", "-a", "-m", "updating poms for release");
+
+            if (installProject) {
+                // mvn clean install
+                executeMvnCommand("clean", "install");
+            }
         } catch (CommandLineException e) {
             getLog().error(e);
         }

@@ -19,6 +19,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.components.interactivity.PrompterException;
@@ -33,6 +34,13 @@ import org.codehaus.plexus.util.cli.CommandLineException;
  */
 @Mojo(name = "feature-start", aggregator = true)
 public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
+
+    /**
+     * Whether to skip changing project version. Default is <code>false</code>
+     * (the feature name will be appended to project version).
+     */
+    @Parameter(property = "skipFeatureVersion", defaultValue = "false")
+    private boolean skipFeatureVersion = false;
 
     /** {@inheritDoc} */
     @Override
@@ -70,29 +78,38 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                     gitFlowConfig.getFeatureBranchPrefix() + featureName,
                     gitFlowConfig.getDevelopmentBranch());
 
-            // get current project version from pom
-            final String currentVersion = getCurrentProjectVersion();
+            if (!skipFeatureVersion) {
+                // get current project version from pom
+                final String currentVersion = getCurrentProjectVersion();
 
-            String version = null;
-            try {
-                final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
-                        currentVersion);
-                version = versionInfo.getReleaseVersionString() + "-"
-                        + featureName + "-" + Artifact.SNAPSHOT_VERSION;
-            } catch (VersionParseException e) {
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug(e);
+                String version = null;
+                try {
+                    final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
+                            currentVersion);
+                    version = versionInfo.getReleaseVersionString() + "-"
+                            + featureName + "-" + Artifact.SNAPSHOT_VERSION;
+                } catch (VersionParseException e) {
+                    if (getLog().isDebugEnabled()) {
+                        getLog().debug(e);
+                    }
+                }
+
+                if (StringUtils.isNotBlank(version)) {
+                    // mvn versions:set -DnewVersion=...
+                    // -DgenerateBackupPoms=false
+                    executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL,
+                            "-DnewVersion=" + version,
+                            "-DgenerateBackupPoms=false");
+
+                    // git commit -a -m updating poms for feature branch
+                    executeGitCommand("commit", "-a", "-m",
+                            "updating poms for feature branch");
                 }
             }
 
-            if (StringUtils.isNotBlank(version)) {
-                // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-                executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL,
-                        "-DnewVersion=" + version, "-DgenerateBackupPoms=false");
-
-                // git commit -a -m updating poms for feature branch
-                executeGitCommand("commit", "-a", "-m",
-                        "updating poms for feature branch");
+            if (installProject) {
+                // mvn clean install
+                executeMvnCommand("clean", "install");
             }
         } catch (CommandLineException e) {
             getLog().error(e);
