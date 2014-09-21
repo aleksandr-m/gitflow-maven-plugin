@@ -82,6 +82,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(defaultValue = "${settings}", readonly = true)
     protected Settings settings;
 
+    /** System line separator. */
+    protected static final String LS = System.getProperty("line.separator");
+
     /**
      * Initializes command line executables.
      * 
