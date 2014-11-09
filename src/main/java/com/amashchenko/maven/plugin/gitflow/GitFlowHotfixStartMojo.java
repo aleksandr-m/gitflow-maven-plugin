@@ -37,6 +37,9 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
+            // set git flow configuration
+            initGitFlowConfig();
+
             // check uncommitted changes
             checkUncommittedChanges();
 

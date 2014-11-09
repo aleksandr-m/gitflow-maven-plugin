@@ -179,6 +179,32 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Executes Git config commands to set Git Flow configuration.
+     * 
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void initGitFlowConfig() throws MojoFailureException,
+            CommandLineException {
+        // ignore error exit codes
+        executeGitCommandExitCode("config", "gitflow.branch.master",
+                gitFlowConfig.getProductionBranch());
+        executeGitCommandExitCode("config", "gitflow.branch.develop",
+                gitFlowConfig.getDevelopmentBranch());
+
+        executeGitCommandExitCode("config", "gitflow.prefix.feature",
+                gitFlowConfig.getFeatureBranchPrefix());
+        executeGitCommandExitCode("config", "gitflow.prefix.release",
+                gitFlowConfig.getReleaseBranchPrefix());
+        executeGitCommandExitCode("config", "gitflow.prefix.hotfix",
+                gitFlowConfig.getHotfixBranchPrefix());
+        executeGitCommandExitCode("config", "gitflow.prefix.support",
+                gitFlowConfig.getSupportBranchPrefix());
+        executeGitCommandExitCode("config", "gitflow.prefix.versiontag",
+                gitFlowConfig.getVersionTagPrefix());
+    }
+
+    /**
      * Executes Git command and returns exit code.
      * 
      * @param args

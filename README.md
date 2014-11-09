@@ -54,6 +54,7 @@ The `installProject` parameter controls whether the Maven `install` goal will be
             <featureBranchPrefix>feature/</featureBranchPrefix>
             <releaseBranchPrefix>release/</releaseBranchPrefix>
             <hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
+            <supportBranchPrefix>support/</supportBranchPrefix>
             <versionTagPrefix></versionTagPrefix>
         </gitFlowConfig>
     </configuration>
