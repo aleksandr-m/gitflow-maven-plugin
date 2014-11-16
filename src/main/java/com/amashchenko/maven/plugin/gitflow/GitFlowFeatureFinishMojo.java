@@ -63,13 +63,12 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             final String[] branches = featureBranches.split("\\r?\\n");
 
             List<String> numberedList = new ArrayList<String>();
-            StringBuffer str = new StringBuffer(
-                    "Choose feature branch name to finish: [");
+            StringBuffer str = new StringBuffer("Feature branches:" + LS);
             for (int i = 0; i < branches.length; i++) {
-                str.append((i + 1) + ". " + branches[i] + " ");
+                str.append((i + 1) + ". " + branches[i] + LS);
                 numberedList.add("" + (i + 1));
             }
-            str.append(']');
+            str.append("Choose feature branch to finish");
 
             String featureNumber = null;
             try {

@@ -16,7 +16,7 @@ The plugin is available from Maven central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.0.5</version>
+                <version>1.0.6</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -54,6 +54,7 @@ The `installProject` parameter controls whether the Maven `install` goal will be
             <featureBranchPrefix>feature/</featureBranchPrefix>
             <releaseBranchPrefix>release/</releaseBranchPrefix>
             <hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
+            <supportBranchPrefix>support/</supportBranchPrefix>
             <versionTagPrefix></versionTagPrefix>
         </gitFlowConfig>
     </configuration>
