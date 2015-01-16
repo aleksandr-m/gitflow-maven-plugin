@@ -68,7 +68,8 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             String[] branches = hotfixBranches.split("\\r?\\n");
 
             List<String> numberedList = new ArrayList<String>();
-            StringBuffer str = new StringBuffer("Hotfix branches:" + LS);
+            StringBuilder str = new StringBuilder("Hotfix branches:")
+                    .append(LS);
             for (int i = 0; i < branches.length; i++) {
                 str.append((i + 1) + ". " + branches[i] + LS);
                 numberedList.add("" + (i + 1));

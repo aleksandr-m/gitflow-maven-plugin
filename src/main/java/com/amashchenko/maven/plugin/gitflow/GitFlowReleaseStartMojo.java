@@ -74,7 +74,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             }
 
             String version = null;
-            if (settings.getInteractiveMode()) {
+            if (settings.isInteractiveMode()) {
                 try {
                     version = prompter.prompt("What is release version? ["
                             + defaultVersion + "]");

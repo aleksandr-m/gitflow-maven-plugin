@@ -37,6 +37,9 @@ public class GitFlowConfig {
     /** Prefix of the version tag. */
     private String versionTagPrefix;
 
+    /**
+     * Default constructor.
+     */
     public GitFlowConfig() {
         this.productionBranch = "master";
         this.developmentBranch = "develop";
