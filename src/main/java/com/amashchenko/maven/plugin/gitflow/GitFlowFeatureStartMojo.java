@@ -77,9 +77,8 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout -b ... develop
-            executeGitCommand("checkout", "-b",
-                    gitFlowConfig.getFeatureBranchPrefix() + featureName,
-                    gitFlowConfig.getDevelopmentBranch());
+            gitCreateAndCheckout(gitFlowConfig.getFeatureBranchPrefix()
+                    + featureName, gitFlowConfig.getDevelopmentBranch());
 
             if (!skipFeatureVersion) {
                 // get current project version from pom
@@ -100,19 +99,16 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                 if (StringUtils.isNotBlank(version)) {
                     // mvn versions:set -DnewVersion=...
                     // -DgenerateBackupPoms=false
-                    executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL,
-                            "-DnewVersion=" + version,
-                            "-DgenerateBackupPoms=false");
+                    mvnSetVersions(version);
 
                     // git commit -a -m updating poms for feature branch
-                    executeGitCommand("commit", "-a", "-m",
-                            "updating poms for feature branch");
+                    gitCommit("updating poms for feature branch");
                 }
             }
 
             if (installProject) {
                 // mvn clean install
-                executeMvnCommand("clean", "install");
+                mvnCleanInstall();
             }
         } catch (CommandLineException e) {
             getLog().error(e);

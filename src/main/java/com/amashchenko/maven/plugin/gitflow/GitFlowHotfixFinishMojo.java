@@ -97,28 +97,25 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout hotfix/...
-            executeGitCommand("checkout", hotfixBranchName);
+            gitCheckout(hotfixBranchName);
 
             if (!skipTestProject) {
                 // mvn clean test
-                executeMvnCommand("clean", "test");
+                mvnCleanTest();
             }
 
             // git checkout master
-            executeGitCommand("checkout", gitFlowConfig.getProductionBranch());
+            gitCheckout(gitFlowConfig.getProductionBranch());
 
             // git merge --no-ff hotfix/...
-            executeGitCommand("merge", "--no-ff", hotfixBranchName);
+            gitMergeNoff(hotfixBranchName);
 
             if (!skipTag) {
                 // git tag -a ...
-                executeGitCommand(
-                        "tag",
-                        "-a",
-                        gitFlowConfig.getVersionTagPrefix()
-                                + hotfixBranchName.replaceFirst(
-                                        gitFlowConfig.getHotfixBranchPrefix(),
-                                        ""), "-m", "tagging hotfix");
+                gitTag(gitFlowConfig.getVersionTagPrefix()
+                        + hotfixBranchName.replaceFirst(
+                                gitFlowConfig.getHotfixBranchPrefix(), ""),
+                        "tagging hotfix");
             }
 
             // check whether release branch exists
@@ -132,16 +129,15 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             // if release branch exists merge hotfix changes into it
             if (StringUtils.isNotBlank(releaseBranch)) {
                 // git checkout release
-                executeGitCommand("checkout", releaseBranch);
+                gitCheckout(releaseBranch);
                 // git merge --no-ff hotfix/...
-                executeGitCommand("merge", "--no-ff", hotfixBranchName);
+                gitMergeNoff(hotfixBranchName);
             } else {
                 // git checkout develop
-                executeGitCommand("checkout",
-                        gitFlowConfig.getDevelopmentBranch());
+                gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
                 // git merge --no-ff hotfix/...
-                executeGitCommand("merge", "--no-ff", hotfixBranchName);
+                gitMergeNoff(hotfixBranchName);
 
                 // get current project version from pom
                 final String currentVersion = getCurrentProjectVersion();
@@ -165,23 +161,20 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 }
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-                executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL,
-                        "-DnewVersion=" + nextSnapshotVersion,
-                        "-DgenerateBackupPoms=false");
+                mvnSetVersions(nextSnapshotVersion);
 
                 // git commit -a -m updating poms for next development version
-                executeGitCommand("commit", "-a", "-m",
-                        "updating poms for next development version");
+                gitCommit("updating poms for next development version");
             }
 
             if (installProject) {
                 // mvn clean install
-                executeMvnCommand("clean", "install");
+                mvnCleanInstall();
             }
 
             if (!keepBranch) {
                 // git branch -d hotfix/...
-                executeGitCommand("branch", "-d", hotfixBranchName);
+                gitBranchDelete(hotfixBranchName);
             }
         } catch (CommandLineException e) {
             getLog().error(e);

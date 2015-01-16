@@ -92,18 +92,18 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout feature/...
-            executeGitCommand("checkout", featureBranchName);
+            gitCheckout(featureBranchName);
 
             if (!skipTestProject) {
                 // mvn clean test
-                executeMvnCommand("clean", "test");
+                mvnCleanTest();
             }
 
             // git checkout develop
-            executeGitCommand("checkout", gitFlowConfig.getDevelopmentBranch());
+            gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
             // git merge --no-ff feature/...
-            executeGitCommand("merge", "--no-ff", featureBranchName);
+            gitMergeNoff(featureBranchName);
 
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
@@ -116,22 +116,20 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                         + featureName, "");
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-                executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL,
-                        "-DnewVersion=" + version, "-DgenerateBackupPoms=false");
+                mvnSetVersions(version);
 
                 // git commit -a -m updating poms for development branch
-                executeGitCommand("commit", "-a", "-m",
-                        "updating poms for development branch");
+                gitCommit("updating poms for development branch");
             }
 
             if (installProject) {
                 // mvn clean install
-                executeMvnCommand("clean", "install");
+                mvnCleanInstall();
             }
 
             if (!keepBranch) {
                 // git branch -d feature/...
-                executeGitCommand("branch", "-d", featureBranchName);
+                gitBranchDelete(featureBranchName);
             }
         } catch (CommandLineException e) {
             getLog().error(e);
