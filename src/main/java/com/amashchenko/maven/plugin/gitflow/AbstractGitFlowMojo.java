@@ -51,6 +51,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(property = "installProject", defaultValue = "false")
     protected boolean installProject = false;
 
+    /** Whether to print commands output into the console. */
+    @Parameter(property = "verbose", defaultValue = "false")
+    private boolean verbose = false;
+
     /**
      * The path to the Maven executable. Defaults to either "mvn" or "mvn.bat"
      * depending on the operating system.
@@ -438,14 +442,16 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         cmd.clearArgs();
         cmd.addArguments(args);
 
-        StreamConsumer out = null;
+        final StreamConsumer out;
         if (returnOut) {
             out = new CommandLineUtils.StringStreamConsumer();
-        } else {
+        } else if (verbose) {
             out = new DefaultConsumer();
+        } else {
+            out = null;
         }
 
-        CommandLineUtils.StringStreamConsumer err = new CommandLineUtils.StringStreamConsumer();
+        final CommandLineUtils.StringStreamConsumer err = new CommandLineUtils.StringStreamConsumer();
 
         // execute
         final int exitCode = CommandLineUtils.executeCommandLine(cmd, out, err);
