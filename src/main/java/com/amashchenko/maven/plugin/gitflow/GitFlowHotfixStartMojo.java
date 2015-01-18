@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Aleksandr Mashchenko.
+ * Copyright 2014-2015 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
             // need to be in master to get correct project version
             // git checkout master
-            executeGitCommand("checkout", gitFlowConfig.getProductionBranch());
+            gitCheckout(gitFlowConfig.getProductionBranch());
 
             String defaultVersion = "1.0.1";
 
@@ -87,20 +87,18 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout -b hotfix/... master
-            executeGitCommand("checkout", "-b",
-                    gitFlowConfig.getHotfixBranchPrefix() + version,
-                    gitFlowConfig.getProductionBranch());
+            gitCreateAndCheckout(gitFlowConfig.getHotfixBranchPrefix()
+                    + version, gitFlowConfig.getProductionBranch());
 
             // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-            executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, "-DnewVersion="
-                    + version, "-DgenerateBackupPoms=false");
+            mvnSetVersions(version);
 
             // git commit -a -m updating poms for hotfix
-            executeGitCommand("commit", "-a", "-m", "updating poms for hotfix");
+            gitCommit("updating poms for hotfix");
 
             if (installProject) {
                 // mvn clean install
-                executeMvnCommand("clean", "install");
+                mvnCleanInstall();
             }
         } catch (CommandLineException e) {
             getLog().error(e);

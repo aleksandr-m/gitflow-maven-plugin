@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Aleksandr Mashchenko.
+ * Copyright 2014-2015 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,33 +79,32 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout release/...
-            executeGitCommand("checkout", releaseBranches.trim());
+            gitCheckout(releaseBranches.trim());
 
             if (!skipTestProject) {
-                // mvn clean install
-                executeMvnCommand("clean", "test");
+                // mvn clean test
+                mvnCleanTest();
             }
 
             // git checkout master
-            executeGitCommand("checkout", gitFlowConfig.getProductionBranch());
+            gitCheckout(gitFlowConfig.getProductionBranch());
 
             // git merge --no-ff release/...
-            executeGitCommand("merge", "--no-ff",
-                    gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
+            gitMergeNoff(gitFlowConfig.getReleaseBranchPrefix()
+                    + releaseVersion);
 
             if (!skipTag) {
                 // git tag -a ...
-                executeGitCommand("tag", "-a",
-                        gitFlowConfig.getVersionTagPrefix() + releaseVersion,
-                        "-m", "tagging release");
+                gitTag(gitFlowConfig.getVersionTagPrefix() + releaseVersion,
+                        "tagging release");
             }
 
             // git checkout develop
-            executeGitCommand("checkout", gitFlowConfig.getDevelopmentBranch());
+            gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
             // git merge --no-ff release/...
-            executeGitCommand("merge", "--no-ff",
-                    gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
+            gitMergeNoff(gitFlowConfig.getReleaseBranchPrefix()
+                    + releaseVersion);
 
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
@@ -129,22 +128,20 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             }
 
             // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-            executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, "-DnewVersion="
-                    + nextSnapshotVersion, "-DgenerateBackupPoms=false");
+            mvnSetVersions(nextSnapshotVersion);
 
             // git commit -a -m updating poms for ... release
-            executeGitCommand("commit", "-a", "-m",
-                    "updating poms for next development version");
+            gitCommit("updating poms for next development version");
 
             if (installProject) {
                 // mvn clean install
-                executeMvnCommand("clean", "install");
+                mvnCleanInstall();
             }
 
             if (!keepBranch) {
                 // git branch -d release/...
-                executeGitCommand("branch", "-d",
-                        gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
+                gitBranchDelete(gitFlowConfig.getReleaseBranchPrefix()
+                        + releaseVersion);
             }
         } catch (CommandLineException e) {
             getLog().error(e);

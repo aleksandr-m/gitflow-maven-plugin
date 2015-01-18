@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Aleksandr Mashchenko.
+ * Copyright 2014-2015 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(property = "installProject", defaultValue = "false")
     protected boolean installProject = false;
 
+    /** Whether to print commands output into the console. */
+    @Parameter(property = "verbose", defaultValue = "false")
+    private boolean verbose = false;
+
     /**
      * The path to the Maven executable. Defaults to either "mvn" or "mvn.bat"
      * depending on the operating system.
@@ -70,7 +74,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private final Commandline cmdMvn = new Commandline();
 
     /** A full name of the versions-maven-plugin set goal. */
-    protected static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:2.1:set";
+    private static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:2.1:set";
 
     /** Maven project. */
     @Parameter(defaultValue = "${project}", readonly = true)
@@ -115,14 +119,15 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected String getCurrentProjectVersion() throws MojoFailureException {
         try {
             // read pom.xml
-            MavenXpp3Reader reader = new MavenXpp3Reader();
-            FileReader fr = new FileReader(project.getFile().getAbsoluteFile());
+            MavenXpp3Reader mavenReader = new MavenXpp3Reader();
+            FileReader fileReader = new FileReader(project.getFile()
+                    .getAbsoluteFile());
             try {
-                Model model = reader.read(fr);
+                Model model = mavenReader.read(fileReader);
                 return model.getVersion();
             } finally {
-                if (fr != null) {
-                    fr.close();
+                if (fileReader != null) {
+                    fileReader.close();
                 }
             }
         } catch (Exception e) {
@@ -138,6 +143,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void checkUncommittedChanges() throws MojoFailureException,
             CommandLineException {
+        getLog().info("Checking for uncommitted changes.");
         if (executeGitHasUncommitted()) {
             throw new MojoFailureException(
                     "You have some uncommitted files. Commit or discard local changes in order to proceed.");
@@ -205,17 +211,143 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
-     * Executes Git command and returns exit code.
+     * Executes git checkout.
      * 
-     * @param args
-     *            Git command line arguments.
-     * @return Command output.
-     * @throws CommandLineException
+     * @param branchName
+     *            Branch name to checkout.
      * @throws MojoFailureException
+     * @throws CommandLineException
      */
-    protected String executeGitCommandExitCode(final String... args)
-            throws CommandLineException, MojoFailureException {
-        return executeCommand(cmdGit, true, true, args);
+    protected void gitCheckout(final String branchName)
+            throws MojoFailureException, CommandLineException {
+        getLog().info("Checking out '" + branchName + "' branch.");
+
+        executeGitCommand("checkout", branchName);
+    }
+
+    /**
+     * Executes git checkout -b.
+     * 
+     * @param newBranchName
+     *            Create branch with this name.
+     * @param fromBranchName
+     *            Create branch from this branch.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitCreateAndCheckout(final String newBranchName,
+            final String fromBranchName) throws MojoFailureException,
+            CommandLineException {
+        getLog().info(
+                "Creating a new branch '" + newBranchName + "' from '"
+                        + fromBranchName + "' and checking it out.");
+
+        executeGitCommand("checkout", "-b", newBranchName, fromBranchName);
+    }
+
+    /**
+     * Executes git commit -a -m.
+     * 
+     * @param message
+     *            Commit message.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitCommit(final String message) throws MojoFailureException,
+            CommandLineException {
+        getLog().info("Committing changes.");
+
+        executeGitCommand("commit", "-a", "-m", message);
+    }
+
+    /**
+     * Executes git merge --no-ff.
+     * 
+     * @param branchName
+     *            Branch name to merge.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitMergeNoff(final String branchName)
+            throws MojoFailureException, CommandLineException {
+        getLog().info("Merging '" + branchName + "' branch.");
+
+        executeGitCommand("merge", "--no-ff", branchName);
+    }
+
+    /**
+     * Executes git tag -a -m.
+     * 
+     * @param tagName
+     *            Name of the tag.
+     * @param message
+     *            Tag message.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitTag(final String tagName, final String message)
+            throws MojoFailureException, CommandLineException {
+        getLog().info("Creating '" + tagName + "' tag.");
+
+        executeGitCommand("tag", "-a", tagName, "-m", message);
+    }
+
+    /**
+     * Executes git branch -d.
+     * 
+     * @param branchName
+     *            Branch name to delete.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitBranchDelete(final String branchName)
+            throws MojoFailureException, CommandLineException {
+        getLog().info("Deleting '" + branchName + "' branch.");
+
+        executeGitCommand("branch", "-d", branchName);
+    }
+
+    /**
+     * Executes 'set' goal of versions-maven-plugin.
+     * 
+     * @param version
+     *            New version to set.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void mvnSetVersions(final String version)
+            throws MojoFailureException, CommandLineException {
+        getLog().info(
+                "Updating pom(-s) version(s) to '" + version + "' version.");
+
+        executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, "-DnewVersion="
+                + version, "-DgenerateBackupPoms=false");
+    }
+
+    /**
+     * Executes mvn clean test.
+     * 
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void mvnCleanTest() throws MojoFailureException,
+            CommandLineException {
+        getLog().info("Cleaning and testing the project.");
+
+        executeMvnCommand("clean", "test");
+    }
+
+    /**
+     * Executes mvn clean install.
+     * 
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void mvnCleanInstall() throws MojoFailureException,
+            CommandLineException {
+        getLog().info("Cleaning and installing the project.");
+
+        executeMvnCommand("clean", "install");
     }
 
     /**
@@ -233,6 +365,20 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Executes Git command and returns exit code.
+     * 
+     * @param args
+     *            Git command line arguments.
+     * @return Command output.
+     * @throws CommandLineException
+     * @throws MojoFailureException
+     */
+    private String executeGitCommandExitCode(final String... args)
+            throws CommandLineException, MojoFailureException {
+        return executeCommand(cmdGit, true, true, args);
+    }
+
+    /**
      * Executes Git command.
      * 
      * @param args
@@ -240,7 +386,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws CommandLineException
      * @throws MojoFailureException
      */
-    protected void executeGitCommand(final String... args)
+    private void executeGitCommand(final String... args)
             throws CommandLineException, MojoFailureException {
         executeCommand(cmdGit, false, false, args);
     }
@@ -253,7 +399,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws CommandLineException
      * @throws MojoFailureException
      */
-    protected void executeMvnCommand(final String... args)
+    private void executeMvnCommand(final String... args)
             throws CommandLineException, MojoFailureException {
         executeCommand(cmdMvn, false, false, args);
     }
@@ -285,6 +431,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             final boolean returnOut, final boolean returnExitCode,
             final String... args) throws CommandLineException,
             MojoFailureException {
+        // initialize executables
         initExecutables();
 
         if (getLog().isDebugEnabled()) {
@@ -295,14 +442,16 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         cmd.clearArgs();
         cmd.addArguments(args);
 
-        StreamConsumer out = null;
+        final StreamConsumer out;
         if (returnOut) {
             out = new CommandLineUtils.StringStreamConsumer();
-        } else {
+        } else if (verbose) {
             out = new DefaultConsumer();
+        } else {
+            out = null;
         }
 
-        CommandLineUtils.StringStreamConsumer err = new CommandLineUtils.StringStreamConsumer();
+        final CommandLineUtils.StringStreamConsumer err = new CommandLineUtils.StringStreamConsumer();
 
         // execute
         final int exitCode = CommandLineUtils.executeCommandLine(cmd, out, err);

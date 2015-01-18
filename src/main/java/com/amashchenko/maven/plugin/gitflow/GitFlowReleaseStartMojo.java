@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Aleksandr Mashchenko.
+ * Copyright 2014-2015 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             // need to be in develop to get correct project version
             // git checkout develop
-            executeGitCommand("checkout", gitFlowConfig.getDevelopmentBranch());
+            gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
@@ -74,7 +74,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             }
 
             String version = null;
-            if (settings.getInteractiveMode()) {
+            if (settings.isInteractiveMode()) {
                 try {
                     version = prompter.prompt("What is release version? ["
                             + defaultVersion + "]");
@@ -88,20 +88,18 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout -b release/... develop
-            executeGitCommand("checkout", "-b",
-                    gitFlowConfig.getReleaseBranchPrefix() + version,
-                    gitFlowConfig.getDevelopmentBranch());
+            gitCreateAndCheckout(gitFlowConfig.getReleaseBranchPrefix()
+                    + version, gitFlowConfig.getDevelopmentBranch());
 
             // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-            executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, "-DnewVersion="
-                    + version, "-DgenerateBackupPoms=false");
+            mvnSetVersions(version);
 
             // git commit -a -m updating poms for release
-            executeGitCommand("commit", "-a", "-m", "updating poms for release");
+            gitCommit("updating poms for release");
 
             if (installProject) {
                 // mvn clean install
-                executeMvnCommand("clean", "install");
+                mvnCleanInstall();
             }
         } catch (CommandLineException e) {
             getLog().error(e);

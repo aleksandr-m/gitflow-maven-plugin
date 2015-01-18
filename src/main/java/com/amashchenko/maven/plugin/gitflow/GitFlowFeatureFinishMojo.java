@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Aleksandr Mashchenko.
+ * Copyright 2014-2015 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,8 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             final String[] branches = featureBranches.split("\\r?\\n");
 
             List<String> numberedList = new ArrayList<String>();
-            StringBuffer str = new StringBuffer("Feature branches:" + LS);
+            StringBuilder str = new StringBuilder("Feature branches:")
+                    .append(LS);
             for (int i = 0; i < branches.length; i++) {
                 str.append((i + 1) + ". " + branches[i] + LS);
                 numberedList.add("" + (i + 1));
@@ -92,18 +93,18 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout feature/...
-            executeGitCommand("checkout", featureBranchName);
+            gitCheckout(featureBranchName);
 
             if (!skipTestProject) {
                 // mvn clean test
-                executeMvnCommand("clean", "test");
+                mvnCleanTest();
             }
 
             // git checkout develop
-            executeGitCommand("checkout", gitFlowConfig.getDevelopmentBranch());
+            gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
             // git merge --no-ff feature/...
-            executeGitCommand("merge", "--no-ff", featureBranchName);
+            gitMergeNoff(featureBranchName);
 
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
@@ -116,22 +117,20 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                         + featureName, "");
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-                executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL,
-                        "-DnewVersion=" + version, "-DgenerateBackupPoms=false");
+                mvnSetVersions(version);
 
                 // git commit -a -m updating poms for development branch
-                executeGitCommand("commit", "-a", "-m",
-                        "updating poms for development branch");
+                gitCommit("updating poms for development branch");
             }
 
             if (installProject) {
                 // mvn clean install
-                executeMvnCommand("clean", "install");
+                mvnCleanInstall();
             }
 
             if (!keepBranch) {
                 // git branch -d feature/...
-                executeGitCommand("branch", "-d", featureBranchName);
+                gitBranchDelete(featureBranchName);
             }
         } catch (CommandLineException e) {
             getLog().error(e);

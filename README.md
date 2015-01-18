@@ -16,7 +16,7 @@ The plugin is available from Maven central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.0.6</version>
+                <version>1.0.7</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -41,12 +41,14 @@ The plugin is available from Maven central.
 All parameters are optional. The `gitFlowConfig` parameters defaults are the same as in below example.
 Maven and Git executables are assumed to be in the PATH, if executables are not available in the PATH or you want to use different version use `mvnExecutable` and `gitExecutable` parameters.
 The `installProject` parameter controls whether the Maven `install` goal will be called during the mojo execution. The default value for this parameter is `false` (i.e. the project will NOT be installed).
+Since `1.0.7` version of this plugin the output of the executed commands will NOT be printed into the console. This can be changed by setting `verbose` parameter to `true`.
 
     <configuration>
         <mvnExecutable>path_to_maven_executable</mvnExecutable>
         <gitExecutable>path_to_git_executable</gitExecutable>
 
         <installProject>false</installProject>
+        <verbose>false</verbose>
 
         <gitFlowConfig>
             <productionBranch>master</productionBranch>

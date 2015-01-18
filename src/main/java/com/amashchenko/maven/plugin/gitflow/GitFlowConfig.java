@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Aleksandr Mashchenko.
+ * Copyright 2014-2015 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,9 @@ public class GitFlowConfig {
     /** Prefix of the version tag. */
     private String versionTagPrefix;
 
+    /**
+     * Default constructor.
+     */
     public GitFlowConfig() {
         this.productionBranch = "master";
         this.developmentBranch = "develop";
