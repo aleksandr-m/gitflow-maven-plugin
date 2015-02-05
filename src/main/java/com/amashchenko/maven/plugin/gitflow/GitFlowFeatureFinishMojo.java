@@ -51,10 +51,8 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             checkUncommittedChanges();
 
             // git for-each-ref --format='%(refname:short)' refs/heads/feature/*
-            final String featureBranches = executeGitCommandReturn(
-                    "for-each-ref", "--format=\"%(refname:short)\"",
-                    "refs/heads/" + gitFlowConfig.getFeatureBranchPrefix()
-                            + "*");
+            final String featureBranches = gitFindBranches(gitFlowConfig
+                    .getFeatureBranchPrefix());
 
             if (StringUtils.isBlank(featureBranches)) {
                 throw new MojoFailureException("There is no feature branches.");

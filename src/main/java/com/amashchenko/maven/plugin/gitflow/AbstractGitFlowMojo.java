@@ -211,6 +211,31 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Executes git for-each-ref with <code>refname:short</code> format.
+     * 
+     * @param branchName
+     *            Branch name to find.
+     * @return Branch names which matches <code>refs/heads/{branchName}*</code>.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected String gitFindBranches(final String branchName)
+            throws MojoFailureException, CommandLineException {
+        String branches = executeGitCommandReturn("for-each-ref",
+                "--format=\"%(refname:short)\"", "refs/heads/" + branchName
+                        + "*");
+
+        // on *nix systems return values from git for-each-ref are wrapped in
+        // quotes
+        // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
+        if (branches != null && !branches.isEmpty()) {
+            branches = branches.replace("\"", "");
+        }
+
+        return branches;
+    }
+
+    /**
      * Executes git checkout.
      * 
      * @param branchName

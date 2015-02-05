@@ -53,10 +53,8 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             checkUncommittedChanges();
 
             // git for-each-ref --format='%(refname:short)' refs/heads/release/*
-            final String releaseBranches = executeGitCommandReturn(
-                    "for-each-ref", "--format=\"%(refname:short)\"",
-                    "refs/heads/" + gitFlowConfig.getReleaseBranchPrefix()
-                            + "*");
+            final String releaseBranches = gitFindBranches(gitFlowConfig
+                    .getReleaseBranchPrefix());
 
             String releaseVersion = null;
 

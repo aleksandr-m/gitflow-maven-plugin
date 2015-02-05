@@ -57,9 +57,8 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             checkUncommittedChanges();
 
             // git for-each-ref --format='%(refname:short)' refs/heads/hotfix/*
-            final String hotfixBranches = executeGitCommandReturn(
-                    "for-each-ref", "--format=\"%(refname:short)\"",
-                    "refs/heads/" + gitFlowConfig.getHotfixBranchPrefix() + "*");
+            final String hotfixBranches = gitFindBranches(gitFlowConfig
+                    .getHotfixBranchPrefix());
 
             if (StringUtils.isBlank(hotfixBranches)) {
                 throw new MojoFailureException("There is no hotfix branches.");
