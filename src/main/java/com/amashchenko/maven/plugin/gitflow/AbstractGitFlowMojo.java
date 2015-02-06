@@ -119,11 +119,17 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected String getCurrentProjectVersion() throws MojoFailureException {
         try {
             // read pom.xml
-            MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-            FileReader fileReader = new FileReader(project.getFile()
+            final MavenXpp3Reader mavenReader = new MavenXpp3Reader();
+            final FileReader fileReader = new FileReader(project.getFile()
                     .getAbsoluteFile());
             try {
-                Model model = mavenReader.read(fileReader);
+                final Model model = mavenReader.read(fileReader);
+
+                if (model.getVersion() == null) {
+                    throw new MojoFailureException(
+                            "Cannot get current project version. This plugin should be executed from the parent project.");
+                }
+
                 return model.getVersion();
             } finally {
                 if (fileReader != null) {
