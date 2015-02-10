@@ -65,7 +65,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                     .append(LS);
             for (int i = 0; i < branches.length; i++) {
                 str.append((i + 1) + ". " + branches[i] + LS);
-                numberedList.add("" + (i + 1));
+                numberedList.add(String.valueOf(i + 1));
             }
             str.append("Choose feature branch to finish");
 

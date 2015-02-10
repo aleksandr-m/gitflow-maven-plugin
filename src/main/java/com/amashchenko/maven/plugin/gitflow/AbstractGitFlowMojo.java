@@ -89,6 +89,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** System line separator. */
     protected static final String LS = System.getProperty("line.separator");
 
+    /** String representing success exit code. */
+    private static final String SUCCESS_EXIT_CODE = "0";
+
     /**
      * Initializes command line executables.
      * 
@@ -157,7 +160,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
-     * Executes Git commands to check for uncommitted changes.
+     * Executes git commands to check for uncommitted changes.
      * 
      * @return <code>true</code> when there are uncommitted changes,
      *         <code>false</code> otherwise.
@@ -175,12 +178,12 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                 "--no-ext-diff", "--ignore-submodules", "--quiet",
                 "--exit-code");
 
-        if ("0".equals(diffExitCode)) {
+        if (SUCCESS_EXIT_CODE.equals(diffExitCode)) {
             // git diff-index --cached --quiet --ignore-submodules HEAD --
             final String diffIndexExitCode = executeGitCommandExitCode(
                     "diff-index", "--cached", "--quiet", "--ignore-submodules",
                     "HEAD", "--");
-            if (!"0".equals(diffIndexExitCode)) {
+            if (!SUCCESS_EXIT_CODE.equals(diffIndexExitCode)) {
                 uncommited = true;
             }
         } else {
@@ -191,29 +194,44 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
-     * Executes Git config commands to set Git Flow configuration.
+     * Executes git config commands to set Git Flow configuration.
      * 
      * @throws MojoFailureException
      * @throws CommandLineException
      */
     protected void initGitFlowConfig() throws MojoFailureException,
             CommandLineException {
-        // ignore error exit codes
-        executeGitCommandExitCode("config", "gitflow.branch.master",
+        gitSetConfig("gitflow.branch.master",
                 gitFlowConfig.getProductionBranch());
-        executeGitCommandExitCode("config", "gitflow.branch.develop",
+        gitSetConfig("gitflow.branch.develop",
                 gitFlowConfig.getDevelopmentBranch());
 
-        executeGitCommandExitCode("config", "gitflow.prefix.feature",
+        gitSetConfig("gitflow.prefix.feature",
                 gitFlowConfig.getFeatureBranchPrefix());
-        executeGitCommandExitCode("config", "gitflow.prefix.release",
+        gitSetConfig("gitflow.prefix.release",
                 gitFlowConfig.getReleaseBranchPrefix());
-        executeGitCommandExitCode("config", "gitflow.prefix.hotfix",
+        gitSetConfig("gitflow.prefix.hotfix",
                 gitFlowConfig.getHotfixBranchPrefix());
-        executeGitCommandExitCode("config", "gitflow.prefix.support",
+        gitSetConfig("gitflow.prefix.support",
                 gitFlowConfig.getSupportBranchPrefix());
-        executeGitCommandExitCode("config", "gitflow.prefix.versiontag",
+        gitSetConfig("gitflow.prefix.versiontag",
                 gitFlowConfig.getVersionTagPrefix());
+    }
+
+    /**
+     * Executes git config command.
+     * 
+     * @param name
+     *            Option name.
+     * @param value
+     *            Option value.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    private void gitSetConfig(final String name, final String value)
+            throws MojoFailureException, CommandLineException {
+        // ignore error exit codes
+        executeGitCommandExitCode("config", name, value);
     }
 
     /**
@@ -235,7 +253,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         // quotes
         // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
         if (branches != null && !branches.isEmpty()) {
-            branches = branches.replace("\"", "");
+            branches = branches.replaceAll("\"", "");
         }
 
         return branches;
@@ -495,7 +513,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         String ret = "";
         if (returnOut) {
             if (returnExitCode) {
-                ret = "" + exitCode;
+                ret = String.valueOf(exitCode);
             } else if (out instanceof StringStreamConsumer) {
                 ret = ((StringStreamConsumer) out).getOutput();
             }
