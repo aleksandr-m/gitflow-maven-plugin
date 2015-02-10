@@ -6,6 +6,9 @@ Currently a Java implementation of Git version control system [JGit](https://git
 
 This plugin runs Git and Maven commands from the command line ensuring that all Git features work properly.
 
+## Changelog
+
+See what's changed - [CHANGELOG](CHANGELOG.md)
 
 # Installation
 
@@ -16,7 +19,7 @@ The plugin is available from Maven central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.0.7</version>
+                <version>1.0.8</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
