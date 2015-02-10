@@ -4,6 +4,7 @@
 
 * Fixed issue #3 - on *nix systems return values from `git for-each-ref` are wrapped in quotes
 * Added null check on getting current project version
+* Small code improvements
 
 ## v1.0.7
 
