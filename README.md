@@ -6,6 +6,9 @@ Currently a Java implementation of Git version control system [JGit](https://git
 
 This plugin runs Git and Maven commands from the command line ensuring that all Git features work properly.
 
+## Changelog
+
+See what's changed - [CHANGELOG](CHANGELOG.md)
 
 # Installation
 
