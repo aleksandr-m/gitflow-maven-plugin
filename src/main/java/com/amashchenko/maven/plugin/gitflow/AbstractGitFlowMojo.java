@@ -497,7 +497,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         } else if (verbose) {
             out = new DefaultConsumer();
         } else {
-            out = null;
+            // because on error not all commands print to error stream
+            out = new CommandLineUtils.StringStreamConsumer();
         }
 
         final CommandLineUtils.StringStreamConsumer err = new CommandLineUtils.StringStreamConsumer();
@@ -507,7 +508,14 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
         // throw error on NOT 0 exit code only if returnExitCode is false
         if (!returnExitCode && exitCode != 0) {
-            throw new MojoFailureException(err.getOutput());
+            String errStr = err.getOutput();
+
+            if (StringUtils.isBlank(errStr)
+                    && out instanceof StringStreamConsumer) {
+                errStr = ((StringStreamConsumer) out).getOutput();
+            }
+
+            throw new MojoFailureException(errStr);
         }
 
         String ret = "";
