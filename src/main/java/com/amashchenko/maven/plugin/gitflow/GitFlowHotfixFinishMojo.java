@@ -164,7 +164,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 mvnSetVersions(nextSnapshotVersion);
 
                 // git commit -a -m updating poms for next development version
-                gitCommit("updating poms for next development version");
+                gitCommit("updating poms for development version " + nextSnapshotVersion);
             }
 
             if (installProject) {

@@ -95,7 +95,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             mvnSetVersions(version);
 
             // git commit -a -m updating poms for release
-            gitCommit("updating poms for release");
+            gitCommit("updating poms for release " + version);
 
             if (installProject) {
                 // mvn clean install

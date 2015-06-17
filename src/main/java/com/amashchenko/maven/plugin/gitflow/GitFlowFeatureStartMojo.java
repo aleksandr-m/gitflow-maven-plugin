@@ -63,7 +63,8 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                 getLog().error(e);
             }
 
-            featureName = StringUtils.deleteWhitespace(featureName);
+//            featureName = StringUtils.deleteWhitespace(featureName);
+            featureName = StringUtils.join(StringUtils.split(featureName), "_");
 
             // git for-each-ref refs/heads/feature/...
             final String featureBranch = executeGitCommandReturn(
