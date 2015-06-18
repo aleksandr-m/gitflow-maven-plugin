@@ -1,4 +1,4 @@
-<!-- 
+<!--
 /*
  * Copyright 2014-2015 Aleksandr Mashchenko.
  *
@@ -24,7 +24,7 @@
     <version>1.0.9-SNAPSHOT</version>
 
     <description>Git-Flow Maven Plugin, which runs Git and Maven commands from the command line.</description>
- 
+
     <inceptionYear>2014</inceptionYear>
 
     <licenses>
@@ -33,7 +33,7 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
-    </licenses> 
+    </licenses>
 
     <developers>
         <developer>
@@ -42,13 +42,13 @@
     </developers>
 
     <url>${url}</url>
- 
+
     <scm>
         <url>${url}</url>
         <connection>${scm.url}</connection>
         <developerConnection>${scm.url}</developerConnection>
     </scm>
-    
+
     <distributionManagement>
         <repository>
             <id>sonatype-nexus-staging</id>
@@ -104,6 +104,42 @@
                 </executions>
             </plugin>
         </plugins>
+        <pluginManagement>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<version>1.0.0</version>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>
+        									org.apache.maven.plugins
+        								</groupId>
+        								<artifactId>
+        									maven-plugin-plugin
+        								</artifactId>
+        								<versionRange>
+        									[3.4,)
+        								</versionRange>
+        								<goals>
+        									<goal>descriptor</goal>
+        									<goal>helpmojo</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore></ignore>
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin>
+        	</plugins>
+        </pluginManagement>
     </build>
 
     <profiles>
