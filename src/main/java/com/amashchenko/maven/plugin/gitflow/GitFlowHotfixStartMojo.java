@@ -24,11 +24,13 @@ import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
+import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+
 /**
  * The git flow hotfix start mojo.
- * 
+ *
  * @author Aleksandr Mashchenko
- * 
+ *
  */
 @Mojo(name = "hotfix-start", aggregator = true)
 public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
@@ -94,7 +96,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             mvnSetVersions(version);
 
             // git commit -a -m updating poms for hotfix
-            gitCommit("updating poms for hotfix " + version);
+            gitCommit(msg.getMessage(CommitMessages.updating_pom_for_hotfix_version, version));
 
             if (installProject) {
                 // mvn clean install

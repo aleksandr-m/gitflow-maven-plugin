@@ -28,11 +28,13 @@ import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
+import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+
 /**
  * The git flow hotfix finish mojo.
- * 
+ *
  * @author Aleksandr Mashchenko
- * 
+ *
  */
 @Mojo(name = "hotfix-finish", aggregator = true)
 public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
@@ -115,7 +117,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 gitTag(gitFlowConfig.getVersionTagPrefix()
                         + hotfixBranchName.replaceFirst(
                                 gitFlowConfig.getHotfixBranchPrefix(), ""),
-                        "tagging hotfix");
+                                msg.getMessage(CommitMessages.tagging_hotfix));
             }
 
             // check whether release branch exists
@@ -164,7 +166,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 mvnSetVersions(nextSnapshotVersion);
 
                 // git commit -a -m updating poms for next development version
-                gitCommit("updating poms for development version " + nextSnapshotVersion);
+                gitCommit(msg.getMessage(CommitMessages.updating_pom_for_develop_version, nextSnapshotVersion));
             }
 
             if (installProject) {

@@ -24,11 +24,13 @@ import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
+import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+
 /**
  * The git flow release finish mojo.
- * 
+ *
  * @author Aleksandr Mashchenko
- * 
+ *
  */
 @Mojo(name = "release-finish", aggregator = true)
 public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
@@ -94,7 +96,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             if (!skipTag) {
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + releaseVersion,
-                        "tagging release");
+                		msg.getMessage(CommitMessages.tagging_release));
             }
 
             // git checkout develop
@@ -129,7 +131,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             mvnSetVersions(nextSnapshotVersion);
 
             // git commit -a -m updating poms for development
-            gitCommit("updating poms for development version " + nextSnapshotVersion);
+            gitCommit(msg.getMessage(CommitMessages.updating_pom_for_develop_version, nextSnapshotVersion));
 
             if (installProject) {
                 // mvn clean install
