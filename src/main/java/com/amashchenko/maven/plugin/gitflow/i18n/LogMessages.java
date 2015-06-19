@@ -8,17 +8,17 @@ import ch.qos.cal10n.LocaleData;
 @BaseName("LogMessages")
 @LocaleData({ @Locale("en") })
 public enum LogMessages {
-	checking_for_uncommited_files,
+	looking_for_uncommitted_files,
 	checking_out_branch,
-	creating_new_branch_and_checking_it_out,
-	commiting_changes,
+	checking_out_new_branch,
+	committing_changes,
 	merging_branch,
 	creating_tag,
 	deleting_branch,
 	updating_poms_version_to,
+	removing_snapshots,
 	cleaning_and_testing,
 	cleaning_and_installing
-
 }
 
 /* EOF */

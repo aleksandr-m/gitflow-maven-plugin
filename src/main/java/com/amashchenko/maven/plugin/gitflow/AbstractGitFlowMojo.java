@@ -166,7 +166,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void checkUncommittedChanges() throws MojoFailureException,
             CommandLineException {
-        getLog().info(msg.getMessage(LogMessages.checking_for_uncommited_files));
+        getLog().info(msg.getMessage(LogMessages.looking_for_uncommitted_files));
         if (executeGitHasUncommitted()) {
             throw new MojoFailureException(
                     "You have some uncommitted files. Commit or discard local changes in order to proceed.");
@@ -301,7 +301,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected void gitCreateAndCheckout(final String newBranchName,
             final String fromBranchName) throws MojoFailureException,
             CommandLineException {
-        getLog().info(msg.getMessage(LogMessages.creating_new_branch_and_checking_it_out,
+        getLog().info(msg.getMessage(LogMessages.checking_out_new_branch,
         		newBranchName, fromBranchName));
 
         executeGitCommand("checkout", "-b", newBranchName, fromBranchName);
@@ -317,7 +317,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitCommit(final String message) throws MojoFailureException,
             CommandLineException {
-        getLog().info(msg.getMessage(LogMessages.commiting_changes));
+        getLog().info(msg.getMessage(LogMessages.committing_changes));
 
         executeGitCommand("commit", "-a", "-m", commentPrefix + message);
     }
