@@ -26,11 +26,15 @@ import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
+import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.ErrorMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.PromptMessages;
+
 /**
  * The git flow feature start mojo.
- * 
+ *
  * @author Aleksandr Mashchenko
- * 
+ *
  */
 @Mojo(name = "feature-start", aggregator = true)
 public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
@@ -57,7 +61,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             try {
                 while (StringUtils.isBlank(featureName)) {
                     featureName = prompter
-                            .prompt("What is a name of feature branch? "
+                            .prompt(msg.getMessage(PromptMessages.feature_branch_name_to_create_prompt)
                                     + gitFlowConfig.getFeatureBranchPrefix());
                 }
             } catch (PrompterException e) {
@@ -66,13 +70,12 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
 
             featureName = StringUtils.join(StringUtils.split(featureName), "_");
 
-            // git for-each-ref refs/heads/feature/...
+			// git for-each-ref refs/heads/feature/...
             String pattern = "refs/heads/" + gitFlowConfig.getFeatureBranchPrefix() + featureName;
             final String featureBranch = executeGitCommandReturn("for-each-ref", pattern);
 
             if (StringUtils.isNotBlank(featureBranch)) {
-                throw new MojoFailureException(
-                        "Feature branch with that name already exists. Cannot start feature.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.feature_branch_name_duplicate));
             }
 
             // git checkout -b ... develop
@@ -101,7 +104,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                     mvnSetVersions(version);
 
                     // git commit -a -m updating poms for feature branch
-                    gitCommit("updating poms for feature branch");
+                    gitCommit(msg.getMessage(CommitMessages.updating_pom_for_feature_branch));
                 }
             }
 

@@ -28,6 +28,10 @@ import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
+import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.ErrorMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.PromptMessages;
+
 /**
  * The git flow hotfix finish mojo.
  *
@@ -61,19 +65,20 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     .getHotfixBranchPrefix());
 
             if (StringUtils.isBlank(hotfixBranches)) {
-                throw new MojoFailureException("There is no hotfix branches.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.no_hotfix_branch_found));
             }
 
             String[] branches = hotfixBranches.split("\\r?\\n");
 
             List<String> numberedList = new ArrayList<String>();
-            StringBuilder str = new StringBuilder("Hotfix branches:");
+            StringBuilder str = new StringBuilder(
+            		msg.getMessage(PromptMessages.hotfix_branch_list_header));
             str.append(LS);
             for (int i = 0; i < branches.length; i++) {
             	str.append(i+1).append(". ").append(branches[i]).append(LS);
                 numberedList.add(String.valueOf(i + 1));
             }
-            str.append("Choose hotfix branch to finish");
+            str.append(msg.getMessage(PromptMessages.hotfix_branch_number_to_finish_prompt));
 
             String hotfixNumber = null;
             try {
@@ -92,8 +97,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (StringUtils.isBlank(hotfixBranchName)) {
-                throw new MojoFailureException(
-                        "Hotfix name to finish is blank.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.hotfix_branch_name_empty));
             }
 
             // git checkout hotfix/...
@@ -115,7 +119,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 gitTag(gitFlowConfig.getVersionTagPrefix()
                         + hotfixBranchName.replaceFirst(
                                 gitFlowConfig.getHotfixBranchPrefix(), ""),
-                        "tagging hotfix");
+                                msg.getMessage(CommitMessages.tagging_hotfix));
             }
 
             // check whether release branch exists
@@ -155,15 +159,14 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 }
 
                 if (StringUtils.isBlank(nextSnapshotVersion)) {
-                    throw new MojoFailureException(
-                            "Next snapshot version is blank.");
+                    throw new MojoFailureException(msg.getMessage(ErrorMessages.next_snapshot_version_empty));
                 }
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(nextSnapshotVersion);
 
                 // git commit -a -m updating poms for next development version
-                gitCommit("updating poms for development version " + nextSnapshotVersion);
+                gitCommit(msg.getMessage(CommitMessages.updating_pom_for_develop_version, nextSnapshotVersion));
             }
 
             if (installProject) {

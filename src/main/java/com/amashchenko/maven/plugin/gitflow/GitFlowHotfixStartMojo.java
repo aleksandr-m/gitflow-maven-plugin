@@ -24,11 +24,15 @@ import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
+import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.ErrorMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.PromptMessages;
+
 /**
  * The git flow hotfix start mojo.
- * 
+ *
  * @author Aleksandr Mashchenko
- * 
+ *
  */
 @Mojo(name = "hotfix-start", aggregator = true)
 public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
@@ -66,8 +70,8 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
             String version = null;
             try {
-                version = prompter.prompt("What is the hotfix version? ["
-                        + defaultVersion + "]");
+                version = prompter.prompt(
+                		msg.getMessage(PromptMessages.hotfix_branch_name_to_create_prompt, defaultVersion));
             } catch (PrompterException e) {
                 getLog().error(e);
             }
@@ -81,8 +85,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 			final String hotfixBranch = executeGitCommandReturn("for-each-ref", pattern);
 
             if (StringUtils.isNotBlank(hotfixBranch)) {
-                throw new MojoFailureException(
-                        "Hotfix branch with that name already exists. Cannot start hotfix.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.hotfix_branch_name_duplicate));
             }
 
             // git checkout -b hotfix/... master
@@ -93,7 +96,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             mvnSetVersions(version);
 
             // git commit -a -m updating poms for hotfix
-            gitCommit("updating poms for hotfix " + version);
+            gitCommit(msg.getMessage(CommitMessages.updating_pom_for_hotfix_version, version));
 
             if (installProject) {
                 // mvn clean install

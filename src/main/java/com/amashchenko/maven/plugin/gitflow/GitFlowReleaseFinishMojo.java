@@ -24,11 +24,14 @@ import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
+import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.ErrorMessages;
+
 /**
  * The git flow release finish mojo.
- * 
+ *
  * @author Aleksandr Mashchenko
- * 
+ *
  */
 @Mojo(name = "release-finish", aggregator = true)
 public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
@@ -59,11 +62,10 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             String releaseVersion = null;
 
             if (StringUtils.isBlank(releaseBranches)) {
-                throw new MojoFailureException("There is no release branch.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.no_release_branch_found));
             } else if (StringUtils.countMatches(releaseBranches,
                     gitFlowConfig.getReleaseBranchPrefix()) > 1) {
-                throw new MojoFailureException(
-                        "More than one release branch exists. Cannot finish release.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.release_branch_not_unique));
             } else {
                 releaseVersion = releaseBranches.trim().substring(
                         releaseBranches.lastIndexOf(gitFlowConfig
@@ -73,7 +75,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (StringUtils.isBlank(releaseVersion)) {
-                throw new MojoFailureException("Release version is blank.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.release_branch_name_empty));
             }
 
             // git checkout release/...
@@ -94,7 +96,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             if (!skipTag) {
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + releaseVersion,
-                        "tagging release");
+                		msg.getMessage(CommitMessages.tagging_release));
             }
 
             // git checkout develop
@@ -121,15 +123,14 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (StringUtils.isBlank(nextSnapshotVersion)) {
-                throw new MojoFailureException(
-                        "Next snapshot version is blank.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.next_snapshot_version_empty));
             }
 
             // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
             mvnSetVersions(nextSnapshotVersion);
 
             // git commit -a -m updating poms for development
-            gitCommit("updating poms for development version " + nextSnapshotVersion);
+            gitCommit(msg.getMessage(CommitMessages.updating_pom_for_develop_version, nextSnapshotVersion));
 
             if (installProject) {
                 // mvn clean install
