@@ -25,6 +25,7 @@ import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
 import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.PromptMessages;
 
 /**
  * The git flow hotfix start mojo.
@@ -68,8 +69,8 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
             String version = null;
             try {
-                version = prompter.prompt("What is the hotfix version? ["
-                        + defaultVersion + "]");
+                version = prompter.prompt(
+                		msg.getMessage(PromptMessages.hotfix_branch_name_to_create_prompt, defaultVersion));
             } catch (PrompterException e) {
                 getLog().error(e);
             }

@@ -25,6 +25,7 @@ import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
 import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.PromptMessages;
 
 /**
  * The git flow release start mojo.
@@ -78,8 +79,8 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             String version = null;
             if (settings.isInteractiveMode()) {
                 try {
-                    version = prompter.prompt("What is release version? ["
-                            + defaultVersion + "]");
+                    version = prompter.prompt(
+                    		msg.getMessage(PromptMessages.release_branch_name_to_create_prompt, defaultVersion));
                 } catch (PrompterException e) {
                     getLog().error(e);
                 }

@@ -29,6 +29,7 @@ import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
 import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.PromptMessages;
 
 /**
  * The git flow hotfix finish mojo.
@@ -69,13 +70,14 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             String[] branches = hotfixBranches.split("\\r?\\n");
 
             List<String> numberedList = new ArrayList<String>();
-            StringBuilder str = new StringBuilder("Hotfix branches:")
+            StringBuilder str = new StringBuilder(
+            		msg.getMessage(PromptMessages.hotfix_branch_list_header))
                     .append(LS);
             for (int i = 0; i < branches.length; i++) {
                 str.append((i + 1) + ". " + branches[i] + LS);
                 numberedList.add(String.valueOf(i + 1));
             }
-            str.append("Choose hotfix branch to finish");
+            str.append(msg.getMessage(PromptMessages.hotfix_branch_number_to_finish_prompt));
 
             String hotfixNumber = null;
             try {

@@ -27,6 +27,7 @@ import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
 import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.PromptMessages;
 
 /**
  * The git flow feature start mojo.
@@ -59,17 +60,16 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             try {
                 while (StringUtils.isBlank(featureName)) {
                     featureName = prompter
-                            .prompt("What is a name of feature branch? "
+                            .prompt(msg.getMessage(PromptMessages.feature_branch_name_to_create_prompt)
                                     + gitFlowConfig.getFeatureBranchPrefix());
                 }
             } catch (PrompterException e) {
                 getLog().error(e);
             }
 
-//            featureName = StringUtils.deleteWhitespace(featureName);
             featureName = StringUtils.join(StringUtils.split(featureName), "_");
 
-            // git for-each-ref refs/heads/feature/...
+			// git for-each-ref refs/heads/feature/...
             final String featureBranch = executeGitCommandReturn(
                     "for-each-ref",
                     "refs/heads/" + gitFlowConfig.getFeatureBranchPrefix()
