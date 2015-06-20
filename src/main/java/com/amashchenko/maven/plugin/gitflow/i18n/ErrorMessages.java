@@ -5,7 +5,7 @@ import ch.qos.cal10n.Locale;
 import ch.qos.cal10n.LocaleData;
 
 
-@BaseName("ErrorMessages")
+@BaseName("com/amashchenko/maven/plugin/gitflow/i18n/ErrorMessages")
 @LocaleData({ @Locale("en") })
 public enum ErrorMessages {
 	unexpected_error,

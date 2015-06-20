@@ -5,7 +5,7 @@ import ch.qos.cal10n.Locale;
 import ch.qos.cal10n.LocaleData;
 
 
-@BaseName("LogMessages")
+@BaseName("com/amashchenko/maven/plugin/gitflow/i18n/LogMessages")
 @LocaleData({ @Locale("en") })
 public enum LogMessages {
 	looking_for_uncommitted_files,

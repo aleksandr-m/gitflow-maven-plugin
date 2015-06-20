@@ -5,7 +5,7 @@ import ch.qos.cal10n.Locale;
 import ch.qos.cal10n.LocaleData;
 
 
-@BaseName("PromptMessages")
+@BaseName("com/amashchenko/maven/plugin/gitflow/i18n/PromptMessages")
 @LocaleData({ @Locale("en") })
 public enum PromptMessages {
 	feature_branch_list_header,
