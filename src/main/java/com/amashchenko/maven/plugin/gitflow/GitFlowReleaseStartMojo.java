@@ -44,10 +44,9 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             checkUncommittedChanges();
 
             // git for-each-ref --count=1 refs/heads/release/*
-            final String releaseBranch = executeGitCommandReturn(
-                    "for-each-ref", "--count=1",
-                    "refs/heads/" + gitFlowConfig.getReleaseBranchPrefix()
-                            + "*");
+            String pattern = "refs/heads/" + gitFlowConfig.getReleaseBranchPrefix() + "*";
+			final String releaseBranch = executeGitCommandReturn(
+                    "for-each-ref", "--count=1", pattern);
 
             if (StringUtils.isNotBlank(releaseBranch)) {
                 throw new MojoFailureException(
@@ -88,8 +87,8 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout -b release/... develop
-            gitCreateAndCheckout(gitFlowConfig.getReleaseBranchPrefix()
-                    + version, gitFlowConfig.getDevelopmentBranch());
+            gitCreateAndCheckout(gitFlowConfig.getReleaseBranchPrefix() + version,
+            		gitFlowConfig.getDevelopmentBranch());
 
             // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
             mvnSetVersions(version);

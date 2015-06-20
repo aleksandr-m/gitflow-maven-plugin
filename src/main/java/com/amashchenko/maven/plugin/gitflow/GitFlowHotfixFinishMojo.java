@@ -30,9 +30,9 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
  * The git flow hotfix finish mojo.
- * 
+ *
  * @author Aleksandr Mashchenko
- * 
+ *
  */
 @Mojo(name = "hotfix-finish", aggregator = true)
 public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
@@ -67,10 +67,10 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             String[] branches = hotfixBranches.split("\\r?\\n");
 
             List<String> numberedList = new ArrayList<String>();
-            StringBuilder str = new StringBuilder("Hotfix branches:")
-                    .append(LS);
+            StringBuilder str = new StringBuilder("Hotfix branches:");
+            str.append(LS);
             for (int i = 0; i < branches.length; i++) {
-                str.append((i + 1) + ". " + branches[i] + LS);
+            	str.append(i+1).append(". ").append(branches[i]).append(LS);
                 numberedList.add(String.valueOf(i + 1));
             }
             str.append("Choose hotfix branch to finish");
@@ -121,10 +121,9 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             // check whether release branch exists
             // git for-each-ref --count=1 --format="%(refname:short)"
             // refs/heads/release/*
-            final String releaseBranch = executeGitCommandReturn(
-                    "for-each-ref", "--count=1",
-                    "--format=\"%(refname:short)\"", "refs/heads/"
-                            + gitFlowConfig.getReleaseBranchPrefix() + "*");
+            String pattern = "refs/heads/" + gitFlowConfig.getReleaseBranchPrefix() + "*";
+			final String releaseBranch = executeGitCommandReturn(
+                    "for-each-ref", "--count=1", "--format=\"%(refname:short)\"", pattern);
 
             // if release branch exists merge hotfix changes into it
             if (StringUtils.isNotBlank(releaseBranch)) {

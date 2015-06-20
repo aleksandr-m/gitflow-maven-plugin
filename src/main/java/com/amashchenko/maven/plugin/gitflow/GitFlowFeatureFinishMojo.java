@@ -28,9 +28,9 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
  * The git flow feature finish mojo.
- * 
+ *
  * @author Aleksandr Mashchenko
- * 
+ *
  */
 @Mojo(name = "feature-finish", aggregator = true)
 public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
@@ -61,10 +61,10 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             final String[] branches = featureBranches.split("\\r?\\n");
 
             List<String> numberedList = new ArrayList<String>();
-            StringBuilder str = new StringBuilder("Feature branches:")
-                    .append(LS);
+            StringBuilder str = new StringBuilder("Feature branches:");
+            str.append(LS);
             for (int i = 0; i < branches.length; i++) {
-                str.append((i + 1) + ". " + branches[i] + LS);
+            	str.append(i+1).append(". ").append(branches[i]).append(LS);
                 numberedList.add(String.valueOf(i + 1));
             }
             str.append("Choose feature branch to finish");

@@ -39,6 +39,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
      * Whether to skip changing project version. Default is <code>false</code>
      * (the feature name will be appended to project version).
      */
+	// FIXME switch to appendFeatureVersion
     @Parameter(property = "skipFeatureVersion", defaultValue = "false")
     private boolean skipFeatureVersion = false;
 
@@ -63,14 +64,11 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                 getLog().error(e);
             }
 
-//            featureName = StringUtils.deleteWhitespace(featureName);
             featureName = StringUtils.join(StringUtils.split(featureName), "_");
 
             // git for-each-ref refs/heads/feature/...
-            final String featureBranch = executeGitCommandReturn(
-                    "for-each-ref",
-                    "refs/heads/" + gitFlowConfig.getFeatureBranchPrefix()
-                            + featureName);
+            String pattern = "refs/heads/" + gitFlowConfig.getFeatureBranchPrefix() + featureName;
+            final String featureBranch = executeGitCommandReturn("for-each-ref", pattern);
 
             if (StringUtils.isNotBlank(featureBranch)) {
                 throw new MojoFailureException(

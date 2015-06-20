@@ -249,9 +249,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected String gitFindBranches(final String branchName)
             throws MojoFailureException, CommandLineException {
-        String branches = executeGitCommandReturn("for-each-ref",
-                "--format=\"%(refname:short)\"", "refs/heads/" + branchName
-                        + "*");
+        String pattern = "refs/heads/" + branchName + "*";
+		String branches = executeGitCommandReturn("for-each-ref",
+                "--format=\"%(refname:short)\"", pattern);
 
         // on *nix systems return values from git for-each-ref are wrapped in
         // quotes
@@ -373,8 +373,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         getLog().info(
                 "Updating pom's version(s) to " + version);
 
-        executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, "-DnewVersion="
-                + version, "-DgenerateBackupPoms=false");
+        executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, "-DnewVersion=" + version,
+        		"-DgenerateBackupPoms=false");
     }
 
     /**
