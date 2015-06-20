@@ -29,6 +29,7 @@ import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
 import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.ErrorMessages;
 import com.amashchenko.maven.plugin.gitflow.i18n.PromptMessages;
 
 /**
@@ -64,7 +65,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     .getHotfixBranchPrefix());
 
             if (StringUtils.isBlank(hotfixBranches)) {
-                throw new MojoFailureException("There is no hotfix branches.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.no_hotfix_branch_found));
             }
 
             String[] branches = hotfixBranches.split("\\r?\\n");
@@ -96,8 +97,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (StringUtils.isBlank(hotfixBranchName)) {
-                throw new MojoFailureException(
-                        "Hotfix name to finish is blank.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.hotfix_branch_name_empty));
             }
 
             // git checkout hotfix/...
@@ -160,8 +160,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 }
 
                 if (StringUtils.isBlank(nextSnapshotVersion)) {
-                    throw new MojoFailureException(
-                            "Next snapshot version is blank.");
+                    throw new MojoFailureException(msg.getMessage(ErrorMessages.next_snapshot_version_empty));
                 }
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false

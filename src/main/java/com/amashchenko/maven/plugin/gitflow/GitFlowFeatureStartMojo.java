@@ -27,6 +27,7 @@ import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
 import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.ErrorMessages;
 import com.amashchenko.maven.plugin.gitflow.i18n.PromptMessages;
 
 /**
@@ -76,8 +77,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                             + featureName);
 
             if (StringUtils.isNotBlank(featureBranch)) {
-                throw new MojoFailureException(
-                        "Feature branch with that name already exists. Cannot start feature.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.feature_branch_name_duplicate));
             }
 
             // git checkout -b ... develop

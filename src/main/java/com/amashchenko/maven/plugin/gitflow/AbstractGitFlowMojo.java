@@ -38,6 +38,7 @@ import org.codehaus.plexus.util.cli.StreamConsumer;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 
+import com.amashchenko.maven.plugin.gitflow.i18n.ErrorMessages;
 import com.amashchenko.maven.plugin.gitflow.i18n.LogMessages;
 
 /**
@@ -143,8 +144,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                 final Model model = mavenReader.read(fileReader);
 
                 if (model.getVersion() == null) {
-                    throw new MojoFailureException(
-                            "Cannot get current project version. This plugin should be executed from the parent project.");
+                    throw new MojoFailureException(msg.getMessage(ErrorMessages.not_in_a_maven_folder));
                 }
 
                 return model.getVersion();
@@ -154,7 +154,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                 }
             }
         } catch (Exception e) {
-            throw new MojoFailureException("", e);
+            throw new MojoFailureException(msg.getMessage(ErrorMessages.unexpected_error), e);
         }
     }
 
@@ -168,8 +168,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             CommandLineException {
         getLog().info(msg.getMessage(LogMessages.looking_for_uncommitted_files));
         if (executeGitHasUncommitted()) {
-            throw new MojoFailureException(
-                    "You have some uncommitted files. Commit or discard local changes in order to proceed.");
+            throw new MojoFailureException(msg.getMessage(ErrorMessages.uncommitted_files_detected));
         }
     }
 

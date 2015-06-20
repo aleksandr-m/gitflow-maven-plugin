@@ -27,6 +27,7 @@ import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
 import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.ErrorMessages;
 import com.amashchenko.maven.plugin.gitflow.i18n.PromptMessages;
 
 /**
@@ -58,7 +59,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                     .getFeatureBranchPrefix());
 
             if (StringUtils.isBlank(featureBranches)) {
-                throw new MojoFailureException("There is no feature branches.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.no_feature_branch_found));
             }
 
             final String[] branches = featureBranches.split("\\r?\\n");
@@ -90,8 +91,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (StringUtils.isBlank(featureBranchName)) {
-                throw new MojoFailureException(
-                        "Feature branch name to finish is blank.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.feature_branch_name_empty));
             }
 
             // git checkout feature/...

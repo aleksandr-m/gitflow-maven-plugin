@@ -25,6 +25,7 @@ import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
 import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.ErrorMessages;
 import com.amashchenko.maven.plugin.gitflow.i18n.PromptMessages;
 
 /**
@@ -53,8 +54,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                             + "*");
 
             if (StringUtils.isNotBlank(releaseBranch)) {
-                throw new MojoFailureException(
-                        "Release branch already exists. Cannot start release.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.release_branch_already_exists));
             }
 
             // need to be in develop to get correct project version

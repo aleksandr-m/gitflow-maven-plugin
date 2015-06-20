@@ -8,14 +8,14 @@ import org.junit.Test;
 import ch.qos.cal10n.verifier.Cal10nError;
 import ch.qos.cal10n.verifier.MessageKeyVerifier;
 
-import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.PromptMessages;
 
 
-public class CommitMessagesVerificationTest {
+public class PromptMessagesVerificationTest {
 
 	@Test
 	public void en() {
-		List<Cal10nError> errorList = new MessageKeyVerifier(CommitMessages.class).verify(Locale.ENGLISH);
+		List<Cal10nError> errorList = new MessageKeyVerifier(PromptMessages.class).verify(Locale.ENGLISH);
 		for (Cal10nError error : errorList) {
 			System.out.println(error);
 		}

@@ -25,6 +25,7 @@ import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
 import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
+import com.amashchenko.maven.plugin.gitflow.i18n.ErrorMessages;
 import com.amashchenko.maven.plugin.gitflow.i18n.PromptMessages;
 
 /**
@@ -85,8 +86,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                             + version);
 
             if (StringUtils.isNotBlank(hotfixBranch)) {
-                throw new MojoFailureException(
-                        "Hotfix branch with that name already exists. Cannot start hotfix.");
+                throw new MojoFailureException(msg.getMessage(ErrorMessages.hotfix_branch_name_duplicate));
             }
 
             // git checkout -b hotfix/... master
