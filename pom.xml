@@ -17,13 +17,18 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.amashchenko.maven.plugin</groupId>
-    <artifactId>gitflow-maven-plugin</artifactId>
-    <packaging>maven-plugin</packaging>
-    <name>gitflow-maven-plugin</name>
-    <version>1.0.10-SNAPSHOT</version>
 
+    <groupId>com.zartc.maven.plugin</groupId>
+    <artifactId>gitflow-maven-plugin</artifactId>
+    <version>1.0.10-SNAPSHOT</version>
+    <packaging>maven-plugin</packaging>
+
+    <name>${project.artifactId}</name>
     <description>Git-Flow Maven Plugin, which runs Git and Maven commands from the command line.</description>
+
+	<prerequisites>
+		<maven>3.2.0</maven>
+	</prerequisites>
 
     <inceptionYear>2014</inceptionYear>
 
@@ -38,15 +43,24 @@
     <developers>
         <developer>
             <name>Aleksandr Mashchenko</name>
+            <roles>
+            	<role>Originator</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Zart Colwing</name>
+            <roles>
+            	<role>New Version</role>
+            </roles>
         </developer>
     </developers>
 
-    <url>${url}</url>
+	<url>https://github.com/zartc/gitflow-maven-plugin</url>
 
     <scm>
-        <url>${url}</url>
-        <connection>${scm.url}</connection>
-        <developerConnection>${scm.url}</developerConnection>
+        <url>${project.url}</url>
+        <connection>scm:git:git@github.com:zartc/gitflow-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:zartc/gitflow-maven-plugin.git</developerConnection>
     </scm>
 
     <distributionManagement>
@@ -62,11 +76,68 @@
         </snapshotRepository>
     </distributionManagement>
 
+
     <properties>
+    	<java.version>1.6</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scm.url>scm:git:git@github.com:aleksandr-m/gitflow-maven-plugin.git</scm.url>
-        <url>https://github.com/aleksandr-m/gitflow-maven-plugin</url>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>3.2.3</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
+            <version>3.3</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-interactivity-api</artifactId>
+            <version>1.0-alpha-6</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>plexus-utils</artifactId>
+                    <groupId>org.codehaus.plexus</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-project</artifactId>
+            <version>3.0-alpha-2</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.maven.release</groupId>
+            <artifactId>maven-release-manager</artifactId>
+            <version>2.5</version>
+            <scope>compile</scope>
+        </dependency>
+
+		<dependency>
+			<groupId>ch.qos.cal10n</groupId>
+			<artifactId>cal10n-api</artifactId>
+			<version>0.8.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -75,11 +146,12 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.2</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
@@ -103,6 +175,7 @@
                     </execution>
                 </executions>
             </plugin>
+
 			<plugin>
 				<groupId>com.amashchenko.maven.plugin</groupId>
 				<artifactId>gitflow-maven-plugin</artifactId>
@@ -203,56 +276,4 @@
 			</build>
 		</profile>
     </profiles>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-plugin-api</artifactId>
-            <version>3.2.3</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.plugin-tools</groupId>
-            <artifactId>maven-plugin-annotations</artifactId>
-            <version>3.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-interactivity-api</artifactId>
-            <version>1.0-alpha-6</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>plexus-utils</artifactId>
-                    <groupId>org.codehaus.plexus</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-project</artifactId>
-            <version>3.0-alpha-2</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.release</groupId>
-            <artifactId>maven-release-manager</artifactId>
-            <version>2.5</version>
-            <scope>compile</scope>
-        </dependency>
-
-		<dependency>
-			<groupId>ch.qos.cal10n</groupId>
-			<artifactId>cal10n-api</artifactId>
-			<version>0.8.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-    </dependencies>
 </project>

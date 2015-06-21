@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.amashchenko.maven.plugin.gitflow;
+package com.zartc.maven.plugin.gitflow;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -24,8 +24,8 @@ import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
-import com.amashchenko.maven.plugin.gitflow.i18n.CommitMessages;
-import com.amashchenko.maven.plugin.gitflow.i18n.ErrorMessages;
+import com.zartc.maven.plugin.gitflow.i18n.CommitMessages;
+import com.zartc.maven.plugin.gitflow.i18n.ErrorMessages;
 
 /**
  * The git flow release finish mojo.

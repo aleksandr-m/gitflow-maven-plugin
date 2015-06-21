@@ -1,11 +1,11 @@
-package com.amashchenko.maven.plugin.gitflow.i18n;
+package com.zartc.maven.plugin.gitflow.i18n;
 
 import ch.qos.cal10n.BaseName;
 import ch.qos.cal10n.Locale;
 import ch.qos.cal10n.LocaleData;
 
 
-@BaseName("com/amashchenko/maven/plugin/gitflow/i18n/CommitMessages")
+@BaseName("com/zartc/maven/plugin/gitflow/i18n/CommitMessages")
 @LocaleData({ @Locale("en") })
 public enum CommitMessages {
 	updating_pom_for_develop_branch,

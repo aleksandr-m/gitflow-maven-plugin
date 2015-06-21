@@ -8,7 +8,7 @@ import org.junit.Test;
 import ch.qos.cal10n.verifier.Cal10nError;
 import ch.qos.cal10n.verifier.MessageKeyVerifier;
 
-import com.amashchenko.maven.plugin.gitflow.i18n.LogMessages;
+import com.zartc.maven.plugin.gitflow.i18n.LogMessages;
 
 
 public class LogMessagesVerificationTest {

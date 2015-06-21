@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.0.10
+* Take full ownership of this fork
+* Change the groupId to `<groupId>com.zartc.maven.plugin</groupId>`
+* Change the main packages name to `com.zartc.maven.plugin.gitflow`
+* Reformat the source code to 160 columns.
+
+## v1.0.9
+
+* Forked from `https://github.com/aleksandr-m/gitflow-maven-plugin`
+* Fully externalize all strings used in the user interface or the commit message.
+* Small code improvements
+
 ## v1.0.8
 
 * Fixed issue #3 - on *nix systems return values from `git for-each-ref` are wrapped in quotes

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.amashchenko.maven.plugin.gitflow;
+package com.zartc.maven.plugin.gitflow;
 
 /**
  * Git flow configuration.

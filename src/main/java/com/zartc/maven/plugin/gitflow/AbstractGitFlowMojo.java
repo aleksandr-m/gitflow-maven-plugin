@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.amashchenko.maven.plugin.gitflow;
+package com.zartc.maven.plugin.gitflow;
 
 import java.io.FileReader;
 
@@ -38,8 +38,8 @@ import org.codehaus.plexus.util.cli.StreamConsumer;
 import ch.qos.cal10n.IMessageConveyor;
 import ch.qos.cal10n.MessageConveyor;
 
-import com.amashchenko.maven.plugin.gitflow.i18n.ErrorMessages;
-import com.amashchenko.maven.plugin.gitflow.i18n.LogMessages;
+import com.zartc.maven.plugin.gitflow.i18n.ErrorMessages;
+import com.zartc.maven.plugin.gitflow.i18n.LogMessages;
 
 /**
  * Abstract git flow mojo.
