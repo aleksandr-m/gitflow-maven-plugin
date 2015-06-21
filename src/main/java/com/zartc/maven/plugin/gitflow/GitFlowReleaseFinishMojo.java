@@ -27,123 +27,119 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 import com.zartc.maven.plugin.gitflow.i18n.CommitMessages;
 import com.zartc.maven.plugin.gitflow.i18n.ErrorMessages;
 
+
 /**
  * The git flow release finish mojo.
  *
  * @author Aleksandr Mashchenko
- *
  */
 @Mojo(name = "release-finish", aggregator = true)
 public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
-    /** Whether to skip tagging the release in Git. */
-    @Parameter(property = "skipTag", defaultValue = "false")
-    private boolean skipTag = false;
+	/** Whether to skip tagging the release in Git. */
+	@Parameter(property = "skipTag", defaultValue = "false")
+	private boolean skipTag = false;
 
-    /** Whether to keep release branch after finish. */
-    @Parameter(property = "keepBranch", defaultValue = "false")
-    private boolean keepBranch = false;
+	/** Whether to keep release branch after finish. */
+	@Parameter(property = "keepBranch", defaultValue = "false")
+	private boolean keepBranch = false;
 
-    /** Whether to skip calling Maven test goal before merging the branch. */
-    @Parameter(property = "skipTestProject", defaultValue = "false")
-    private boolean skipTestProject = false;
+	/** Whether to skip calling Maven test goal before merging the branch. */
+	@Parameter(property = "skipTestProject", defaultValue = "false")
+	private boolean skipTestProject = false;
 
-    /** {@inheritDoc} */
-    @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        try {
-            // check uncommitted changes
-            checkUncommittedChanges();
 
-            // git for-each-ref --format='%(refname:short)' refs/heads/release/*
-            final String releaseBranches = gitFindBranches(gitFlowConfig
-                    .getReleaseBranchPrefix());
+	/** {@inheritDoc} */
+	@Override
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		try {
+			// check uncommitted changes
+			checkUncommittedChanges();
 
-            String releaseVersion = null;
+			// git for-each-ref --format='%(refname:short)' refs/heads/release/*
+			final String releaseBranches = gitFindBranches(gitFlowConfig.getReleaseBranchPrefix());
 
-            if (StringUtils.isBlank(releaseBranches)) {
-                throw new MojoFailureException(msg.getMessage(ErrorMessages.no_release_branch_found));
-            } else if (StringUtils.countMatches(releaseBranches,
-                    gitFlowConfig.getReleaseBranchPrefix()) > 1) {
-                throw new MojoFailureException(msg.getMessage(ErrorMessages.release_branch_not_unique));
-            } else {
-                releaseVersion = releaseBranches.trim().substring(
-                        releaseBranches.lastIndexOf(gitFlowConfig
-                                .getReleaseBranchPrefix())
-                                + gitFlowConfig.getReleaseBranchPrefix()
-                                        .length());
-            }
+			String releaseVersion = null;
 
-            if (StringUtils.isBlank(releaseVersion)) {
-                throw new MojoFailureException(msg.getMessage(ErrorMessages.release_branch_name_empty));
-            }
+			if (StringUtils.isBlank(releaseBranches)) {
+				throw new MojoFailureException(msg.getMessage(ErrorMessages.no_release_branch_found));
+			}
+			else if (StringUtils.countMatches(releaseBranches, gitFlowConfig.getReleaseBranchPrefix()) > 1) {
+				throw new MojoFailureException(msg.getMessage(ErrorMessages.release_branch_not_unique));
+			}
+			else {
+				releaseVersion = releaseBranches.trim().substring(
+						releaseBranches.lastIndexOf(gitFlowConfig.getReleaseBranchPrefix()) + gitFlowConfig.getReleaseBranchPrefix().length());
+			}
 
-            // git checkout release/...
-            gitCheckout(releaseBranches.trim());
+			if (StringUtils.isBlank(releaseVersion)) {
+				throw new MojoFailureException(msg.getMessage(ErrorMessages.release_branch_name_empty));
+			}
 
-            if (!skipTestProject) {
-                // mvn clean test
-                mvnCleanTest();
-            }
+			// git checkout release/...
+			gitCheckout(releaseBranches.trim());
 
-            // git checkout master
-            gitCheckout(gitFlowConfig.getProductionBranch());
+			if (!skipTestProject) {
+				// mvn clean test
+				mvnCleanTest();
+			}
 
-            // git merge --no-ff release/...
-            gitMergeNoff(gitFlowConfig.getReleaseBranchPrefix()
-                    + releaseVersion);
+			// git checkout master
+			gitCheckout(gitFlowConfig.getProductionBranch());
 
-            if (!skipTag) {
-                // git tag -a ...
-                gitTag(gitFlowConfig.getVersionTagPrefix() + releaseVersion,
-                		msg.getMessage(CommitMessages.tagging_release));
-            }
+			// git merge --no-ff release/...
+			gitMergeNoff(gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
 
-            // git checkout develop
-            gitCheckout(gitFlowConfig.getDevelopmentBranch());
+			if (!skipTag) {
+				// git tag -a ...
+				gitTag(gitFlowConfig.getVersionTagPrefix() + releaseVersion, msg.getMessage(CommitMessages.tagging_release));
+			}
 
-            // git merge --no-ff release/...
-            gitMergeNoff(gitFlowConfig.getReleaseBranchPrefix()
-                    + releaseVersion);
+			// git checkout develop
+			gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
-            // get current project version from pom
-            final String currentVersion = getCurrentProjectVersion();
+			// git merge --no-ff release/...
+			gitMergeNoff(gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
 
-            String nextSnapshotVersion = null;
-            // get next snapshot version
-            try {
-                final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
-                        currentVersion);
-                nextSnapshotVersion = versionInfo.getNextVersion()
-                        .getSnapshotVersionString();
-            } catch (VersionParseException e) {
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug(e);
-                }
-            }
+			// get current project version from pom
+			final String currentVersion = getCurrentProjectVersion();
 
-            if (StringUtils.isBlank(nextSnapshotVersion)) {
-                throw new MojoFailureException(msg.getMessage(ErrorMessages.next_snapshot_version_empty));
-            }
+			String nextSnapshotVersion = null;
+			// get next snapshot version
+			try {
+				final DefaultVersionInfo versionInfo = new DefaultVersionInfo(currentVersion);
+				nextSnapshotVersion = versionInfo.getNextVersion().getSnapshotVersionString();
+			}
+			catch (VersionParseException e) {
+				if (getLog().isDebugEnabled()) {
+					getLog().debug(e);
+				}
+			}
 
-            // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-            mvnSetVersions(nextSnapshotVersion);
+			if (StringUtils.isBlank(nextSnapshotVersion)) {
+				throw new MojoFailureException(msg.getMessage(ErrorMessages.next_snapshot_version_empty));
+			}
 
-            // git commit -a -m updating poms for development
-            gitCommit(msg.getMessage(CommitMessages.updating_pom_for_develop_version, nextSnapshotVersion));
+			// mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
+			mvnSetVersions(nextSnapshotVersion);
 
-            if (installProject) {
-                // mvn clean install
-                mvnCleanInstall();
-            }
+			// git commit -a -m updating poms for development
+			gitCommit(msg.getMessage(CommitMessages.updating_pom_for_develop_version, nextSnapshotVersion));
 
-            if (!keepBranch) {
-                // git branch -d release/...
-                gitBranchDelete(gitFlowConfig.getReleaseBranchPrefix()
-                        + releaseVersion);
-            }
-        } catch (CommandLineException e) {
-            getLog().error(e);
-        }
-    }
+			if (installProject) {
+				// mvn clean install
+				mvnCleanInstall();
+			}
+
+			if (!keepBranch) {
+				// git branch -d release/...
+				gitBranchDelete(gitFlowConfig.getReleaseBranchPrefix() + releaseVersion);
+			}
+		}
+		catch (CommandLineException e) {
+			getLog().error(e);
+		}
+	}
 }
+
+/* EOF */

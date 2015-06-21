@@ -22,3 +22,5 @@ public class PromptMessagesVerificationTest {
 		assertEquals(0, errorList.size());
 	}
 }
+
+/* EOF */

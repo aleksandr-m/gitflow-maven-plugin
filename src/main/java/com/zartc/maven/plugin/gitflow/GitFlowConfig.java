@@ -17,141 +17,136 @@ package com.zartc.maven.plugin.gitflow;
 
 /**
  * Git flow configuration.
- * 
+ *
  * @author Aleksandr Mashchenko
- * 
  */
 public class GitFlowConfig {
-    /** Name of the production branch. */
-    private String productionBranch;
-    /** Name of the development branch. */
-    private String developmentBranch;
-    /** Prefix of the feature branch. */
-    private String featureBranchPrefix;
-    /** Prefix of the release branch. */
-    private String releaseBranchPrefix;
-    /** Prefix of the hotfix branch. */
-    private String hotfixBranchPrefix;
-    /** Prefix of the support branch. */
-    private String supportBranchPrefix;
-    /** Prefix of the version tag. */
-    private String versionTagPrefix;
+	/** Name of the production branch. */
+	private String productionBranch;
+	/** Name of the development branch. */
+	private String developmentBranch;
+	/** Prefix of the feature branch. */
+	private String featureBranchPrefix;
+	/** Prefix of the release branch. */
+	private String releaseBranchPrefix;
+	/** Prefix of the hotfix branch. */
+	private String hotfixBranchPrefix;
+	/** Prefix of the support branch. */
+	private String supportBranchPrefix;
+	/** Prefix of the version tag. */
+	private String versionTagPrefix;
 
-    /**
-     * Default constructor.
-     */
-    public GitFlowConfig() {
-        this.productionBranch = "master";
-        this.developmentBranch = "develop";
-        this.featureBranchPrefix = "feature/";
-        this.releaseBranchPrefix = "release/";
-        this.hotfixBranchPrefix = "hotfix/";
-        this.supportBranchPrefix = "support/";
-        this.versionTagPrefix = "";
-    }
 
-    /**
-     * @return the productionBranch
-     */
-    public String getProductionBranch() {
-        return productionBranch;
-    }
+	/**
+	 * Default constructor.
+	 */
+	public GitFlowConfig() {
+		this.productionBranch = "master";
+		this.developmentBranch = "develop";
+		this.featureBranchPrefix = "feature/";
+		this.releaseBranchPrefix = "release/";
+		this.hotfixBranchPrefix = "hotfix/";
+		this.supportBranchPrefix = "support/";
+		this.versionTagPrefix = "";
+	}
 
-    /**
-     * @param productionBranch
-     *            the productionBranch to set
-     */
-    public void setProductionBranch(String productionBranch) {
-        this.productionBranch = productionBranch;
-    }
+	/**
+	 * @return the productionBranch
+	 */
+	public String getProductionBranch() {
+		return productionBranch;
+	}
 
-    /**
-     * @return the developmentBranch
-     */
-    public String getDevelopmentBranch() {
-        return developmentBranch;
-    }
+	/**
+	 * @param productionBranch the productionBranch to set
+	 */
+	public void setProductionBranch(String productionBranch) {
+		this.productionBranch = productionBranch;
+	}
 
-    /**
-     * @param developmentBranch
-     *            the developmentBranch to set
-     */
-    public void setDevelopmentBranch(String developmentBranch) {
-        this.developmentBranch = developmentBranch;
-    }
+	/**
+	 * @return the developmentBranch
+	 */
+	public String getDevelopmentBranch() {
+		return developmentBranch;
+	}
 
-    /**
-     * @return the featureBranchPrefix
-     */
-    public String getFeatureBranchPrefix() {
-        return featureBranchPrefix;
-    }
+	/**
+	 * @param developmentBranch the developmentBranch to set
+	 */
+	public void setDevelopmentBranch(String developmentBranch) {
+		this.developmentBranch = developmentBranch;
+	}
 
-    /**
-     * @param featureBranchPrefix
-     *            the featureBranchPrefix to set
-     */
-    public void setFeatureBranchPrefix(String featureBranchPrefix) {
-        this.featureBranchPrefix = featureBranchPrefix;
-    }
+	/**
+	 * @return the featureBranchPrefix
+	 */
+	public String getFeatureBranchPrefix() {
+		return featureBranchPrefix;
+	}
 
-    /**
-     * @return the releaseBranchPrefix
-     */
-    public String getReleaseBranchPrefix() {
-        return releaseBranchPrefix;
-    }
+	/**
+	 * @param featureBranchPrefix the featureBranchPrefix to set
+	 */
+	public void setFeatureBranchPrefix(String featureBranchPrefix) {
+		this.featureBranchPrefix = featureBranchPrefix;
+	}
 
-    /**
-     * @param releaseBranchPrefix
-     *            the releaseBranchPrefix to set
-     */
-    public void setReleaseBranchPrefix(String releaseBranchPrefix) {
-        this.releaseBranchPrefix = releaseBranchPrefix;
-    }
+	/**
+	 * @return the releaseBranchPrefix
+	 */
+	public String getReleaseBranchPrefix() {
+		return releaseBranchPrefix;
+	}
 
-    /**
-     * @return the hotfixBranchPrefix
-     */
-    public String getHotfixBranchPrefix() {
-        return hotfixBranchPrefix;
-    }
+	/**
+	 * @param releaseBranchPrefix the releaseBranchPrefix to set
+	 */
+	public void setReleaseBranchPrefix(String releaseBranchPrefix) {
+		this.releaseBranchPrefix = releaseBranchPrefix;
+	}
 
-    /**
-     * @param hotfixBranchPrefix
-     *            the hotfixBranchPrefix to set
-     */
-    public void setHotfixBranchPrefix(String hotfixBranchPrefix) {
-        this.hotfixBranchPrefix = hotfixBranchPrefix;
-    }
+	/**
+	 * @return the hotfixBranchPrefix
+	 */
+	public String getHotfixBranchPrefix() {
+		return hotfixBranchPrefix;
+	}
 
-    /**
-     * @return the supportBranchPrefix
-     */
-    public String getSupportBranchPrefix() {
-        return supportBranchPrefix;
-    }
+	/**
+	 * @param hotfixBranchPrefix the hotfixBranchPrefix to set
+	 */
+	public void setHotfixBranchPrefix(String hotfixBranchPrefix) {
+		this.hotfixBranchPrefix = hotfixBranchPrefix;
+	}
 
-    /**
-     * @param supportBranchPrefix
-     *            the supportBranchPrefix to set
-     */
-    public void setSupportBranchPrefix(String supportBranchPrefix) {
-        this.supportBranchPrefix = supportBranchPrefix;
-    }
+	/**
+	 * @return the supportBranchPrefix
+	 */
+	public String getSupportBranchPrefix() {
+		return supportBranchPrefix;
+	}
 
-    /**
-     * @return the versionTagPrefix
-     */
-    public String getVersionTagPrefix() {
-        return versionTagPrefix;
-    }
+	/**
+	 * @param supportBranchPrefix the supportBranchPrefix to set
+	 */
+	public void setSupportBranchPrefix(String supportBranchPrefix) {
+		this.supportBranchPrefix = supportBranchPrefix;
+	}
 
-    /**
-     * @param versionTagPrefix
-     *            the versionTagPrefix to set
-     */
-    public void setVersionTagPrefix(String versionTagPrefix) {
-        this.versionTagPrefix = versionTagPrefix;
-    }
+	/**
+	 * @return the versionTagPrefix
+	 */
+	public String getVersionTagPrefix() {
+		return versionTagPrefix;
+	}
+
+	/**
+	 * @param versionTagPrefix the versionTagPrefix to set
+	 */
+	public void setVersionTagPrefix(String versionTagPrefix) {
+		this.versionTagPrefix = versionTagPrefix;
+	}
 }
+
+/* EOF */

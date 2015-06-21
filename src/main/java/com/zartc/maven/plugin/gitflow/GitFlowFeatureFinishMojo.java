@@ -30,112 +30,112 @@ import com.zartc.maven.plugin.gitflow.i18n.CommitMessages;
 import com.zartc.maven.plugin.gitflow.i18n.ErrorMessages;
 import com.zartc.maven.plugin.gitflow.i18n.PromptMessages;
 
+
 /**
  * The git flow feature finish mojo.
  *
  * @author Aleksandr Mashchenko
- *
  */
 @Mojo(name = "feature-finish", aggregator = true)
 public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
-    /** Whether to keep feature branch after finish. */
-    @Parameter(property = "keepBranch", defaultValue = "false")
-    private boolean keepBranch = false;
+	/** Whether to keep feature branch after finish. */
+	@Parameter(property = "keepBranch", defaultValue = "false")
+	private boolean keepBranch = false;
 
-    /** Whether to skip calling Maven test goal before merging the branch. */
-    @Parameter(property = "skipTestProject", defaultValue = "false")
-    private boolean skipTestProject = false;
+	/** Whether to skip calling Maven test goal before merging the branch. */
+	@Parameter(property = "skipTestProject", defaultValue = "false")
+	private boolean skipTestProject = false;
 
-    /** {@inheritDoc} */
-    @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        try {
-            // check uncommitted changes
-            checkUncommittedChanges();
 
-            // git for-each-ref --format='%(refname:short)' refs/heads/feature/*
-            final String featureBranches = gitFindBranches(gitFlowConfig
-                    .getFeatureBranchPrefix());
+	/** {@inheritDoc} */
+	@Override
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		try {
+			// check uncommitted changes
+			checkUncommittedChanges();
 
-            if (StringUtils.isBlank(featureBranches)) {
-                throw new MojoFailureException(msg.getMessage(ErrorMessages.no_feature_branch_found));
-            }
+			// git for-each-ref --format='%(refname:short)' refs/heads/feature/*
+			final String featureBranches = gitFindBranches(gitFlowConfig.getFeatureBranchPrefix());
 
-            final String[] branches = featureBranches.split("\\r?\\n");
+			if (StringUtils.isBlank(featureBranches)) {
+				throw new MojoFailureException(msg.getMessage(ErrorMessages.no_feature_branch_found));
+			}
 
-            List<String> numberedList = new ArrayList<String>();
-            StringBuilder str = new StringBuilder(
-            		msg.getMessage(PromptMessages.feature_branch_list_header));
-            str.append(LS);
-            for (int i = 0; i < branches.length; i++) {
-            	str.append(i+1).append(". ").append(branches[i]).append(LS);
-                numberedList.add(String.valueOf(i + 1));
-            }
-            str.append(msg.getMessage(PromptMessages.feature_branch_number_to_finish_prompt));
+			final String[] branches = featureBranches.split("\\r?\\n");
 
-            String featureNumber = null;
-            try {
-                while (StringUtils.isBlank(featureNumber)) {
-                    featureNumber = prompter.prompt(str.toString(),
-                            numberedList);
-                }
-            } catch (PrompterException e) {
-                getLog().error(e);
-            }
+			List<String> numberedList = new ArrayList<String>();
+			StringBuilder str = new StringBuilder(msg.getMessage(PromptMessages.feature_branch_list_header));
+			str.append(LS);
+			for (int i = 0; i < branches.length; i++) {
+				str.append(i + 1).append(". ").append(branches[i]).append(LS);
+				numberedList.add(String.valueOf(i + 1));
+			}
+			str.append(msg.getMessage(PromptMessages.feature_branch_number_to_finish_prompt));
 
-            String featureBranchName = null;
-            if (featureNumber != null) {
-                int num = Integer.parseInt(featureNumber);
-                featureBranchName = branches[num - 1];
-            }
+			String featureNumber = null;
+			try {
+				while (StringUtils.isBlank(featureNumber)) {
+					featureNumber = prompter.prompt(str.toString(), numberedList);
+				}
+			}
+			catch (PrompterException e) {
+				getLog().error(e);
+			}
 
-            if (StringUtils.isBlank(featureBranchName)) {
-                throw new MojoFailureException(msg.getMessage(ErrorMessages.feature_branch_name_empty));
-            }
+			String featureBranchName = null;
+			if (featureNumber != null) {
+				int num = Integer.parseInt(featureNumber);
+				featureBranchName = branches[num - 1];
+			}
 
-            // git checkout feature/...
-            gitCheckout(featureBranchName);
+			if (StringUtils.isBlank(featureBranchName)) {
+				throw new MojoFailureException(msg.getMessage(ErrorMessages.feature_branch_name_empty));
+			}
 
-            if (!skipTestProject) {
-                // mvn clean test
-                mvnCleanTest();
-            }
+			// git checkout feature/...
+			gitCheckout(featureBranchName);
 
-            // git checkout develop
-            gitCheckout(gitFlowConfig.getDevelopmentBranch());
+			if (!skipTestProject) {
+				// mvn clean test
+				mvnCleanTest();
+			}
 
-            // git merge --no-ff feature/...
-            gitMergeNoff(featureBranchName);
+			// git checkout develop
+			gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
-            // get current project version from pom
-            final String currentVersion = getCurrentProjectVersion();
+			// git merge --no-ff feature/...
+			gitMergeNoff(featureBranchName);
 
-            final String featureName = featureBranchName.replaceFirst(
-                    gitFlowConfig.getFeatureBranchPrefix(), "");
+			// get current project version from pom
+			final String currentVersion = getCurrentProjectVersion();
 
-            if (currentVersion.contains("-" + featureName)) {
-                final String version = currentVersion.replaceFirst("-"
-                        + featureName, "");
+			final String featureName = featureBranchName.replaceFirst(gitFlowConfig.getFeatureBranchPrefix(), "");
 
-                // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-                mvnSetVersions(version);
+			if (currentVersion.contains("-" + featureName)) {
+				final String version = currentVersion.replaceFirst("-" + featureName, "");
 
-                // git commit -a -m updating poms for development branch
-                gitCommit(msg.getMessage(CommitMessages.updating_pom_for_develop_branch, version));
-            }
+				// mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
+				mvnSetVersions(version);
 
-            if (installProject) {
-                // mvn clean install
-                mvnCleanInstall();
-            }
+				// git commit -a -m updating poms for development branch
+				gitCommit(msg.getMessage(CommitMessages.updating_pom_for_develop_branch, version));
+			}
 
-            if (!keepBranch) {
-                // git branch -d feature/...
-                gitBranchDelete(featureBranchName);
-            }
-        } catch (CommandLineException e) {
-            getLog().error(e);
-        }
-    }
+			if (installProject) {
+				// mvn clean install
+				mvnCleanInstall();
+			}
+
+			if (!keepBranch) {
+				// git branch -d feature/...
+				gitBranchDelete(featureBranchName);
+			}
+		}
+		catch (CommandLineException e) {
+			getLog().error(e);
+		}
+	}
 }
+
+/* EOF */

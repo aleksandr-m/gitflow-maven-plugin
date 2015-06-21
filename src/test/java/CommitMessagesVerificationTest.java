@@ -22,3 +22,5 @@ public class CommitMessagesVerificationTest {
 		assertEquals(0, errorList.size());
 	}
 }
+
+/* EOF */

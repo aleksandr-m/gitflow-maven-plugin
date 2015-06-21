@@ -30,90 +30,91 @@ import com.zartc.maven.plugin.gitflow.i18n.CommitMessages;
 import com.zartc.maven.plugin.gitflow.i18n.ErrorMessages;
 import com.zartc.maven.plugin.gitflow.i18n.PromptMessages;
 
+
 /**
  * The git flow feature start mojo.
  *
  * @author Aleksandr Mashchenko
- *
  */
 @Mojo(name = "feature-start", aggregator = true)
 public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
 
-    /**
-     * Whether to skip changing project version. Default is <code>false</code>
-     * (the feature name will be appended to project version).
-     */
+	/**
+	 * Whether to skip changing project version. Default is <code>false</code>
+	 * (the feature name will be appended to project version).
+	 */
 	// FIXME switch to appendFeatureVersion
-    @Parameter(property = "skipFeatureVersion", defaultValue = "false")
-    private boolean skipFeatureVersion = false;
+	@Parameter(property = "skipFeatureVersion", defaultValue = "false")
+	private boolean skipFeatureVersion = false;
 
-    /** {@inheritDoc} */
-    @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        try {
-            // set git flow configuration
-            initGitFlowConfig();
 
-            // check uncommitted changes
-            checkUncommittedChanges();
+	/** {@inheritDoc} */
+	@Override
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		try {
+			// set git flow configuration
+			initGitFlowConfig();
 
-            String featureName = null;
-            try {
-                while (StringUtils.isBlank(featureName)) {
-                    featureName = prompter
-                            .prompt(msg.getMessage(PromptMessages.feature_branch_name_to_create_prompt)
-                                    + gitFlowConfig.getFeatureBranchPrefix());
-                }
-            } catch (PrompterException e) {
-                getLog().error(e);
-            }
+			// check uncommitted changes
+			checkUncommittedChanges();
 
-            featureName = StringUtils.join(StringUtils.split(featureName), "_");
+			String featureName = null;
+			try {
+				while (StringUtils.isBlank(featureName)) {
+					featureName = prompter.prompt(msg.getMessage(PromptMessages.feature_branch_name_to_create_prompt) + gitFlowConfig.getFeatureBranchPrefix());
+				}
+			}
+			catch (PrompterException e) {
+				getLog().error(e);
+			}
+
+			featureName = StringUtils.join(StringUtils.split(featureName), "_");
 
 			// git for-each-ref refs/heads/feature/...
-            String pattern = "refs/heads/" + gitFlowConfig.getFeatureBranchPrefix() + featureName;
-            final String featureBranch = executeGitCommandReturn("for-each-ref", pattern);
+			String pattern = "refs/heads/" + gitFlowConfig.getFeatureBranchPrefix() + featureName;
+			final String featureBranch = executeGitCommandReturn("for-each-ref", pattern);
 
-            if (StringUtils.isNotBlank(featureBranch)) {
-                throw new MojoFailureException(msg.getMessage(ErrorMessages.feature_branch_name_duplicate));
-            }
+			if (StringUtils.isNotBlank(featureBranch)) {
+				throw new MojoFailureException(msg.getMessage(ErrorMessages.feature_branch_name_duplicate));
+			}
 
-            // git checkout -b ... develop
-            gitCreateAndCheckout(gitFlowConfig.getFeatureBranchPrefix()
-                    + featureName, gitFlowConfig.getDevelopmentBranch());
+			// git checkout -b ... develop
+			gitCreateAndCheckout(gitFlowConfig.getFeatureBranchPrefix() + featureName, gitFlowConfig.getDevelopmentBranch());
 
-            if (!skipFeatureVersion) {
-                // get current project version from pom
-                final String currentVersion = getCurrentProjectVersion();
+			if (!skipFeatureVersion) {
+				// get current project version from pom
+				final String currentVersion = getCurrentProjectVersion();
 
-                String version = null;
-                try {
-                    final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
-                            currentVersion);
-                    version = versionInfo.getReleaseVersionString() + "-"
-                            + featureName + "-" + Artifact.SNAPSHOT_VERSION;
-                } catch (VersionParseException e) {
-                    if (getLog().isDebugEnabled()) {
-                        getLog().debug(e);
-                    }
-                }
+				String version = null;
+				try {
+					final DefaultVersionInfo versionInfo = new DefaultVersionInfo(currentVersion);
+					version = versionInfo.getReleaseVersionString() + "-" + featureName + "-" + Artifact.SNAPSHOT_VERSION;
+				}
+				catch (VersionParseException e) {
+					if (getLog().isDebugEnabled()) {
+						getLog().debug(e);
+					}
+				}
 
-                if (StringUtils.isNotBlank(version)) {
-                    // mvn versions:set -DnewVersion=...
-                    // -DgenerateBackupPoms=false
-                    mvnSetVersions(version);
+				if (StringUtils.isNotBlank(version)) {
+					// mvn versions:set -DnewVersion=...
+					// -DgenerateBackupPoms=false
+					mvnSetVersions(version);
 
-                    // git commit -a -m updating poms for feature branch
-                    gitCommit(msg.getMessage(CommitMessages.updating_pom_for_feature_branch));
-                }
-            }
+					// git commit -a -m updating poms for feature branch
+					gitCommit(msg.getMessage(CommitMessages.updating_pom_for_feature_branch));
+				}
+			}
 
-            if (installProject) {
-                // mvn clean install
-                mvnCleanInstall();
-            }
-        } catch (CommandLineException e) {
-            getLog().error(e);
-        }
-    }
+			if (installProject) {
+				// mvn clean install
+				mvnCleanInstall();
+			}
+		}
+		catch (CommandLineException e) {
+			getLog().error(e);
+		}
+	}
 }
+
+/* EOF */

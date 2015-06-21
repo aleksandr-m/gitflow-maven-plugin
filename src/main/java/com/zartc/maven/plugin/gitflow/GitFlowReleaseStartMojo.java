@@ -28,83 +28,84 @@ import com.zartc.maven.plugin.gitflow.i18n.CommitMessages;
 import com.zartc.maven.plugin.gitflow.i18n.ErrorMessages;
 import com.zartc.maven.plugin.gitflow.i18n.PromptMessages;
 
+
 /**
  * The git flow release start mojo.
  *
  * @author Aleksandr Mashchenko
- *
  */
 @Mojo(name = "release-start", aggregator = true)
 public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
-    /** {@inheritDoc} */
-    @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        try {
-            // set git flow configuration
-            initGitFlowConfig();
+	/** {@inheritDoc} */
+	@Override
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		try {
+			// set git flow configuration
+			initGitFlowConfig();
 
-            // check uncommitted changes
-            checkUncommittedChanges();
+			// check uncommitted changes
+			checkUncommittedChanges();
 
-            // git for-each-ref --count=1 refs/heads/release/*
-            String pattern = "refs/heads/" + gitFlowConfig.getReleaseBranchPrefix() + "*";
-			final String releaseBranch = executeGitCommandReturn(
-                    "for-each-ref", "--count=1", pattern);
+			// git for-each-ref --count=1 refs/heads/release/*
+			String pattern = "refs/heads/" + gitFlowConfig.getReleaseBranchPrefix() + "*";
+			final String releaseBranch = executeGitCommandReturn("for-each-ref", "--count=1", pattern);
 
-            if (StringUtils.isNotBlank(releaseBranch)) {
-                throw new MojoFailureException(msg.getMessage(ErrorMessages.release_branch_already_exists));
-            }
+			if (StringUtils.isNotBlank(releaseBranch)) {
+				throw new MojoFailureException(msg.getMessage(ErrorMessages.release_branch_already_exists));
+			}
 
-            // need to be in develop to get correct project version
-            // git checkout develop
-            gitCheckout(gitFlowConfig.getDevelopmentBranch());
+			// need to be in develop to get correct project version
+			// git checkout develop
+			gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
-            // get current project version from pom
-            final String currentVersion = getCurrentProjectVersion();
+			// get current project version from pom
+			final String currentVersion = getCurrentProjectVersion();
 
-            String defaultVersion = "1.0.0";
-            // get default release version
-            try {
-                final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
-                        currentVersion);
-                defaultVersion = versionInfo.getReleaseVersionString();
-            } catch (VersionParseException e) {
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug(e);
-                }
-            }
+			String defaultVersion = "1.0.0";
+			// get default release version
+			try {
+				final DefaultVersionInfo versionInfo = new DefaultVersionInfo(currentVersion);
+				defaultVersion = versionInfo.getReleaseVersionString();
+			}
+			catch (VersionParseException e) {
+				if (getLog().isDebugEnabled()) {
+					getLog().debug(e);
+				}
+			}
 
-            String version = null;
-            if (settings.isInteractiveMode()) {
-                try {
-                    version = prompter.prompt(
-                    		msg.getMessage(PromptMessages.release_branch_name_to_create_prompt, defaultVersion));
-                } catch (PrompterException e) {
-                    getLog().error(e);
-                }
-            }
+			String version = null;
+			if (settings.isInteractiveMode()) {
+				try {
+					version = prompter.prompt(msg.getMessage(PromptMessages.release_branch_name_to_create_prompt, defaultVersion));
+				}
+				catch (PrompterException e) {
+					getLog().error(e);
+				}
+			}
 
-            if (StringUtils.isBlank(version)) {
-                version = defaultVersion;
-            }
+			if (StringUtils.isBlank(version)) {
+				version = defaultVersion;
+			}
 
-            // git checkout -b release/... develop
-            gitCreateAndCheckout(gitFlowConfig.getReleaseBranchPrefix() + version,
-            		gitFlowConfig.getDevelopmentBranch());
+			// git checkout -b release/... develop
+			gitCreateAndCheckout(gitFlowConfig.getReleaseBranchPrefix() + version, gitFlowConfig.getDevelopmentBranch());
 
-            // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-            mvnSetVersions(version);
+			// mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
+			mvnSetVersions(version);
 
-            // git commit -a -m updating poms for release
-            gitCommit(msg.getMessage(CommitMessages.updating_pom_for_release_version, version));
+			// git commit -a -m updating poms for release
+			gitCommit(msg.getMessage(CommitMessages.updating_pom_for_release_version, version));
 
-            if (installProject) {
-                // mvn clean install
-                mvnCleanInstall();
-            }
-        } catch (CommandLineException e) {
-            getLog().error(e);
-        }
-    }
+			if (installProject) {
+				// mvn clean install
+				mvnCleanInstall();
+			}
+		}
+		catch (CommandLineException e) {
+			getLog().error(e);
+		}
+	}
 }
+
+/* EOF */

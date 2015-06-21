@@ -28,82 +28,83 @@ import com.zartc.maven.plugin.gitflow.i18n.CommitMessages;
 import com.zartc.maven.plugin.gitflow.i18n.ErrorMessages;
 import com.zartc.maven.plugin.gitflow.i18n.PromptMessages;
 
+
 /**
  * The git flow hotfix start mojo.
  *
  * @author Aleksandr Mashchenko
- *
  */
 @Mojo(name = "hotfix-start", aggregator = true)
 public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
-    /** {@inheritDoc} */
-    @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        try {
-            // set git flow configuration
-            initGitFlowConfig();
+	/** {@inheritDoc} */
+	@Override
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		try {
+			// set git flow configuration
+			initGitFlowConfig();
 
-            // check uncommitted changes
-            checkUncommittedChanges();
+			// check uncommitted changes
+			checkUncommittedChanges();
 
-            // need to be in master to get correct project version
-            // git checkout master
-            gitCheckout(gitFlowConfig.getProductionBranch());
+			// need to be in master to get correct project version
+			// git checkout master
+			gitCheckout(gitFlowConfig.getProductionBranch());
 
-            String defaultVersion = "1.0.1";
+			String defaultVersion = "1.0.1";
 
-            // get current project version from pom
-            final String currentVersion = getCurrentProjectVersion();
+			// get current project version from pom
+			final String currentVersion = getCurrentProjectVersion();
 
-            // get default hotfix version
-            try {
-                final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
-                        currentVersion);
-                defaultVersion = versionInfo.getNextVersion()
-                        .getReleaseVersionString();
-            } catch (VersionParseException e) {
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug(e);
-                }
-            }
+			// get default hotfix version
+			try {
+				final DefaultVersionInfo versionInfo = new DefaultVersionInfo(currentVersion);
+				defaultVersion = versionInfo.getNextVersion().getReleaseVersionString();
+			}
+			catch (VersionParseException e) {
+				if (getLog().isDebugEnabled()) {
+					getLog().debug(e);
+				}
+			}
 
-            String version = null;
-            try {
-                version = prompter.prompt(
-                		msg.getMessage(PromptMessages.hotfix_branch_name_to_create_prompt, defaultVersion));
-            } catch (PrompterException e) {
-                getLog().error(e);
-            }
+			String version = null;
+			try {
+				version = prompter.prompt(msg.getMessage(PromptMessages.hotfix_branch_name_to_create_prompt, defaultVersion));
+			}
+			catch (PrompterException e) {
+				getLog().error(e);
+			}
 
-            if (StringUtils.isBlank(version)) {
-                version = defaultVersion;
-            }
+			if (StringUtils.isBlank(version)) {
+				version = defaultVersion;
+			}
 
-            // git for-each-ref refs/heads/hotfix/...
-            String pattern = "refs/heads/" + gitFlowConfig.getHotfixBranchPrefix() + version;
+			// git for-each-ref refs/heads/hotfix/...
+			String pattern = "refs/heads/" + gitFlowConfig.getHotfixBranchPrefix() + version;
 			final String hotfixBranch = executeGitCommandReturn("for-each-ref", pattern);
 
-            if (StringUtils.isNotBlank(hotfixBranch)) {
-                throw new MojoFailureException(msg.getMessage(ErrorMessages.hotfix_branch_name_duplicate));
-            }
+			if (StringUtils.isNotBlank(hotfixBranch)) {
+				throw new MojoFailureException(msg.getMessage(ErrorMessages.hotfix_branch_name_duplicate));
+			}
 
-            // git checkout -b hotfix/... master
-            gitCreateAndCheckout(gitFlowConfig.getHotfixBranchPrefix()
-                    + version, gitFlowConfig.getProductionBranch());
+			// git checkout -b hotfix/... master
+			gitCreateAndCheckout(gitFlowConfig.getHotfixBranchPrefix() + version, gitFlowConfig.getProductionBranch());
 
-            // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-            mvnSetVersions(version);
+			// mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
+			mvnSetVersions(version);
 
-            // git commit -a -m updating poms for hotfix
-            gitCommit(msg.getMessage(CommitMessages.updating_pom_for_hotfix_version, version));
+			// git commit -a -m updating poms for hotfix
+			gitCommit(msg.getMessage(CommitMessages.updating_pom_for_hotfix_version, version));
 
-            if (installProject) {
-                // mvn clean install
-                mvnCleanInstall();
-            }
-        } catch (CommandLineException e) {
-            getLog().error(e);
-        }
-    }
+			if (installProject) {
+				// mvn clean install
+				mvnCleanInstall();
+			}
+		}
+		catch (CommandLineException e) {
+			getLog().error(e);
+		}
+	}
 }
+
+/* EOF */

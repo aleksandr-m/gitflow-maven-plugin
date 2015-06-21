@@ -22,3 +22,5 @@ public class ErrorMessagesVerificationTest {
 		assertEquals(0, errorList.size());
 	}
 }
+
+/* EOF */
