@@ -103,6 +103,14 @@
                     </execution>
                 </executions>
             </plugin>
+			<plugin>
+				<groupId>com.amashchenko.maven.plugin</groupId>
+				<artifactId>gitflow-maven-plugin</artifactId>
+				<version>${project.version}</version>
+				<configuration>
+					<skipFeatureVersion>true</skipFeatureVersion>
+				</configuration>
+			</plugin>
         </plugins>
     </build>
 
