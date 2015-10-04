@@ -128,8 +128,8 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
             mvnSetVersions(nextSnapshotVersion);
 
-            // git commit -a -m updating poms for ... release
-            gitCommit("updating poms for next development version");
+            // git commit -a -m updating for next development version
+            gitCommit("updating for next development version");
 
             if (installProject) {
                 // mvn clean install

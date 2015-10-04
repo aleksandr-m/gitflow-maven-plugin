@@ -43,9 +43,29 @@ import org.codehaus.plexus.util.cli.StreamConsumer;
  */
 public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
+    /** A full name of the versions-maven-plugin set goal. */
+    private static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:2.1:set";
+    /** Name of the tycho-versions-plugin set-version goal. */
+    private static final String TYCHO_VERSIONS_PLUGIN_SET_GOAL = "org.eclipse.tycho:tycho-versions-plugin:set-version";
+
+    /** System line separator. */
+    protected static final String LS = System.getProperty("line.separator");
+
+    /** String representing success exit code. */
+    private static final String SUCCESS_EXIT_CODE = "0";
+
+    /** Command line for Git executable. */
+    private final Commandline cmdGit = new Commandline();
+    /** Command line for Maven executable. */
+    private final Commandline cmdMvn = new Commandline();
+
     /** Git flow configuration. */
     @Parameter(defaultValue = "${gitFlowConfig}")
     protected GitFlowConfig gitFlowConfig;
+
+    /** Whether this is Tycho build. */
+    @Parameter(defaultValue = "false")
+    protected boolean tychoBuild;
 
     /** Whether to call Maven install goal during the mojo execution. */
     @Parameter(property = "installProject", defaultValue = "false")
@@ -68,14 +88,6 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(property = "gitExecutable")
     private String gitExecutable;
 
-    /** Command line for Git executable. */
-    private final Commandline cmdGit = new Commandline();
-    /** Command line for Maven executable. */
-    private final Commandline cmdMvn = new Commandline();
-
-    /** A full name of the versions-maven-plugin set goal. */
-    private static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:2.1:set";
-
     /** Maven project. */
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
@@ -85,12 +97,6 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** Maven settings. */
     @Parameter(defaultValue = "${settings}", readonly = true)
     protected Settings settings;
-
-    /** System line separator. */
-    protected static final String LS = System.getProperty("line.separator");
-
-    /** String representing success exit code. */
-    private static final String SUCCESS_EXIT_CODE = "0";
 
     /**
      * Initializes command line executables.
@@ -357,7 +363,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
-     * Executes 'set' goal of versions-maven-plugin.
+     * Executes 'set' goal of versions-maven-plugin or 'set-version' of
+     * tycho-versions-plugin in case it is tycho build.
      * 
      * @param version
      *            New version to set.
@@ -366,11 +373,15 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void mvnSetVersions(final String version)
             throws MojoFailureException, CommandLineException {
-        getLog().info(
-                "Updating pom(-s) version(s) to '" + version + "' version.");
+        getLog().info("Updating version(s) to '" + version + "'.");
 
-        executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, "-DnewVersion="
-                + version, "-DgenerateBackupPoms=false");
+        if (tychoBuild) {
+            executeMvnCommand(TYCHO_VERSIONS_PLUGIN_SET_GOAL, "-DnewVersion="
+                    + version, "-Dtycho.mode=maven");
+        } else {
+            executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, "-DnewVersion="
+                    + version, "-DgenerateBackupPoms=false");
+        }
     }
 
     /**

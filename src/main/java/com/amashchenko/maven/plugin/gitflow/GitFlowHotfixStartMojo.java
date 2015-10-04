@@ -47,11 +47,10 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             // git checkout master
             gitCheckout(gitFlowConfig.getProductionBranch());
 
-            String defaultVersion = "1.0.1";
-
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
 
+            String defaultVersion = null;
             // get default hotfix version
             try {
                 final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
@@ -62,6 +61,11 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                 if (getLog().isDebugEnabled()) {
                     getLog().debug(e);
                 }
+            }
+
+            if (defaultVersion == null) {
+                throw new MojoFailureException(
+                        "Cannot get default project version.");
             }
 
             String version = null;
@@ -90,11 +94,14 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             gitCreateAndCheckout(gitFlowConfig.getHotfixBranchPrefix()
                     + version, gitFlowConfig.getProductionBranch());
 
-            // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-            mvnSetVersions(version);
+            // execute if version changed
+            if (!version.equals(currentVersion)) {
+                // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
+                mvnSetVersions(version);
 
-            // git commit -a -m updating poms for hotfix
-            gitCommit("updating poms for hotfix");
+                // git commit -a -m updating versions for hotfix
+                gitCommit("updating versions for hotfix");
+            }
 
             if (installProject) {
                 // mvn clean install

@@ -80,7 +80,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             gitCreateAndCheckout(gitFlowConfig.getFeatureBranchPrefix()
                     + featureName, gitFlowConfig.getDevelopmentBranch());
 
-            if (!skipFeatureVersion) {
+            if (!skipFeatureVersion && !tychoBuild) {
                 // get current project version from pom
                 final String currentVersion = getCurrentProjectVersion();
 
@@ -101,8 +101,8 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                     // -DgenerateBackupPoms=false
                     mvnSetVersions(version);
 
-                    // git commit -a -m updating poms for feature branch
-                    gitCommit("updating poms for feature branch");
+                    // git commit -a -m updating versions for feature branch
+                    gitCommit("updating versions for feature branch");
                 }
             }
 

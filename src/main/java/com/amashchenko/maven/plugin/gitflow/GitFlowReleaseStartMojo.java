@@ -61,16 +61,25 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
 
-            String defaultVersion = "1.0.0";
-            // get default release version
-            try {
-                final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
-                        currentVersion);
-                defaultVersion = versionInfo.getReleaseVersionString();
-            } catch (VersionParseException e) {
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug(e);
+            String defaultVersion = null;
+            if (tychoBuild) {
+                defaultVersion = currentVersion;
+            } else {
+                // get default release version
+                try {
+                    final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
+                            currentVersion);
+                    defaultVersion = versionInfo.getReleaseVersionString();
+                } catch (VersionParseException e) {
+                    if (getLog().isDebugEnabled()) {
+                        getLog().debug(e);
+                    }
                 }
+            }
+
+            if (defaultVersion == null) {
+                throw new MojoFailureException(
+                        "Cannot get default project version.");
             }
 
             String version = null;
@@ -91,11 +100,14 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             gitCreateAndCheckout(gitFlowConfig.getReleaseBranchPrefix()
                     + version, gitFlowConfig.getDevelopmentBranch());
 
-            // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-            mvnSetVersions(version);
+            // execute if version changed
+            if (!version.equals(currentVersion)) {
+                // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
+                mvnSetVersions(version);
 
-            // git commit -a -m updating poms for release
-            gitCommit("updating poms for release");
+                // git commit -a -m updating versions for release
+                gitCommit("updating versions for release");
+            }
 
             if (installProject) {
                 // mvn clean install

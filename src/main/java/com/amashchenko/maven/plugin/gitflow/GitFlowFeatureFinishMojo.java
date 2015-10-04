@@ -117,8 +117,8 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(version);
 
-                // git commit -a -m updating poms for development branch
-                gitCommit("updating poms for development branch");
+                // git commit -a -m updating versions for development branch
+                gitCommit("updating versions for development branch");
             }
 
             if (installProject) {
