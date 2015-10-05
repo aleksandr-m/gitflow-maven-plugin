@@ -95,13 +95,13 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
             if (StringUtils.isBlank(hotfixBranchName)) {
                 throw new MojoFailureException(
-                        "Hotfix name to finish is blank.");
+                        "Hotfix branch name to finish is blank.");
             }
 
-            // git checkout hotfix/...
-            gitCheckout(hotfixBranchName);
-
             if (!skipTestProject) {
+                // git checkout hotfix/...
+                gitCheckout(hotfixBranchName);
+
                 // mvn clean test
                 mvnCleanTest();
             }

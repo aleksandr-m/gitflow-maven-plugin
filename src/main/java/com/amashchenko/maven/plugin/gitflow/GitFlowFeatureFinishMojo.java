@@ -90,10 +90,10 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                         "Feature branch name to finish is blank.");
             }
 
-            // git checkout feature/...
-            gitCheckout(featureBranchName);
-
             if (!skipTestProject) {
+                // git checkout feature/...
+                gitCheckout(featureBranchName);
+
                 // mvn clean test
                 mvnCleanTest();
             }
