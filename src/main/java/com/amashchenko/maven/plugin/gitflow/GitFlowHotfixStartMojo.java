@@ -15,6 +15,8 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -57,6 +59,10 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                         currentVersion);
                 defaultVersion = versionInfo.getNextVersion()
                         .getReleaseVersionString();
+
+                if (tychoBuild && ArtifactUtils.isSnapshot(currentVersion)) {
+                    defaultVersion += "-" + Artifact.SNAPSHOT_VERSION;
+                }
             } catch (VersionParseException e) {
                 if (getLog().isDebugEnabled()) {
                     getLog().debug(e);

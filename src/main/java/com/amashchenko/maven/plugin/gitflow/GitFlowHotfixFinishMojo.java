@@ -18,6 +18,8 @@ package com.amashchenko.maven.plugin.gitflow;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -111,10 +113,14 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             gitMergeNoff(hotfixBranchName);
 
             if (!skipTag) {
+                String tagVersion = getCurrentProjectVersion();
+                if (tychoBuild && ArtifactUtils.isSnapshot(tagVersion)) {
+                    tagVersion = tagVersion.replace("-"
+                            + Artifact.SNAPSHOT_VERSION, "");
+                }
+
                 // git tag -a ...
-                gitTag(gitFlowConfig.getVersionTagPrefix()
-                        + hotfixBranchName.replaceFirst(
-                                gitFlowConfig.getHotfixBranchPrefix(), ""),
+                gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
                         "tagging hotfix");
             }
 

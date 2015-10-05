@@ -15,6 +15,8 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -91,9 +93,18 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             gitMergeNoff(gitFlowConfig.getReleaseBranchPrefix()
                     + releaseVersion);
 
+            // get current project version from pom
+            final String currentVersion = getCurrentProjectVersion();
+
             if (!skipTag) {
+                String tagVersion = currentVersion;
+                if (tychoBuild && ArtifactUtils.isSnapshot(currentVersion)) {
+                    tagVersion = currentVersion.replace("-"
+                            + Artifact.SNAPSHOT_VERSION, "");
+                }
+
                 // git tag -a ...
-                gitTag(gitFlowConfig.getVersionTagPrefix() + releaseVersion,
+                gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
                         "tagging release");
             }
 
@@ -103,9 +114,6 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             // git merge --no-ff release/...
             gitMergeNoff(gitFlowConfig.getReleaseBranchPrefix()
                     + releaseVersion);
-
-            // get current project version from pom
-            final String currentVersion = getCurrentProjectVersion();
 
             String nextSnapshotVersion = null;
             // get next snapshot version
