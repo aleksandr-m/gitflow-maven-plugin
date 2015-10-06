@@ -55,7 +55,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                     .getFeatureBranchPrefix());
 
             if (StringUtils.isBlank(featureBranches)) {
-                throw new MojoFailureException("There is no feature branches.");
+                throw new MojoFailureException("There are no feature branches.");
             }
 
             final String[] branches = featureBranches.split("\\r?\\n");
