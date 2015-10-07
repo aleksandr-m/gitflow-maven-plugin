@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.0
+
+* Added support for Eclipse plugins build with Tycho
+* Skipped checking out unnecessary branch when `skipTestProject` is set to true
+* Improved error log
+
 ## v1.0.8
 
 * Fixed issue #3 - on *nix systems return values from `git for-each-ref` are wrapped in quotes

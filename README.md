@@ -19,7 +19,7 @@ The plugin is available from Maven central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.0.8</version>
+                <version>1.1.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -30,13 +30,27 @@ The plugin is available from Maven central.
 
 # Goals Overview
 
-- `gitflow:release-start` - Starts a release branch and updates pom(s) with release version.
-- `gitflow:release-finish` - Merges a release branch and updates pom(s) with next development version.
-- `gitflow:feature-start` - Starts a feature branch and updates pom(s) with feature name.
+- `gitflow:release-start` - Starts a release branch and updates version(s) to release version.
+- `gitflow:release-finish` - Merges a release branch and updates version(s) to next development version.
+- `gitflow:feature-start` - Starts a feature branch and optionally updates version(s).
 - `gitflow:feature-finish` - Merges a feature branch.
-- `gitflow:hotfix-start` - Starts a hotfix branch and updates pom(s) with hotfix version.
+- `gitflow:hotfix-start` - Starts a hotfix branch and updates version(s) to hotfix version.
 - `gitflow:hotfix-finish` - Merges a hotfix branch.
 - `gitflow:help` - Displays help information on plugin.
+
+
+# Eclipse Plugins build with Tycho
+
+Since version `1.1.0` this plugin supports Eclipse plugin projects which are build with [Tycho](https://eclipse.org/tycho/).
+To enable this feature put `<tychoBuild>true</tychoBuild>` into `<configuration>` section of this plugin in your pom.xml file.
+
+### Features of `tychoBuild` 
+
+The [`tycho-versions-plugin`](https://eclipse.org/tycho/sitedocs/tycho-release/tycho-versions-plugin/plugin-info.html) Maven plugin will be used to set versions instead of [`versions-maven-plugin`](http://www.mojohaus.org/versions-maven-plugin/).
+
+Feature name will not be appended to project version on `gitflow:feature-start` goal even if the `skipFeatureVersion` is set to `false`.
+
+If version has qualifier then it will not be removed in the release or hotfix goals.
 
 
 # Plugin Common Parameters
