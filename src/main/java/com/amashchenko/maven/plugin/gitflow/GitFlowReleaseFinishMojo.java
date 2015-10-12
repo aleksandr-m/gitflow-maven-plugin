@@ -55,32 +55,20 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             checkUncommittedChanges();
 
             // git for-each-ref --format='%(refname:short)' refs/heads/release/*
-            final String releaseBranches = gitFindBranches(gitFlowConfig
-                    .getReleaseBranchPrefix());
+            final String releaseBranch = gitFindBranches(
+                    gitFlowConfig.getReleaseBranchPrefix()).trim();
 
-            String releaseVersion = null;
-
-            if (StringUtils.isBlank(releaseBranches)) {
+            if (StringUtils.isBlank(releaseBranch)) {
                 throw new MojoFailureException("There is no release branch.");
-            } else if (StringUtils.countMatches(releaseBranches,
+            } else if (StringUtils.countMatches(releaseBranch,
                     gitFlowConfig.getReleaseBranchPrefix()) > 1) {
                 throw new MojoFailureException(
                         "More than one release branch exists. Cannot finish release.");
-            } else {
-                releaseVersion = releaseBranches.trim().substring(
-                        releaseBranches.lastIndexOf(gitFlowConfig
-                                .getReleaseBranchPrefix())
-                                + gitFlowConfig.getReleaseBranchPrefix()
-                                        .length());
-            }
-
-            if (StringUtils.isBlank(releaseVersion)) {
-                throw new MojoFailureException("Release version is blank.");
             }
 
             if (!skipTestProject) {
                 // git checkout release/...
-                gitCheckout(releaseBranches.trim());
+                gitCheckout(releaseBranch);
 
                 // mvn clean test
                 mvnCleanTest();
@@ -90,8 +78,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             gitCheckout(gitFlowConfig.getProductionBranch());
 
             // git merge --no-ff release/...
-            gitMergeNoff(gitFlowConfig.getReleaseBranchPrefix()
-                    + releaseVersion);
+            gitMergeNoff(releaseBranch);
 
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
@@ -112,8 +99,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
             // git merge --no-ff release/...
-            gitMergeNoff(gitFlowConfig.getReleaseBranchPrefix()
-                    + releaseVersion);
+            gitMergeNoff(releaseBranch);
 
             String nextSnapshotVersion = null;
             // get next snapshot version
@@ -146,8 +132,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
             if (!keepBranch) {
                 // git branch -d release/...
-                gitBranchDelete(gitFlowConfig.getReleaseBranchPrefix()
-                        + releaseVersion);
+                gitBranchDelete(releaseBranch);
             }
         } catch (CommandLineException e) {
             getLog().error(e);
