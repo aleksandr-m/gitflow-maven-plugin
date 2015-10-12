@@ -234,8 +234,12 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    private void gitSetConfig(final String name, final String value)
+    private void gitSetConfig(final String name, String value)
             throws MojoFailureException, CommandLineException {
+        if (value == null || value.isEmpty()) {
+            value = "\"\"";
+        }
+
         // ignore error exit codes
         executeGitCommandExitCode("config", name, value);
     }
