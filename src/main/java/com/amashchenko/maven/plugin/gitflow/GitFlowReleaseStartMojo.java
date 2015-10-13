@@ -18,6 +18,7 @@ package com.amashchenko.maven.plugin.gitflow;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.components.interactivity.PrompterException;
@@ -32,6 +33,19 @@ import org.codehaus.plexus.util.cli.CommandLineException;
  */
 @Mojo(name = "release-start", aggregator = true)
 public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
+
+    /**
+     * Whether to use the same name of the release branch for every release.
+     * Default is <code>false</code>, i.e. project version will be added to
+     * release branch prefix. <br/>
+     * <br/>
+     * 
+     * Note: By itself the default releaseBranchPrefix is not a valid branch
+     * name. You must change it when setting sameBranchName to <code>true</code>
+     * .
+     */
+    @Parameter(property = "sameBranchName", defaultValue = "false")
+    private boolean sameBranchName = false;
 
     /** {@inheritDoc} */
     @Override
@@ -96,9 +110,14 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 version = defaultVersion;
             }
 
+            String branchName = gitFlowConfig.getReleaseBranchPrefix();
+            if (!sameBranchName) {
+                branchName += version;
+            }
+
             // git checkout -b release/... develop
-            gitCreateAndCheckout(gitFlowConfig.getReleaseBranchPrefix()
-                    + version, gitFlowConfig.getDevelopmentBranch());
+            gitCreateAndCheckout(branchName,
+                    gitFlowConfig.getDevelopmentBranch());
 
             // execute if version changed
             if (!version.equals(currentVersion)) {
