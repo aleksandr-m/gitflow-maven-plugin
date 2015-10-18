@@ -249,15 +249,25 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * 
      * @param branchName
      *            Branch name to find.
+     * @param firstMatch
+     *            Return first match.
      * @return Branch names which matches <code>refs/heads/{branchName}*</code>.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected String gitFindBranches(final String branchName)
-            throws MojoFailureException, CommandLineException {
-        String branches = executeGitCommandReturn("for-each-ref",
-                "--format=\"%(refname:short)\"", "refs/heads/" + branchName
-                        + "*");
+    protected String gitFindBranches(final String branchName,
+            final boolean firstMatch) throws MojoFailureException,
+            CommandLineException {
+        String branches;
+        if (firstMatch) {
+            branches = executeGitCommandReturn("for-each-ref", "--count=1",
+                    "--format=\"%(refname:short)\"", "refs/heads/" + branchName
+                            + "*");
+        } else {
+            branches = executeGitCommandReturn("for-each-ref",
+                    "--format=\"%(refname:short)\"", "refs/heads/" + branchName
+                            + "*");
+        }
 
         // on *nix systems return values from git for-each-ref are wrapped in
         // quotes
@@ -267,6 +277,12 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
 
         return branches;
+    }
+
+    protected String gitFindBranch(final String branchName)
+            throws MojoFailureException, CommandLineException {
+        return executeGitCommandReturn("for-each-ref", "refs/heads/"
+                + branchName);
     }
 
     /**
@@ -423,7 +439,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws CommandLineException
      * @throws MojoFailureException
      */
-    protected String executeGitCommandReturn(final String... args)
+    private String executeGitCommandReturn(final String... args)
             throws CommandLineException, MojoFailureException {
         return executeCommand(cmdGit, true, false, args);
     }

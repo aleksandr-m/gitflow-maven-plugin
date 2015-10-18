@@ -66,10 +66,8 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             featureName = StringUtils.deleteWhitespace(featureName);
 
             // git for-each-ref refs/heads/feature/...
-            final String featureBranch = executeGitCommandReturn(
-                    "for-each-ref",
-                    "refs/heads/" + gitFlowConfig.getFeatureBranchPrefix()
-                            + featureName);
+            final String featureBranch = gitFindBranch(gitFlowConfig
+                    .getFeatureBranchPrefix() + featureName);
 
             if (StringUtils.isNotBlank(featureBranch)) {
                 throw new MojoFailureException(

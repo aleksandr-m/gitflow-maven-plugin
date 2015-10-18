@@ -56,7 +56,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
             // git for-each-ref --format='%(refname:short)' refs/heads/release/*
             final String releaseBranch = gitFindBranches(
-                    gitFlowConfig.getReleaseBranchPrefix()).trim();
+                    gitFlowConfig.getReleaseBranchPrefix(), false).trim();
 
             if (StringUtils.isBlank(releaseBranch)) {
                 throw new MojoFailureException("There is no release branch.");

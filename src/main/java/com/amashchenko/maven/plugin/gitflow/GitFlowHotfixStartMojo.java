@@ -87,9 +87,8 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             }
 
             // git for-each-ref refs/heads/hotfix/...
-            final String hotfixBranch = executeGitCommandReturn("for-each-ref",
-                    "refs/heads/" + gitFlowConfig.getHotfixBranchPrefix()
-                            + version);
+            final String hotfixBranch = gitFindBranch(gitFlowConfig
+                    .getHotfixBranchPrefix() + version);
 
             if (StringUtils.isNotBlank(hotfixBranch)) {
                 throw new MojoFailureException(

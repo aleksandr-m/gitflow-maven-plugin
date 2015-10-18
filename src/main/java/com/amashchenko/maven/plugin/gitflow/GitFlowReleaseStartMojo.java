@@ -58,10 +58,8 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             checkUncommittedChanges();
 
             // git for-each-ref --count=1 refs/heads/release/*
-            final String releaseBranch = executeGitCommandReturn(
-                    "for-each-ref", "--count=1",
-                    "refs/heads/" + gitFlowConfig.getReleaseBranchPrefix()
-                            + "*");
+            final String releaseBranch = gitFindBranches(
+                    gitFlowConfig.getReleaseBranchPrefix(), true);
 
             if (StringUtils.isNotBlank(releaseBranch)) {
                 throw new MojoFailureException(

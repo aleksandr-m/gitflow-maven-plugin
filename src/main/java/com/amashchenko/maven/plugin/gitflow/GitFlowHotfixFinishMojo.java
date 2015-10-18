@@ -59,8 +59,8 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             checkUncommittedChanges();
 
             // git for-each-ref --format='%(refname:short)' refs/heads/hotfix/*
-            final String hotfixBranches = gitFindBranches(gitFlowConfig
-                    .getHotfixBranchPrefix());
+            final String hotfixBranches = gitFindBranches(
+                    gitFlowConfig.getHotfixBranchPrefix(), false);
 
             if (StringUtils.isBlank(hotfixBranches)) {
                 throw new MojoFailureException("There is no hotfix branches.");
@@ -127,10 +127,8 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             // check whether release branch exists
             // git for-each-ref --count=1 --format="%(refname:short)"
             // refs/heads/release/*
-            final String releaseBranch = executeGitCommandReturn(
-                    "for-each-ref", "--count=1",
-                    "--format=\"%(refname:short)\"", "refs/heads/"
-                            + gitFlowConfig.getReleaseBranchPrefix() + "*");
+            final String releaseBranch = gitFindBranches(
+                    gitFlowConfig.getReleaseBranchPrefix(), true);
 
             // if release branch exists merge hotfix changes into it
             if (StringUtils.isNotBlank(releaseBranch)) {
