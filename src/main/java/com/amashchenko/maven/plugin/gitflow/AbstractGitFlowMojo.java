@@ -51,8 +51,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** System line separator. */
     protected static final String LS = System.getProperty("line.separator");
 
-    /** String representing success exit code. */
-    private static final String SUCCESS_EXIT_CODE = "0";
+    /** Success exit code. */
+    private static final int SUCCESS_EXIT_CODE = 0;
 
     /** Command line for Git executable. */
     private final Commandline cmdGit = new Commandline();
@@ -173,27 +173,35 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws CommandLineException
      * @throws MojoFailureException
      */
-    protected boolean executeGitHasUncommitted() throws MojoFailureException,
+    private boolean executeGitHasUncommitted() throws MojoFailureException,
             CommandLineException {
         boolean uncommited = false;
 
         // 1 if there were differences and 0 means no differences
 
         // git diff --no-ext-diff --ignore-submodules --quiet --exit-code
-        final String diffExitCode = executeGitCommandExitCode("diff",
-                "--no-ext-diff", "--ignore-submodules", "--quiet",
+        final CommandResult diffCommandResult = executeGitCommandExitCode(
+                "diff", "--no-ext-diff", "--ignore-submodules", "--quiet",
                 "--exit-code");
 
-        if (SUCCESS_EXIT_CODE.equals(diffExitCode)) {
+        String error = null;
+
+        if (diffCommandResult.getExitCode() == SUCCESS_EXIT_CODE) {
             // git diff-index --cached --quiet --ignore-submodules HEAD --
-            final String diffIndexExitCode = executeGitCommandExitCode(
+            final CommandResult diffIndexCommandResult = executeGitCommandExitCode(
                     "diff-index", "--cached", "--quiet", "--ignore-submodules",
                     "HEAD", "--");
-            if (!SUCCESS_EXIT_CODE.equals(diffIndexExitCode)) {
+            if (diffIndexCommandResult.getExitCode() != SUCCESS_EXIT_CODE) {
+                error = diffIndexCommandResult.getError();
                 uncommited = true;
             }
         } else {
+            error = diffCommandResult.getError();
             uncommited = true;
+        }
+
+        if (StringUtils.isNotBlank(error)) {
+            throw new MojoFailureException(error);
         }
 
         return uncommited;
@@ -441,21 +449,21 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private String executeGitCommandReturn(final String... args)
             throws CommandLineException, MojoFailureException {
-        return executeCommand(cmdGit, true, false, args);
+        return executeCommand(cmdGit, true, args).getOut();
     }
 
     /**
-     * Executes Git command and returns exit code.
+     * Executes Git command without failing on non successfull exit code.
      * 
      * @param args
      *            Git command line arguments.
-     * @return Command output.
+     * @return Command result.
      * @throws CommandLineException
      * @throws MojoFailureException
      */
-    private String executeGitCommandExitCode(final String... args)
+    private CommandResult executeGitCommandExitCode(final String... args)
             throws CommandLineException, MojoFailureException {
-        return executeCommand(cmdGit, true, true, args);
+        return executeCommand(cmdGit, false, args);
     }
 
     /**
@@ -468,7 +476,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private void executeGitCommand(final String... args)
             throws CommandLineException, MojoFailureException {
-        executeCommand(cmdGit, false, false, args);
+        executeCommand(cmdGit, true, args);
     }
 
     /**
@@ -481,7 +489,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private void executeMvnCommand(final String... args)
             throws CommandLineException, MojoFailureException {
-        executeCommand(cmdMvn, false, false, args);
+        executeCommand(cmdMvn, true, args);
     }
 
     /**
@@ -489,28 +497,20 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * 
      * @param cmd
      *            Command line.
-     * @param returnOut
-     *            Whether to return output. When <code>true</code> the output
-     *            will not be printed into the console and will be returned from
-     *            this method.
-     * @param returnExitCode
-     *            If <code>true</code> the exit code of the command will be
-     *            returned, if <code>false</code> the output of the command will
-     *            be returned. Will not have effect if the
-     *            <code>returnOut</code> parameter is set to <code>false</code>.
+     * @param failOnError
+     *            Whether to throw exception on NOT success exit code.
      * @param args
      *            Command line arguments.
-     * @return Output of the command or exit code or empty String depending on
-     *         the parameters values.
+     * @return {@link CommandResult} instance holding command exit code, output
+     *         and error if any.
      * @throws CommandLineException
      * @throws MojoFailureException
-     *             If <code>returnExitCode</code> is <code>false</code> and
-     *             command exit code is NOT equals to 0.
+     *             If <code>failOnError</code> is <code>true</code> and command
+     *             exit code is NOT equals to 0.
      */
-    private String executeCommand(final Commandline cmd,
-            final boolean returnOut, final boolean returnExitCode,
-            final String... args) throws CommandLineException,
-            MojoFailureException {
+    private CommandResult executeCommand(final Commandline cmd,
+            final boolean failOnError, final String... args)
+            throws CommandLineException, MojoFailureException {
         // initialize executables
         initExecutables();
 
@@ -523,12 +523,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         cmd.addArguments(args);
 
         final StreamConsumer out;
-        if (returnOut) {
-            out = new CommandLineUtils.StringStreamConsumer();
-        } else if (verbose) {
+        if (verbose) {
             out = new DefaultConsumer();
         } else {
-            // because on error not all commands print to error stream
             out = new CommandLineUtils.StringStreamConsumer();
         }
 
@@ -537,26 +534,55 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         // execute
         final int exitCode = CommandLineUtils.executeCommandLine(cmd, out, err);
 
-        // throw error on NOT 0 exit code only if returnExitCode is false
-        if (!returnExitCode && exitCode != 0) {
-            String errStr = err.getOutput();
-
-            if (StringUtils.isBlank(errStr)
-                    && out instanceof StringStreamConsumer) {
-                errStr = ((StringStreamConsumer) out).getOutput();
-            }
-
-            throw new MojoFailureException(errStr);
+        String errorStr = err.getOutput();
+        String outStr = "";
+        if (out instanceof StringStreamConsumer) {
+            outStr = ((StringStreamConsumer) out).getOutput();
         }
 
-        String ret = "";
-        if (returnOut) {
-            if (returnExitCode) {
-                ret = String.valueOf(exitCode);
-            } else if (out instanceof StringStreamConsumer) {
-                ret = ((StringStreamConsumer) out).getOutput();
+        if (failOnError && exitCode != SUCCESS_EXIT_CODE) {
+            // not all commands print errors to error stream
+            if (StringUtils.isBlank(errorStr) && StringUtils.isNotBlank(outStr)) {
+                errorStr = outStr;
             }
+
+            throw new MojoFailureException(errorStr);
         }
-        return ret;
+
+        return new CommandResult(exitCode, outStr, errorStr);
+    }
+
+    private static class CommandResult {
+        private final int exitCode;
+        private final String out;
+        private final String error;
+
+        private CommandResult(final int exitCode, final String out,
+                final String error) {
+            this.exitCode = exitCode;
+            this.out = out;
+            this.error = error;
+        }
+
+        /**
+         * @return the exitCode
+         */
+        public int getExitCode() {
+            return exitCode;
+        }
+
+        /**
+         * @return the out
+         */
+        public String getOut() {
+            return out;
+        }
+
+        /**
+         * @return the error
+         */
+        public String getError() {
+            return error;
+        }
     }
 }
