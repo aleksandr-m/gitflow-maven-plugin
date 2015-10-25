@@ -421,8 +421,11 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected void mvnCleanTest() throws MojoFailureException,
             CommandLineException {
         getLog().info("Cleaning and testing the project.");
-
-        executeMvnCommand("clean", "test");
+        if (tychoBuild) {
+            executeMvnCommand("clean", "verify");
+        } else {
+            executeMvnCommand("clean", "test");
+        }
     }
 
     /**
@@ -453,7 +456,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
-     * Executes Git command without failing on non successfull exit code.
+     * Executes Git command without failing on non successful exit code.
      * 
      * @param args
      *            Git command line arguments.
