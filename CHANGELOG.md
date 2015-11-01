@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.2.0
+
+* Added `release` goal for creating releases w/o separate release branch
+* Added `sameBranchName` parameter which allows to use the same name for the release branch (see [#5](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/5))
+* Fixed [#7](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/7) - Correctly set empty value to Git configuration
+* Improved commands execution
+
 ## v1.1.0
 
 * Added support for Eclipse plugins build with Tycho
@@ -8,7 +15,7 @@
 
 ## v1.0.8
 
-* Fixed issue #3 - on *nix systems return values from `git for-each-ref` are wrapped in quotes
+* Fixed issue [#3](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3) - on *nix systems return values from `git for-each-ref` are wrapped in quotes
 * Added null check on getting current project version
 * Small code improvements
 
@@ -38,7 +45,7 @@
 ## v1.0.1-alpha3
 
 * Added `keepBranch` parameter
-* Fixed issue #1 - using commands to check for uncommitted changes
+* Fixed issue [#1](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/1) - using commands to check for uncommitted changes
 
 ## v1.0.1-alpha2
 

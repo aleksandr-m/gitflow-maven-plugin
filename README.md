@@ -19,7 +19,7 @@ The plugin is available from Maven central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.1.0</version>
+                <version>1.2.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -32,6 +32,7 @@ The plugin is available from Maven central.
 
 - `gitflow:release-start` - Starts a release branch and updates version(s) to release version.
 - `gitflow:release-finish` - Merges a release branch and updates version(s) to next development version.
+- `gitflow:release` - Releases project w/o creating a release branch.
 - `gitflow:feature-start` - Starts a feature branch and optionally updates version(s).
 - `gitflow:feature-finish` - Merges a feature branch.
 - `gitflow:hotfix-start` - Starts a hotfix branch and updates version(s) to hotfix version.
@@ -80,7 +81,7 @@ Since `1.0.7` version of this plugin the output of the executed commands will NO
 
 ## Additional goal parameters
 
-The `gitflow:release-finish` and `gitflow:hotfix-finish` goals have `skipTag` parameter. This parameter controls whether the release/hotfix will be tagged in Git.
+The `gitflow:release-finish`, `gitflow:release` and `gitflow:hotfix-finish` goals have `skipTag` parameter. This parameter controls whether the release/hotfix will be tagged in Git.
 The default value is `false` (i.e. the release/hotfix will be tagged).
 
 The `gitflow:feature-start` goal has `skipFeatureVersion` parameter which controls whether the feature name will be appended to the project version or not.
@@ -89,7 +90,7 @@ The default value is `false` (e.g. if the project version is `1.0.0-SNAPSHOT` an
 All `-finish` goals have `keepBranch` parameter which controls whether created support branch will be kept in Git after the goal finishes.
 The default value is `false` (i.e. the supporting branch will be deleted).
 
-All `-finish` goals have `skipTestProject` parameter which controls whether Maven `test` goal will be called before merging branches.
+All `-finish` goals and `gitflow:release` have `skipTestProject` parameter which controls whether Maven `test` goal will be called before merging branches.
 The default value is `false` (i.e. the project will be tested before merging branches).
 
 # Non-interactive Release
@@ -100,5 +101,9 @@ When `gitflow:release-start` is executed in the Maven batch mode the default rel
 To put Maven in the batch mode use `-B` or `--batch-mode` option.
 
     mvn -B gitflow:release-start gitflow:release-finish
+    
+To release w/o creating separate release branch use `gitflow:release` goal.
+
+    mvn -B gitflow:release
 
 This gives the ability to perform releases in non-interactive mode (e.g. in CI server).
