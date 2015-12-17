@@ -63,6 +63,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(defaultValue = "${gitFlowConfig}")
     protected GitFlowConfig gitFlowConfig;
 
+    /** Git commit messages. */
+    @Parameter(defaultValue = "${commitMessages}")
+    protected CommitMessages commitMessages;
+
     /** Whether this is Tycho build. */
     @Parameter(defaultValue = "false")
     protected boolean tychoBuild;

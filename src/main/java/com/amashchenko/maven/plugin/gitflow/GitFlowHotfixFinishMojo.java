@@ -121,7 +121,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
-                        "tagging hotfix");
+                        commitMessages.getTagHotfixMessage());
             }
 
             // check whether release branch exists
@@ -168,7 +168,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 mvnSetVersions(nextSnapshotVersion);
 
                 // git commit -a -m updating for next development version
-                gitCommit("updating for next development version");
+                gitCommit(commitMessages.getHotfixFinishMessage());
             }
 
             if (installProject) {

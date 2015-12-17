@@ -118,7 +118,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 mvnSetVersions(version);
 
                 // git commit -a -m updating versions for development branch
-                gitCommit("updating versions for development branch");
+                gitCommit(commitMessages.getFeatureFinishMessage());
             }
 
             if (installProject) {

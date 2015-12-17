@@ -123,7 +123,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 mvnSetVersions(version);
 
                 // git commit -a -m updating versions for release
-                gitCommit("updating versions for release");
+                gitCommit(commitMessages.getReleaseStartMessage());
             }
 
             if (installProject) {

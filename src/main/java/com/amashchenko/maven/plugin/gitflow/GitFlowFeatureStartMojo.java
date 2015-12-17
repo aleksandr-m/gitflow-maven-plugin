@@ -100,7 +100,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                     mvnSetVersions(version);
 
                     // git commit -a -m updating versions for feature branch
-                    gitCommit("updating versions for feature branch");
+                    gitCommit(commitMessages.getFeatureStartMessage());
                 }
             }
 

@@ -92,7 +92,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
-                        "tagging release");
+                        commitMessages.getTagReleaseMessage());
             }
 
             // git checkout develop
@@ -123,7 +123,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             mvnSetVersions(nextSnapshotVersion);
 
             // git commit -a -m updating for next development version
-            gitCommit("updating for next development version");
+            gitCommit(commitMessages.getReleaseFinishMessage());
 
             if (installProject) {
                 // mvn clean install
