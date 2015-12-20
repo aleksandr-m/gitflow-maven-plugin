@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="Git-Flow Maven Plugin">
+    <bannerLeft>
+        <name>Git-Flow Maven Plugin</name>
+    </bannerLeft>
+
+    <googleAnalyticsAccountId>UA-65158625-2</googleAnalyticsAccountId>
+
+    <publishDate position="right"/>
+    <version position="right"/>
 
     <skin>
         <groupId>org.apache.maven.skins</groupId>
         <artifactId>maven-fluido-skin</artifactId>
         <version>1.4</version>
     </skin>
-
-    <bannerLeft>
-        <name>Git-Flow Maven Plugin</name>
-    </bannerLeft>
-
-    <publishDate position="right"/>
-    <version position="right"/>
 
     <custom>
        <fluidoSkin>
@@ -28,7 +29,6 @@
     </custom>
 
     <body>
-
         <breadcrumbs>
             <item name="Git-Flow Maven Plugin" href="./index.html"/>
         </breadcrumbs>
@@ -39,7 +39,6 @@
         </menu>
 
         <menu ref="reports"/>
-
     </body>
 
 </project>
