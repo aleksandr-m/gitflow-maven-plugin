@@ -6,6 +6,8 @@
 
   This plugin runs Git and Maven commands from the command line ensuring that all Git features work properly.
 
+  Supports Eclipse Plugin projects build with [Tycho](https://eclipse.org/tycho/).
+
 # Usage
 
   If you feel like the plugin is missing a feature or has a defect, create a [new issue](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/new) or submit a [Pull Request](https://github.com/aleksandr-m/gitflow-maven-plugin/pulls).

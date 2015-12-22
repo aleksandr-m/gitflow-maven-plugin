@@ -19,7 +19,7 @@ The plugin is available from Maven central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.2.0</version>
+                <version>1.2.1</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -77,7 +77,36 @@ Since `1.0.7` version of this plugin the output of the executed commands will NO
             <supportBranchPrefix>support/</supportBranchPrefix>
             <versionTagPrefix></versionTagPrefix>
         </gitFlowConfig>
+
+        <commitMessages>
+            <!-- since 1.2.1, see Customizing commit messages -->
+        </commitMessages>
     </configuration>
+
+## Customizing commit messages
+
+Since `1.2.1` commit messages can be changed in plugin's configuration section in pom.xml. Commit messages defaults are seen below.
+
+    <configuration>
+        <commitMessages>
+            <featureStartMessage>updating versions for feature branch</featureStartMessage>
+            <featureFinishMessage>updating versions for development branch</featureFinishMessage>
+            
+            <hotfixStartMessage>updating versions for hotfix</hotfixStartMessage>
+            <hotfixFinishMessage>updating for next development version</hotfixFinishMessage>
+            
+            <releaseStartMessage>updating versions for release</releaseStartMessage>
+            <releaseFinishMessage>updating for next development version</releaseFinishMessage>
+            
+            <tagHotfixMessage>tagging hotfix</tagHotfixMessage>
+            <tagReleaseMessage>tagging release</tagReleaseMessage>
+        </commitMessages>
+    </configuration>
+
+Maven properties can be used in commit messages. For example `<featureStartMessage>updating ${artifactId} project for feature branch</featureStartMessage>` will produce message where 
+`${artifactId}` will be substituted for projects `<artifactId>`.
+
+Note that although `${project.version}` can be used any changes to version introduced by this goal won't be reflected in a commit message for this goal.
 
 ## Additional goal parameters
 

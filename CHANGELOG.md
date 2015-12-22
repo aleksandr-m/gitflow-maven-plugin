@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.1
+
+* Added `commitMessages` configuration which allows to customize commit messages (see [#8](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/8))
+* Added maven site
+
 ## v1.2.0
 
 * Added `release` goal for creating releases w/o separate release branch
