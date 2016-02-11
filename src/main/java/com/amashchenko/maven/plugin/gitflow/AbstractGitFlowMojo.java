@@ -16,7 +16,10 @@
 package com.amashchenko.maven.plugin.gitflow;
 
 import java.io.FileReader;
+import java.util.List;
 
+import org.apache.maven.artifact.ArtifactUtils;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.AbstractMojo;
@@ -75,6 +78,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(property = "installProject", defaultValue = "false")
     protected boolean installProject = false;
 
+    /** Whether to allow SNAPSHOT versions in dependencies. */
+    @Parameter(property = "allowSnapshots", defaultValue = "false")
+    protected boolean allowSnapshots = false;
+    
     /** Whether to print commands output into the console. */
     @Parameter(property = "verbose", defaultValue = "false")
     private boolean verbose = false;
@@ -169,6 +176,18 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    protected void checkSnapshotDependencies() throws MojoFailureException {
+        getLog().info("Checking for SNAPSHOT versions in dependencies.");
+        List<Dependency> list = project.getDependencies();
+        for (Dependency d : list) {
+            if (ArtifactUtils.isSnapshot(d.getVersion())) {
+                throw new MojoFailureException(
+                                "There is some SNAPSHOT dependencies in the project. Change them or ignore with `allowSnapshots` property.");
+            }
+        }
+    }
+    
     /**
      * Executes git commands to check for uncommitted changes.
      * 

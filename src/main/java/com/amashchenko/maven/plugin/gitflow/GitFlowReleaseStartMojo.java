@@ -56,6 +56,11 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             // check uncommitted changes
             checkUncommittedChanges();
+            
+            // check snapshots dependencies
+            if (!allowSnapshots) {
+                checkSnapshotDependencies();
+            }
 
             // git for-each-ref --count=1 refs/heads/release/*
             final String releaseBranch = gitFindBranches(
