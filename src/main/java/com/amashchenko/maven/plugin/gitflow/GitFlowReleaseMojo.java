@@ -31,7 +31,7 @@ import org.codehaus.plexus.util.cli.CommandLineException;
  * The git flow release mojo.
  * 
  * @author Aleksandr Mashchenko
- * 
+ * @since 1.2.0
  */
 @Mojo(name = "release", aggregator = true)
 public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
@@ -40,7 +40,11 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipTag", defaultValue = "false")
     private boolean skipTag = false;
 
-    /** Whether to skip calling Maven test goal before releasing. */
+    /**
+     * Whether to skip calling Maven test goal before releasing.
+     * 
+     * @since 1.0.5
+     */
     @Parameter(property = "skipTestProject", defaultValue = "false")
     private boolean skipTestProject = false;
 

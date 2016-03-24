@@ -66,23 +66,43 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(defaultValue = "${gitFlowConfig}")
     protected GitFlowConfig gitFlowConfig;
 
-    /** Git commit messages. */
+    /**
+     * Git commit messages.
+     * 
+     * @since 1.2.1
+     */
     @Parameter(defaultValue = "${commitMessages}")
     protected CommitMessages commitMessages;
 
-    /** Whether this is Tycho build. */
+    /**
+     * Whether this is Tycho build.
+     * 
+     * @since 1.1.0
+     */
     @Parameter(defaultValue = "false")
     protected boolean tychoBuild;
 
-    /** Whether to call Maven install goal during the mojo execution. */
+    /**
+     * Whether to call Maven install goal during the mojo execution.
+     * 
+     * @since 1.0.5
+     */
     @Parameter(property = "installProject", defaultValue = "false")
     protected boolean installProject = false;
 
-    /** Whether to allow SNAPSHOT versions in dependencies. */
+    /**
+     * Whether to allow SNAPSHOT versions in dependencies.
+     * 
+     * @since 1.2.2
+     */
     @Parameter(property = "allowSnapshots", defaultValue = "false")
     protected boolean allowSnapshots = false;
-    
-    /** Whether to print commands output into the console. */
+
+    /**
+     * Whether to print commands output into the console.
+     * 
+     * @since 1.0.7
+     */
     @Parameter(property = "verbose", defaultValue = "false")
     private boolean verbose = false;
 

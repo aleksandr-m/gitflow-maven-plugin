@@ -38,6 +38,8 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
     /**
      * Whether to skip changing project version. Default is <code>false</code>
      * (the feature name will be appended to project version).
+     * 
+     * @since 1.0.5
      */
     @Parameter(property = "skipFeatureVersion", defaultValue = "false")
     private boolean skipFeatureVersion = false;

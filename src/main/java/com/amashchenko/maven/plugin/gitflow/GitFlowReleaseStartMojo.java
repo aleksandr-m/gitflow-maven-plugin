@@ -43,6 +43,8 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
      * Note: By itself the default releaseBranchPrefix is not a valid branch
      * name. You must change it when setting sameBranchName to <code>true</code>
      * .
+     * 
+     * @since 1.2.0
      */
     @Parameter(property = "sameBranchName", defaultValue = "false")
     private boolean sameBranchName = false;

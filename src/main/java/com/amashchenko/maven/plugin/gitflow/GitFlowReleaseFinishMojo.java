@@ -43,7 +43,11 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "keepBranch", defaultValue = "false")
     private boolean keepBranch = false;
 
-    /** Whether to skip calling Maven test goal before merging the branch. */
+    /**
+     * Whether to skip calling Maven test goal before merging the branch.
+     * 
+     * @since 1.0.5
+     */
     @Parameter(property = "skipTestProject", defaultValue = "false")
     private boolean skipTestProject = false;
 
