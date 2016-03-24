@@ -21,7 +21,7 @@
     <artifactId>gitflow-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <name>gitflow-maven-plugin</name>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.2</version>
 
     <description>Git-Flow Maven Plugin, which runs Git and Maven commands from the command line. Supports Eclipse Plugins build with Tycho.</description>
  

@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.2
+
+* Added `allowSnapshots` parameter to allow SNAPSHOT dependencies on releasing (see [#10](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/10))
+* Dependencies versions updated
+
 ## v1.2.1
 
 * Added `commitMessages` configuration which allows to customize commit messages (see [#8](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/8))

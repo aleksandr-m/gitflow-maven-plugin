@@ -19,7 +19,7 @@ The plugin is available from Maven central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.2.1</version>
+                <version>1.2.2</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -121,6 +121,8 @@ The default value is `false` (i.e. the supporting branch will be deleted).
 
 All `-finish` goals and `gitflow:release` have `skipTestProject` parameter which controls whether Maven `test` goal will be called before merging branches.
 The default value is `false` (i.e. the project will be tested before merging branches).
+
+All `release` goals have `allowSnapshots` parameter which controls whether SNAPSHOT dependencies are allowed. The default value is `false` (i.e. build fails if there SNAPSHOT dependency in project).
 
 # Non-interactive Release
 
