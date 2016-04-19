@@ -432,6 +432,17 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
         executeGitCommand("branch", "-d", branchName);
     }
+    
+    /**
+     * Execute git push --follow-tags.
+     * 
+     * @param tagName Tag name to be pushed in repository
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitPushTag(final String tagName) throws MojoFailureException, CommandLineException {
+        executeGitCommand("push", "--follow-tags");
+    }
 
     /**
      * Executes 'set' goal of versions-maven-plugin or 'set-version' of

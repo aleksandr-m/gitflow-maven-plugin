@@ -143,6 +143,11 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + version,
                         commitMessages.getTagReleaseMessage());
+                
+                if (gitFlowConfig.getPushTag()) {
+                    gitPushTag(
+                            gitFlowConfig.getVersionTagPrefix() + version);
+                }
             }
 
             // git checkout develop
