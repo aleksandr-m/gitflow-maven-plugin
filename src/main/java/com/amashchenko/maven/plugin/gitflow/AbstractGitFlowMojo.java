@@ -203,11 +203,11 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         for (Dependency d : list) {
             if (ArtifactUtils.isSnapshot(d.getVersion())) {
                 throw new MojoFailureException(
-                                "There is some SNAPSHOT dependencies in the project. Change them or ignore with `allowSnapshots` property.");
+                        "There is some SNAPSHOT dependencies in the project. Change them or ignore with `allowSnapshots` property.");
             }
         }
     }
-    
+
     /**
      * Executes git commands to check for uncommitted changes.
      * 

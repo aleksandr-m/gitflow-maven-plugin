@@ -58,7 +58,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             // check uncommitted changes
             checkUncommittedChanges();
-            
+
             // check snapshots dependencies
             if (!allowSnapshots) {
                 checkSnapshotDependencies();

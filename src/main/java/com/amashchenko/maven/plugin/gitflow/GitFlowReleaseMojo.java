@@ -62,7 +62,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             if (!allowSnapshots) {
                 checkSnapshotDependencies();
             }
-            
+
             // git for-each-ref --count=1 refs/heads/release/*
             final String releaseBranch = gitFindBranches(
                     gitFlowConfig.getReleaseBranchPrefix(), true);
