@@ -51,6 +51,23 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipTestProject", defaultValue = "false")
     private boolean skipTestProject = false;
 
+    /**
+     * Whether to rebase branch or merge. If <code>true</code> then rebase will
+     * be performed.
+     * 
+     * @since 1.2.3
+     */
+    @Parameter(property = "releaseRebase", defaultValue = "false")
+    private boolean releaseRebase = false;
+
+    /**
+     * Whether to use <code>--no-ff</code> option when merging.
+     * 
+     * @since 1.2.3
+     */
+    @Parameter(property = "releaseMergeNoFF", defaultValue = "true")
+    private boolean releaseMergeNoFF = true;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -86,8 +103,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             // git checkout master
             gitCheckout(gitFlowConfig.getProductionBranch());
 
-            // git merge --no-ff release/...
-            gitMergeNoff(releaseBranch);
+            gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF);
 
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
@@ -107,8 +123,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             // git checkout develop
             gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
-            // git merge --no-ff release/...
-            gitMergeNoff(releaseBranch);
+            gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF);
 
             String nextSnapshotVersion = null;
             // get next snapshot version

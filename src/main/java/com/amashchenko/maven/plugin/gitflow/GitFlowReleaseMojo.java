@@ -48,6 +48,23 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipTestProject", defaultValue = "false")
     private boolean skipTestProject = false;
 
+    /**
+     * Whether to rebase branch or merge. If <code>true</code> then rebase will
+     * be performed.
+     * 
+     * @since 1.2.3
+     */
+    @Parameter(property = "releaseRebase", defaultValue = "false")
+    private boolean releaseRebase = false;
+
+    /**
+     * Whether to use <code>--no-ff</code> option when merging.
+     * 
+     * @since 1.2.3
+     */
+    @Parameter(property = "releaseMergeNoFF", defaultValue = "true")
+    private boolean releaseMergeNoFF = true;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -131,8 +148,8 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             // git checkout master
             gitCheckout(gitFlowConfig.getProductionBranch());
 
-            // git merge --no-ff develop/...
-            gitMergeNoff(gitFlowConfig.getDevelopmentBranch());
+            gitMerge(gitFlowConfig.getDevelopmentBranch(), releaseRebase,
+                    releaseMergeNoFF);
 
             if (!skipTag) {
                 if (tychoBuild && ArtifactUtils.isSnapshot(version)) {
