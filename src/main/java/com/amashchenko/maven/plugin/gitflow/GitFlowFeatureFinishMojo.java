@@ -47,6 +47,15 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipTestProject", defaultValue = "false")
     private boolean skipTestProject = false;
 
+    /**
+     * Whether to squash feature branch commits into a single commit upon
+     * merging.
+     * 
+     * @since 1.2.3
+     */
+    @Parameter(property = "featureSquash", defaultValue = "false")
+    private boolean featureSquash = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -105,8 +114,14 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             // git checkout develop
             gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
-            // git merge --no-ff feature/...
-            gitMergeNoff(featureBranchName);
+            if (featureSquash) {
+                // git merge --squash feature/...
+                gitMergeSquash(featureBranchName);
+                gitCommit(featureBranchName);
+            } else {
+                // git merge --no-ff feature/...
+                gitMergeNoff(featureBranchName);
+            }
 
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
@@ -131,8 +146,13 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (!keepBranch) {
-                // git branch -d feature/...
-                gitBranchDelete(featureBranchName);
+                if (featureSquash) {
+                    // git branch -D feature/...
+                    gitBranchDeleteForce(featureBranchName);
+                } else {
+                    // git branch -d feature/...
+                    gitBranchDelete(featureBranchName);
+                }
             }
         } catch (CommandLineException e) {
             getLog().error(e);

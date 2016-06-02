@@ -426,6 +426,20 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Executes git merge --squash.
+     * 
+     * @param branchName
+     *            Branch name to merge.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitMergeSquash(final String branchName)
+            throws MojoFailureException, CommandLineException {
+        getLog().info("Squashing '" + branchName + "' branch.");
+        executeGitCommand("merge", "--squash", branchName);
+    }
+
+    /**
      * Executes git tag -a -m.
      * 
      * @param tagName
@@ -455,6 +469,21 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         getLog().info("Deleting '" + branchName + "' branch.");
 
         executeGitCommand("branch", "-d", branchName);
+    }
+
+    /**
+     * Executes git branch -D.
+     * 
+     * @param branchName
+     *            Branch name to delete.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitBranchDeleteForce(final String branchName)
+            throws MojoFailureException, CommandLineException {
+        getLog().info("Deleting (-D) '" + branchName + "' branch.");
+
+        executeGitCommand("branch", "-D", branchName);
     }
 
     /**
