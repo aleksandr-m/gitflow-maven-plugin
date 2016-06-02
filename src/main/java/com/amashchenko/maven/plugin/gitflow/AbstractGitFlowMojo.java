@@ -391,6 +391,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * 
      * @param branchName
      *            Branch name to merge.
+     * @param rebase
+     *            Do rebase.
+     * @param noff
+     *            Merge with --no-ff.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
