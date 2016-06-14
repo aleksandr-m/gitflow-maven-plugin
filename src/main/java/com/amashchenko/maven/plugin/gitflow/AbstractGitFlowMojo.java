@@ -33,10 +33,7 @@ import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
-import org.codehaus.plexus.util.cli.CommandLineUtils.StringStreamConsumer;
 import org.codehaus.plexus.util.cli.Commandline;
-import org.codehaus.plexus.util.cli.DefaultConsumer;
-import org.codehaus.plexus.util.cli.StreamConsumer;
 
 /**
  * Abstract git flow mojo.
@@ -621,12 +618,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         cmd.clearArgs();
         cmd.addArguments(args);
 
-        final StreamConsumer out;
-        if (verbose) {
-            out = new DefaultConsumer();
-        } else {
-            out = new CommandLineUtils.StringStreamConsumer();
-        }
+        final StringBufferStreamConsumer out = new StringBufferStreamConsumer(
+                verbose);
 
         final CommandLineUtils.StringStreamConsumer err = new CommandLineUtils.StringStreamConsumer();
 
@@ -634,10 +627,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         final int exitCode = CommandLineUtils.executeCommandLine(cmd, out, err);
 
         String errorStr = err.getOutput();
-        String outStr = "";
-        if (out instanceof StringStreamConsumer) {
-            outStr = ((StringStreamConsumer) out).getOutput();
-        }
+        String outStr = out.getOutput();
 
         if (failOnError && exitCode != SUCCESS_EXIT_CODE) {
             // not all commands print errors to error stream
