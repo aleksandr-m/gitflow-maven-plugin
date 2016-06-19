@@ -22,7 +22,7 @@ The plugin is available from Maven central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.2.2</version>
+                <version>1.2.3</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -40,7 +40,7 @@ The plugin is available from Maven central.
 - `gitflow:feature-finish` - Merges a feature branch.
 - `gitflow:hotfix-start` - Starts a hotfix branch and updates version(s) to hotfix version.
 - `gitflow:hotfix-finish` - Merges a hotfix branch.
-- `gitflow:help` - Displays help information on plugin.
+- `gitflow:help` - Displays help information.
 
 
 # Eclipse Plugins build with Tycho
@@ -126,6 +126,15 @@ All `-finish` goals and `gitflow:release` have `skipTestProject` parameter which
 The default value is `false` (i.e. the project will be tested before merging branches).
 
 All `release` goals have `allowSnapshots` parameter which controls whether SNAPSHOT dependencies are allowed. The default value is `false` (i.e. build fails if there SNAPSHOT dependency in project).
+
+### Rebase, Merge, Fast Forward, Squash
+
+Release branch can be rebased instead of merged by setting `releaseRebase` parameter to `true`. The default value is `false` (i.e. merge will be performed).
+
+Release branch can be merged without `--no-ff` option by setting `releaseMergeNoFF` parameter to `false`. The default value is `true` (i.e. merge --no-ff will be performed).
+The `releaseMergeNoFF` parameter has no effect when `releaseRebase` parameter is set to `true`.
+
+Feature branch can be squashed before merging by setting `featureSquash` parameter to `true`. The default value is `false` (i.e. merge w/o squash will be performed).
 
 # Non-interactive Release
 

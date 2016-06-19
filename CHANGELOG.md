@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.3
+
+* Added `featureSquash` parameter which allows to squash feature commits (see [#17](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/17))
+* Added ability to rebase or merge w/o no-ff option in release goals (see [#14](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/14))
+* Fixed [#18](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/18) - Executing commands with verbose parameter
+
 ## v1.2.2
 
 * Added `allowSnapshots` parameter to allow SNAPSHOT dependencies on releasing (see [#10](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/10))
