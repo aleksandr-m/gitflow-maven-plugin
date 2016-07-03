@@ -29,7 +29,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.components.interactivity.Prompter;
-import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
@@ -104,14 +103,12 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private boolean verbose = false;
 
     /**
-     * The path to the Maven executable. Defaults to either "mvn" or "mvn.bat"
-     * depending on the operating system.
+     * The path to the Maven executable. Defaults to "mvn".
      */
     @Parameter(property = "mvnExecutable")
     private String mvnExecutable;
     /**
-     * The path to the Git executable. Defaults to either "git" or "git.exe"
-     * depending on the operating system.
+     * The path to the Git executable. Defaults to "git".
      */
     @Parameter(property = "gitExecutable")
     private String gitExecutable;
@@ -133,15 +130,13 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private void initExecutables() {
         if (StringUtils.isBlank(cmdMvn.getExecutable())) {
             if (StringUtils.isBlank(mvnExecutable)) {
-                mvnExecutable = "mvn"
-                        + (Os.isFamily(Os.FAMILY_WINDOWS) ? ".bat" : "");
+                mvnExecutable = "mvn";
             }
             cmdMvn.setExecutable(mvnExecutable);
         }
         if (StringUtils.isBlank(cmdGit.getExecutable())) {
             if (StringUtils.isBlank(gitExecutable)) {
-                gitExecutable = "git"
-                        + (Os.isFamily(Os.FAMILY_WINDOWS) ? ".exe" : "");
+                gitExecutable = "git";
             }
             cmdGit.setExecutable(gitExecutable);
         }
