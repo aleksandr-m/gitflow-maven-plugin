@@ -15,6 +15,8 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import org.apache.maven.plugins.annotations.Parameter;
+
 /**
  * Git flow configuration.
  * 
@@ -38,6 +40,12 @@ public class GitFlowConfig {
     private String versionTagPrefix;
 
     /**
+     * indicates if the released tag should be pushed or not.
+     */
+    @Parameter(required = true, defaultValue = "false")
+    private Boolean pushTag;
+
+    /**
      * Default constructor.
      */
     public GitFlowConfig() {
@@ -48,6 +56,7 @@ public class GitFlowConfig {
         this.hotfixBranchPrefix = "hotfix/";
         this.supportBranchPrefix = "support/";
         this.versionTagPrefix = "";
+        this.pushTag = Boolean.FALSE;
     }
 
     /**
@@ -154,4 +163,20 @@ public class GitFlowConfig {
     public void setVersionTagPrefix(String versionTagPrefix) {
         this.versionTagPrefix = versionTagPrefix;
     }
+
+    /**
+     * @return the pushTag
+     */
+    public Boolean getPushTag() {
+        return pushTag;
+    }
+
+    /**
+     * @param pushTag the pushTag to set
+     */
+    public void setPushTag(Boolean pushTag) {
+        this.pushTag = pushTag;
+    }
+    
+    
 }

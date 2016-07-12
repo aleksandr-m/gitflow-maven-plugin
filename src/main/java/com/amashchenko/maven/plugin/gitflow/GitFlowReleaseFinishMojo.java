@@ -111,13 +111,19 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             if (!skipTag) {
                 String tagVersion = currentVersion;
                 if (tychoBuild && ArtifactUtils.isSnapshot(currentVersion)) {
-                    tagVersion = currentVersion.replace("-"
-                            + Artifact.SNAPSHOT_VERSION, "");
+                    tagVersion = currentVersion
+                            .replace("-" + Artifact.SNAPSHOT_VERSION, "");
                 }
 
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
                         commitMessages.getTagReleaseMessage());
+
+                if (gitFlowConfig.getPushTag()) {
+                    gitPushTag(
+                            gitFlowConfig.getVersionTagPrefix() + tagVersion);
+                }
+
             }
 
             // git checkout develop
@@ -158,6 +164,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 // git branch -d release/...
                 gitBranchDelete(releaseBranch);
             }
+
         } catch (CommandLineException e) {
             getLog().error(e);
         }
