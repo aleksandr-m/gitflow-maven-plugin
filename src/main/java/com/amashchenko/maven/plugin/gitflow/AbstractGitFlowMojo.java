@@ -41,7 +41,6 @@ import org.codehaus.plexus.util.cli.Commandline;
  * 
  */
 public abstract class AbstractGitFlowMojo extends AbstractMojo {
-
     /** A full name of the versions-maven-plugin set goal. */
     private static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:2.1:set";
     /** Name of the tycho-versions-plugin set-version goal. */
@@ -93,6 +92,22 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     @Parameter(property = "allowSnapshots", defaultValue = "false")
     protected boolean allowSnapshots = false;
+
+    /**
+     * Whether to fetch remote branch and compare it with the local one.
+     * 
+     * @since 1.3.0
+     */
+    @Parameter(property = "fetchRemote", defaultValue = "true")
+    protected boolean fetchRemote;
+
+    /**
+     * Whether to push to the remote.
+     * 
+     * @since 1.3.0
+     */
+    @Parameter(property = "pushRemote", defaultValue = "true")
+    protected boolean pushRemote;
 
     /**
      * Whether to print commands output into the console.
@@ -265,6 +280,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                 gitFlowConfig.getSupportBranchPrefix());
         gitSetConfig("gitflow.prefix.versiontag",
                 gitFlowConfig.getVersionTagPrefix());
+
+        gitSetConfig("gitflow.origin", gitFlowConfig.getOrigin());
     }
 
     /**
@@ -476,6 +493,78 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         getLog().info("Deleting (-D) '" + branchName + "' branch.");
 
         executeGitCommand("branch", "-D", branchName);
+    }
+
+    /**
+     * Executes git fetch and compares local branch with the remote.
+     * 
+     * @param branchName
+     *            Branch name to fetch and compare.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitFetchRemoteAndCompare(final String branchName)
+            throws MojoFailureException, CommandLineException {
+        getLog().info(
+                "Fetching remote branch '" + gitFlowConfig.getOrigin() + " "
+                        + branchName + "'.");
+
+        CommandResult result = executeGitCommandExitCode("fetch", "--quiet",
+                gitFlowConfig.getOrigin(), branchName);
+
+        if (result.getExitCode() == SUCCESS_EXIT_CODE) {
+            getLog().info(
+                    "Comparing local branch '" + branchName + "' with remote '"
+                            + gitFlowConfig.getOrigin() + "/" + branchName
+                            + "'.");
+            String revlistout = executeGitCommandReturn("rev-list",
+                    "--left-right", "--count", branchName + "..."
+                            + gitFlowConfig.getOrigin() + "/" + branchName);
+
+            String[] counts = org.apache.commons.lang3.StringUtils.split(
+                    revlistout, '\t');
+            if (counts != null && counts.length > 1) {
+                if (!"0".equals(org.apache.commons.lang3.StringUtils
+                        .deleteWhitespace(counts[1]))) {
+                    throw new MojoFailureException(
+                            "Remote branch is ahead of the local branch. Execute git pull.");
+                }
+            }
+        } else {
+            getLog().warn(
+                    "There were some problems fetching remote branch '"
+                            + gitFlowConfig.getOrigin()
+                            + " "
+                            + branchName
+                            + "'. You can turn off remote branch fetching by setting the 'fetchRemote' parameter to false.");
+        }
+    }
+
+    /**
+     * Executes git push, optionally with the <code>--follow-tags</code>
+     * argument.
+     * 
+     * @param branchName
+     *            Branch name to push.
+     * @param pushTags
+     *            If <code>true</code> adds <code>--follow-tags</code> argument
+     *            to the git <code>push</code> command.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitPush(final String branchName, boolean pushTags)
+            throws MojoFailureException, CommandLineException {
+        getLog().info(
+                "Pushing '" + branchName + "' branch" + " to '"
+                        + gitFlowConfig.getOrigin() + "'.");
+
+        if (pushTags) {
+            executeGitCommand("push", "--quiet", "--follow-tags",
+                    gitFlowConfig.getOrigin(), branchName);
+        } else {
+            executeGitCommand("push", "--quiet", gitFlowConfig.getOrigin(),
+                    branchName);
+        }
     }
 
     /**

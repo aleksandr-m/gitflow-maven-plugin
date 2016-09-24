@@ -73,6 +73,11 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                         "Release branch already exists. Cannot start release.");
             }
 
+            // fetch and check remote
+            if (fetchRemote) {
+                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
+            }
+
             // need to be in develop to get correct project version
             // git checkout develop
             gitCheckout(gitFlowConfig.getDevelopmentBranch());

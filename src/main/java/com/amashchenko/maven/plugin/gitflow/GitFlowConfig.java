@@ -36,6 +36,8 @@ public class GitFlowConfig {
     private String supportBranchPrefix;
     /** Prefix of the version tag. */
     private String versionTagPrefix;
+    /** Name of the default remote. */
+    private String origin;
 
     /**
      * Default constructor.
@@ -48,6 +50,7 @@ public class GitFlowConfig {
         this.hotfixBranchPrefix = "hotfix/";
         this.supportBranchPrefix = "support/";
         this.versionTagPrefix = "";
+        this.origin = "origin";
     }
 
     /**
@@ -153,5 +156,20 @@ public class GitFlowConfig {
      */
     public void setVersionTagPrefix(String versionTagPrefix) {
         this.versionTagPrefix = versionTagPrefix;
+    }
+
+    /**
+     * @return the origin
+     */
+    public String getOrigin() {
+        return origin;
+    }
+
+    /**
+     * @param origin
+     *            the origin to set
+     */
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 }

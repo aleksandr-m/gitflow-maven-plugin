@@ -54,6 +54,11 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             // check uncommitted changes
             checkUncommittedChanges();
 
+            // fetch and check remote
+            if (fetchRemote) {
+                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
+            }
+
             String featureName = null;
             try {
                 while (StringUtils.isBlank(featureName)) {

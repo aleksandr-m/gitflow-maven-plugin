@@ -71,6 +71,11 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 throw new MojoFailureException("There are no feature branches.");
             }
 
+            // fetch and check remote
+            if (fetchRemote) {
+                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
+            }
+
             final String[] branches = featureBranches.split("\\r?\\n");
 
             List<String> numberedList = new ArrayList<String>();
@@ -153,6 +158,10 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                     // git branch -d feature/...
                     gitBranchDelete(featureBranchName);
                 }
+            }
+
+            if (pushRemote) {
+                gitPush(gitFlowConfig.getDevelopmentBranch(), false);
             }
         } catch (CommandLineException e) {
             getLog().error(e);

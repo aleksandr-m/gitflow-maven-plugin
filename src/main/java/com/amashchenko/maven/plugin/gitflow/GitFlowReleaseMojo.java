@@ -80,6 +80,12 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 checkSnapshotDependencies();
             }
 
+            // fetch and check remote
+            if (fetchRemote) {
+                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
+                gitFetchRemoteAndCompare(gitFlowConfig.getProductionBranch());
+            }
+
             // git for-each-ref --count=1 refs/heads/release/*
             final String releaseBranch = gitFindBranches(
                     gitFlowConfig.getReleaseBranchPrefix(), true);
@@ -192,6 +198,11 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             if (installProject) {
                 // mvn clean install
                 mvnCleanInstall();
+            }
+
+            if (pushRemote) {
+                gitPush(gitFlowConfig.getProductionBranch(), !skipTag);
+                gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
             }
         } catch (CommandLineException e) {
             getLog().error(e);

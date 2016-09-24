@@ -92,6 +92,12 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                         "More than one release branch exists. Cannot finish release.");
             }
 
+            // fetch and check remote
+            if (fetchRemote) {
+                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
+                gitFetchRemoteAndCompare(gitFlowConfig.getProductionBranch());
+            }
+
             if (!skipTestProject) {
                 // git checkout release/...
                 gitCheckout(releaseBranch);
@@ -157,6 +163,11 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             if (!keepBranch) {
                 // git branch -d release/...
                 gitBranchDelete(releaseBranch);
+            }
+
+            if (pushRemote) {
+                gitPush(gitFlowConfig.getProductionBranch(), !skipTag);
+                gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
             }
         } catch (CommandLineException e) {
             getLog().error(e);

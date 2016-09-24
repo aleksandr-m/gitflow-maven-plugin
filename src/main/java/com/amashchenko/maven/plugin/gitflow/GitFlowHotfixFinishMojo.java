@@ -70,6 +70,12 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 throw new MojoFailureException("There is no hotfix branches.");
             }
 
+            // fetch and check remote
+            if (fetchRemote) {
+                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
+                gitFetchRemoteAndCompare(gitFlowConfig.getProductionBranch());
+            }
+
             String[] branches = hotfixBranches.split("\\r?\\n");
 
             List<String> numberedList = new ArrayList<String>();
@@ -183,6 +189,15 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             if (!keepBranch) {
                 // git branch -d hotfix/...
                 gitBranchDelete(hotfixBranchName);
+            }
+
+            if (pushRemote) {
+                gitPush(gitFlowConfig.getProductionBranch(), !skipTag);
+
+                // if no release branch
+                if (StringUtils.isBlank(releaseBranch)) {
+                    gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
+                }
             }
         } catch (CommandLineException e) {
             getLog().error(e);
