@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.0
+
+* Remote interaction. Added `fetchRemote` and `pushRemote` parameters.
+* Updated default executable names (see [#20](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/20))
+
 ## v1.2.3
 
 * Added `featureSquash` parameter which allows to squash feature commits (see [#17](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/17))

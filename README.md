@@ -59,7 +59,7 @@ If version has qualifier then it will not be removed in the release or hotfix go
 
 # Plugin Common Parameters
 
-All parameters are optional. The `gitFlowConfig` parameters defaults are the same as in below example.
+All parameters are optional. The `gitFlowConfig` parameters defaults are the same as in the example below.
 Maven and Git executables are assumed to be in the PATH, if executables are not available in the PATH or you want to use different version use `mvnExecutable` and `gitExecutable` parameters.
 The `installProject` parameter controls whether the Maven `install` goal will be called during the mojo execution. The default value for this parameter is `false` (i.e. the project will NOT be installed).
 Since `1.0.7` version of this plugin the output of the executed commands will NOT be printed into the console. This can be changed by setting `verbose` parameter to `true`.
@@ -79,6 +79,7 @@ Since `1.0.7` version of this plugin the output of the executed commands will NO
             <hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
             <supportBranchPrefix>support/</supportBranchPrefix>
             <versionTagPrefix></versionTagPrefix>
+            <origin>origin</origin>
         </gitFlowConfig>
 
         <commitMessages>
@@ -126,6 +127,12 @@ All `-finish` goals and `gitflow:release` have `skipTestProject` parameter which
 The default value is `false` (i.e. the project will be tested before merging branches).
 
 All `release` goals have `allowSnapshots` parameter which controls whether SNAPSHOT dependencies are allowed. The default value is `false` (i.e. build fails if there SNAPSHOT dependency in project).
+
+### Remote interaction
+
+At the start of the each goal remote branch(es) will be fetched and compared with the local branch(es). This can be turned off by setting `fetchRemote` parameter to `false`.
+At the end of the `-finish` goals development or production and development branches will be pushed to remote. This can be turned off by setting `pushRemote` parameter to `false`.
+The default remote name is `origin`. It can be customized with `<gitFlowConfig><origin>custom_origin</origin></gitFlowConfig>` configuration in pom.xml.
 
 ### Rebase, Merge, Fast Forward, Squash
 
