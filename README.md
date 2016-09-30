@@ -22,7 +22,7 @@ The plugin is available from Maven central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.2.3</version>
+                <version>1.3.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
