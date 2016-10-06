@@ -35,17 +35,17 @@ public class CommitMessages {
     private String tagReleaseMessage;
 
     public CommitMessages() {
-        featureStartMessage = "updating versions for feature branch";
-        featureFinishMessage = "updating versions for development branch";
+        featureStartMessage = "update versions for feature branch";
+        featureFinishMessage = "update versions for development branch";
 
-        hotfixStartMessage = "updating versions for hotfix";
-        hotfixFinishMessage = "updating for next development version";
+        hotfixStartMessage = "update versions for hotfix";
+        hotfixFinishMessage = "update for next development version";
 
-        releaseStartMessage = "updating versions for release";
-        releaseFinishMessage = "updating for next development version";
+        releaseStartMessage = "update versions for release";
+        releaseFinishMessage = "update for next development version";
 
-        tagHotfixMessage = "tagging hotfix";
-        tagReleaseMessage = "tagging release";
+        tagHotfixMessage = "tag hotfix";
+        tagReleaseMessage = "tag release";
     }
 
     /**
