@@ -189,6 +189,17 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Compares the production branch name with the development branch name.
+     * 
+     * @return <code>true</code> if the production branch name is different from
+     *         the development branch name, <code>false</code> otherwise.
+     */
+    protected boolean notSameProdDevName() {
+        return !gitFlowConfig.getProductionBranch().equals(
+                gitFlowConfig.getDevelopmentBranch());
+    }
+
+    /**
      * Checks uncommitted changes.
      * 
      * @throws MojoFailureException

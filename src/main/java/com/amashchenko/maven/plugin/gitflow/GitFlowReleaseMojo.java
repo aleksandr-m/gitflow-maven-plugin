@@ -82,7 +82,10 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
             // fetch and check remote
             if (fetchRemote) {
-                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
+                if (notSameProdDevName()) {
+                    gitFetchRemoteAndCompare(gitFlowConfig
+                            .getDevelopmentBranch());
+                }
                 gitFetchRemoteAndCompare(gitFlowConfig.getProductionBranch());
             }
 
@@ -151,11 +154,13 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 gitCommit(commitMessages.getReleaseStartMessage());
             }
 
-            // git checkout master
-            gitCheckout(gitFlowConfig.getProductionBranch());
+            if (notSameProdDevName()) {
+                // git checkout master
+                gitCheckout(gitFlowConfig.getProductionBranch());
 
-            gitMerge(gitFlowConfig.getDevelopmentBranch(), releaseRebase,
-                    releaseMergeNoFF);
+                gitMerge(gitFlowConfig.getDevelopmentBranch(), releaseRebase,
+                        releaseMergeNoFF);
+            }
 
             if (!skipTag) {
                 if (tychoBuild && ArtifactUtils.isSnapshot(version)) {
@@ -168,8 +173,10 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                         commitMessages.getTagReleaseMessage());
             }
 
-            // git checkout develop
-            gitCheckout(gitFlowConfig.getDevelopmentBranch());
+            if (notSameProdDevName()) {
+                // git checkout develop
+                gitCheckout(gitFlowConfig.getDevelopmentBranch());
+            }
 
             String nextSnapshotVersion = null;
             // get next snapshot version
@@ -202,7 +209,9 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
             if (pushRemote) {
                 gitPush(gitFlowConfig.getProductionBranch(), !skipTag);
-                gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
+                if (notSameProdDevName()) {
+                    gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
+                }
             }
         } catch (CommandLineException e) {
             getLog().error(e);

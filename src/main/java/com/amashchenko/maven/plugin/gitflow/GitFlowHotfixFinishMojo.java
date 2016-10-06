@@ -72,7 +72,10 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
             // fetch and check remote
             if (fetchRemote) {
-                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
+                if (notSameProdDevName()) {
+                    gitFetchRemoteAndCompare(gitFlowConfig
+                            .getDevelopmentBranch());
+                }
                 gitFetchRemoteAndCompare(gitFlowConfig.getProductionBranch());
             }
 
@@ -147,11 +150,13 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 // git merge --no-ff hotfix/...
                 gitMergeNoff(hotfixBranchName);
             } else {
-                // git checkout develop
-                gitCheckout(gitFlowConfig.getDevelopmentBranch());
+                if (notSameProdDevName()) {
+                    // git checkout develop
+                    gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
-                // git merge --no-ff hotfix/...
-                gitMergeNoff(hotfixBranchName);
+                    // git merge --no-ff hotfix/...
+                    gitMergeNoff(hotfixBranchName);
+                }
 
                 // get current project version from pom
                 final String currentVersion = getCurrentProjectVersion();
@@ -195,7 +200,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 gitPush(gitFlowConfig.getProductionBranch(), !skipTag);
 
                 // if no release branch
-                if (StringUtils.isBlank(releaseBranch)) {
+                if (StringUtils.isBlank(releaseBranch) && notSameProdDevName()) {
                     gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
                 }
             }
