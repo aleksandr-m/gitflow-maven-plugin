@@ -3,7 +3,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.amashchenko.maven.plugin/gitflow-maven-plugin/badge.svg?subject=Maven Central)](https://maven-badges.herokuapp.com/maven-central/com.amashchenko.maven.plugin/gitflow-maven-plugin/)
 [![License](http://img.shields.io/badge/License-Apache License 2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
-The Maven plugin for Vincent Driessen's [successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/).
+The Maven plugin that supports various Git workflows, including Vincent Driessen's [successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/) and [GitHub Flow](https://guides.github.com/introduction/flow/).
 
 Currently a Java implementation of Git version control system [JGit](https://github.com/eclipse/jgit) doesn't support [`.gitattributes`](http://git-scm.com/book/en/Customizing-Git-Git-Attributes).
 
@@ -15,7 +15,7 @@ See what's changed - [CHANGELOG](CHANGELOG.md)
 
 # Installation
 
-The plugin is available from Maven central.
+The plugin is available from Maven Central.
     
     <build>
         <plugins>
@@ -41,6 +41,23 @@ The plugin is available from Maven central.
 - `gitflow:hotfix-start` - Starts a hotfix branch and updates version(s) to hotfix version.
 - `gitflow:hotfix-finish` - Merges a hotfix branch.
 - `gitflow:help` - Displays help information.
+
+
+# Git Workflows
+
+The gitflow-maven-plugin is very versatile. It can be easily configured to use different Git workflows.
+
+## GitHub Flow
+
+The GitHub Flow is a lightweight, branch-based workflow that supports teams and projects where deployments are made regularly.
+
+To configure this plugin to use single branch model, such as GitHub Flow, just set the `developmentBranch` parameter to the same value as the `productionBranch` in your pom.xml file.
+
+    <gitFlowConfig>
+        <developmentBranch>master</developmentBranch>
+    </gitFlowConfig>
+
+That's it!
 
 
 # Eclipse Plugins build with Tycho
