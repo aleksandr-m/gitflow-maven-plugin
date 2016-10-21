@@ -49,6 +49,17 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "sameBranchName", defaultValue = "false")
     private boolean sameBranchName = false;
 
+    /**
+     * Release version.
+     * <br/>
+     *
+     * Note: Work only in non interactive mode.
+     *
+     * @since 1.3.1
+     */
+    @Parameter(property = "releaseVersion", defaultValue = "")
+    private String releaseVersion = "";
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -114,6 +125,8 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 } catch (PrompterException e) {
                     getLog().error(e);
                 }
+            } else {
+                version = releaseVersion;
             }
 
             if (StringUtils.isBlank(version)) {
