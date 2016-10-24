@@ -520,6 +520,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                 "Fetching remote branch '" + gitFlowConfig.getOrigin() + " "
                         + branchName + "'.");
 
+        executeGitCommand("checkout", branchName);
+
         CommandResult result = executeGitCommandExitCode("fetch", "--quiet",
                 gitFlowConfig.getOrigin(), branchName);
 
