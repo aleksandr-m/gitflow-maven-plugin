@@ -73,10 +73,10 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             featureName = StringUtils.deleteWhitespace(featureName);
 
             // git for-each-ref refs/heads/feature/...
-            final String featureBranch = gitFindBranch(gitFlowConfig
+            final boolean featureBranchExists = gitCheckBranchExists(gitFlowConfig
                     .getFeatureBranchPrefix() + featureName);
 
-            if (StringUtils.isNotBlank(featureBranch)) {
+            if (featureBranchExists) {
                 throw new MojoFailureException(
                         "Feature branch with that name already exists. Cannot start feature.");
             }

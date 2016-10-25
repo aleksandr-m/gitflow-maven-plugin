@@ -350,10 +350,21 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         return branches;
     }
 
-    protected String gitFindBranch(final String branchName)
+    /**
+     * Checks if local branch with given name exists.
+     * 
+     * @param branchName
+     *            Name of the branch to check.
+     * @return <code>true</code> if local branch exists, <code>false</code>
+     *         otherwise.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected boolean gitCheckBranchExists(final String branchName)
             throws MojoFailureException, CommandLineException {
-        return executeGitCommandReturn("for-each-ref", "refs/heads/"
-                + branchName);
+        CommandResult commandResult = executeGitCommandExitCode("show-ref",
+                "--verify", "--quiet", "refs/heads/" + branchName);
+        return commandResult.getExitCode() == SUCCESS_EXIT_CODE;
     }
 
     /**
