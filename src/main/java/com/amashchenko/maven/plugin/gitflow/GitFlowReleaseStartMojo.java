@@ -50,11 +50,9 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     private boolean sameBranchName = false;
 
     /**
-     * Release version.
-     * <br/>
-     *
-     * Note: Work only in non interactive mode.
-     *
+     * Release version to use instead of the default next release version in non
+     * interactive mode.
+     * 
      * @since 1.3.1
      */
     @Parameter(property = "releaseVersion", defaultValue = "")

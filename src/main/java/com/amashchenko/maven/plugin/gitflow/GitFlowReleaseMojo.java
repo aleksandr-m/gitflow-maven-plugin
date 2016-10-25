@@ -65,6 +65,15 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     @Parameter(property = "releaseMergeNoFF", defaultValue = "true")
     private boolean releaseMergeNoFF = true;
 
+    /**
+     * Release version to use instead of the default next release version in non
+     * interactive mode.
+     * 
+     * @since 1.3.1
+     */
+    @Parameter(property = "releaseVersion", defaultValue = "")
+    private String releaseVersion = "";
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -139,6 +148,8 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 } catch (PrompterException e) {
                     getLog().error(e);
                 }
+            } else {
+                version = releaseVersion;
             }
 
             if (StringUtils.isBlank(version)) {
