@@ -22,7 +22,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.3.0</version>
+                <version>1.3.1</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -110,17 +110,17 @@ Since `1.2.1` commit messages can be changed in plugin's configuration section i
 
     <configuration>
         <commitMessages>
-            <featureStartMessage>updating versions for feature branch</featureStartMessage>
-            <featureFinishMessage>updating versions for development branch</featureFinishMessage>
+            <featureStartMessage>update versions for feature branch</featureStartMessage>
+            <featureFinishMessage>update versions for development branch</featureFinishMessage>
             
-            <hotfixStartMessage>updating versions for hotfix</hotfixStartMessage>
-            <hotfixFinishMessage>updating for next development version</hotfixFinishMessage>
+            <hotfixStartMessage>update versions for hotfix</hotfixStartMessage>
+            <hotfixFinishMessage>update for next development version</hotfixFinishMessage>
             
-            <releaseStartMessage>updating versions for release</releaseStartMessage>
-            <releaseFinishMessage>updating for next development version</releaseFinishMessage>
+            <releaseStartMessage>update versions for release</releaseStartMessage>
+            <releaseFinishMessage>update for next development version</releaseFinishMessage>
             
-            <tagHotfixMessage>tagging hotfix</tagHotfixMessage>
-            <tagReleaseMessage>tagging release</tagReleaseMessage>
+            <tagHotfixMessage>tag hotfix</tagHotfixMessage>
+            <tagReleaseMessage>tag release</tagReleaseMessage>
         </commitMessages>
     </configuration>
 
@@ -162,8 +162,8 @@ Feature branch can be squashed before merging by setting `featureSquash` paramet
 
 # Non-interactive Release
 
-Releases could be performed without prompting for the release version during `gitflow:release-start` goal by telling Maven to run in non-interactive (batch) mode.
-When `gitflow:release-start` is executed in the Maven batch mode the default release version will be used.
+Releases could be performed without prompting for the release version during `gitflow:release-start` or `gitflow:release` goals by telling Maven to run in non-interactive (batch) mode.
+The `releaseVersion` parameter can be used to set the release version in non-interactive mode. If `releaseVersion` parameter is not set then the default release version will be used.
 
 To put Maven in the batch mode use `-B` or `--batch-mode` option.
 

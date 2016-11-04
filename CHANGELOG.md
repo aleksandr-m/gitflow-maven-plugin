@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.1
+
+* Added ability to set version in non interactive mode (see [#25](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/25))
+* Don't merge/tag/fetch/push to the same branch when using single branch model like GitHub Flow (see [#22](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/22))
+
 ## v1.3.0
 
 * Remote interaction. Added `fetchRemote` and `pushRemote` parameters.
