@@ -19,6 +19,7 @@ import java.io.FileReader;
 import java.util.List;
 
 import org.apache.maven.artifact.ArtifactUtils;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
@@ -128,6 +129,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(property = "gitExecutable")
     private String gitExecutable;
 
+    /** Maven session. */
+    @Component
+    private MavenSession mavenSession;
     /** Maven project. */
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
@@ -214,14 +218,16 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected void checkSnapshotDependencies() throws MojoFailureException {
         getLog().info("Checking for SNAPSHOT versions in dependencies.");
-        List<Dependency> list = project.getDependencies();
-        for (Dependency d : list) {
-            if (ArtifactUtils.isSnapshot(d.getVersion())) {
-                throw new MojoFailureException(
-                        "There is some SNAPSHOT dependencies in the project. Change them or ignore with `allowSnapshots` property.");
+        List<MavenProject> projects = mavenSession.getProjects();
+        for (MavenProject project : projects) {
+            List<Dependency> dependencies = project.getDependencies();
+            for (Dependency d : dependencies) {
+                if (ArtifactUtils.isSnapshot(d.getVersion())) {
+                    throw new MojoFailureException(
+                            "There is some SNAPSHOT dependencies in the project. Change them or ignore with `allowSnapshots` property.");
+                }
             }
         }
     }
