@@ -65,6 +65,11 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                     featureName = prompter
                             .prompt("What is a name of feature branch? "
                                     + gitFlowConfig.getFeatureBranchPrefix());
+
+                    if (!validBranchName(featureName)) {
+                        getLog().info("The name of the branch is not valid.");
+                        featureName = null;
+                    }
                 }
             } catch (PrompterException e) {
                 getLog().error(e);

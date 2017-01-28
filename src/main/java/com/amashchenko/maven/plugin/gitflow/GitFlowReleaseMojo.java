@@ -143,8 +143,16 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             String version = null;
             if (settings.isInteractiveMode()) {
                 try {
-                    version = prompter.prompt("What is release version? ["
-                            + defaultVersion + "]");
+                    while (version == null) {
+                        version = prompter.prompt("What is release version? ["
+                                + defaultVersion + "]");
+
+                        if (!"".equals(version) && !validBranchName(version)) {
+                            getLog().info(
+                                    "The name of the branch is not valid.");
+                            version = null;
+                        }
+                    }
                 } catch (PrompterException e) {
                     getLog().error(e);
                 }

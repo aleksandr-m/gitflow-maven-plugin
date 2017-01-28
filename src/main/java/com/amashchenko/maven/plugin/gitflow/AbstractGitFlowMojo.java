@@ -233,6 +233,23 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Checks if branch name is acceptable.
+     * 
+     * @param branchName
+     *            Branch name to check.
+     * @return <code>true</code> when name is valid, <code>false</code>
+     *         otherwise.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected boolean validBranchName(final String branchName)
+            throws MojoFailureException, CommandLineException {
+        CommandResult r = executeGitCommandExitCode("check-ref-format",
+                "--allow-onelevel", branchName);
+        return r.getExitCode() == SUCCESS_EXIT_CODE;
+    }
+
+    /**
      * Executes git commands to check for uncommitted changes.
      * 
      * @return <code>true</code> when there are uncommitted changes,

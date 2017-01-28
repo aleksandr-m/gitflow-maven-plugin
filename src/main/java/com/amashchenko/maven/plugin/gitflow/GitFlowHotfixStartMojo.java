@@ -81,8 +81,15 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
             String version = null;
             try {
-                version = prompter.prompt("What is the hotfix version? ["
-                        + defaultVersion + "]");
+                while (version == null) {
+                    version = prompter.prompt("What is the hotfix version? ["
+                            + defaultVersion + "]");
+
+                    if (!"".equals(version) && !validBranchName(version)) {
+                        getLog().info("The name of the branch is not valid.");
+                        version = null;
+                    }
+                }
             } catch (PrompterException e) {
                 getLog().error(e);
             }
