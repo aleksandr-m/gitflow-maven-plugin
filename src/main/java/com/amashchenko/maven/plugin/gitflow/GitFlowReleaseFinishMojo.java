@@ -68,6 +68,13 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "releaseMergeNoFF", defaultValue = "true")
     private boolean releaseMergeNoFF = true;
 
+    /**
+     * Whether to use <code>--ff-only</code> option when merging.
+     * 
+     */
+    @Parameter(property = "releaseMergeFFOnly", defaultValue = "false")
+    private boolean releaseMergeFFOnly = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -112,7 +119,8 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             // git checkout master
             gitCheckout(gitFlowConfig.getProductionBranch());
 
-            gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF);
+            gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF,
+                    releaseMergeFFOnly);
 
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
@@ -133,7 +141,8 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 // git checkout develop
                 gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
-                gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF);
+                gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF,
+                        releaseMergeFFOnly);
             }
 
             String nextSnapshotVersion = null;

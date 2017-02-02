@@ -66,6 +66,13 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     private boolean releaseMergeNoFF = true;
 
     /**
+     * Whether to use <code>--ff-only</code> option when merging.
+     * 
+     */
+    @Parameter(property = "releaseMergeFFOnly", defaultValue = "false")
+    private boolean releaseMergeFFOnly = false;
+
+    /**
      * Release version to use instead of the default next release version in non
      * interactive mode.
      * 
@@ -178,7 +185,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 gitCheckout(gitFlowConfig.getProductionBranch());
 
                 gitMerge(gitFlowConfig.getDevelopmentBranch(), releaseRebase,
-                        releaseMergeNoFF);
+                        releaseMergeNoFF, releaseMergeFFOnly);
             }
 
             if (!skipTag) {

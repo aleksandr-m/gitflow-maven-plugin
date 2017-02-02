@@ -449,14 +449,20 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *            Do rebase.
      * @param noff
      *            Merge with --no-ff.
+     * @param ffonly
+     *            Merge with --ff-only.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
     protected void gitMerge(final String branchName, boolean rebase,
-            boolean noff) throws MojoFailureException, CommandLineException {
+            boolean noff, boolean ffonly) throws MojoFailureException,
+            CommandLineException {
         if (rebase) {
             getLog().info("Rebasing '" + branchName + "' branch.");
             executeGitCommand("rebase", branchName);
+        } else if (ffonly) {
+            getLog().info("Merging (--ff-only) '" + branchName + "' branch.");
+            executeGitCommand("merge", "--ff-only", branchName);
         } else if (noff) {
             getLog().info("Merging (--no-ff) '" + branchName + "' branch.");
             executeGitCommand("merge", "--no-ff", branchName);
@@ -476,7 +482,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitMergeNoff(final String branchName)
             throws MojoFailureException, CommandLineException {
-        gitMerge(branchName, false, true);
+        gitMerge(branchName, false, true, false);
     }
 
     /**
