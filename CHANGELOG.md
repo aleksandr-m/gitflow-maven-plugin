@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4.0
+
+* Added support for `--ff-only` option for release merge ([#30](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/30))
+* Added validation for branch names
+* Fixed [#28](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/28) - Release-start and release-finish doesn't check for SNAPSHOT dependencies on submodules
+
 ## v1.3.1
 
 * Added ability to set version in non interactive mode (see [#25](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/25))

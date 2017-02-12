@@ -68,6 +68,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     /**
      * Whether to use <code>--ff-only</code> option when merging.
      * 
+     * @since 1.4.0
      */
     @Parameter(property = "releaseMergeFFOnly", defaultValue = "false")
     private boolean releaseMergeFFOnly = false;

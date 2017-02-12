@@ -22,7 +22,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.3.1</version>
+                <version>1.4.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -155,8 +155,10 @@ The default remote name is `origin`. It can be customized with `<gitFlowConfig><
 
 Release branch can be rebased instead of merged by setting `releaseRebase` parameter to `true`. The default value is `false` (i.e. merge will be performed).
 
-Release branch can be merged without `--no-ff` option by setting `releaseMergeNoFF` parameter to `false`. The default value is `true` (i.e. merge --no-ff will be performed).
+Release branch can be merged without `--no-ff` option by setting `releaseMergeNoFF` parameter to `false`. The default value is `true` (i.e. `merge --no-ff` will be performed).
 The `releaseMergeNoFF` parameter has no effect when `releaseRebase` parameter is set to `true`.
+
+Release branch can be merged with `--ff-only` option by setting `releaseMergeFFOnly` parameter to `true`. The default value is `false` (i.e. The `--ff-only` option won't be used).
 
 Feature branch can be squashed before merging by setting `featureSquash` parameter to `true`. The default value is `false` (i.e. merge w/o squash will be performed).
 
