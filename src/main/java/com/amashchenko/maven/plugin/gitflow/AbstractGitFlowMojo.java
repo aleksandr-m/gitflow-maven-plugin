@@ -54,6 +54,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /** Success exit code. */
     private static final int SUCCESS_EXIT_CODE = 0;
+    public static final String GIT_EXECUTABLE = "gitExecutable";
+    public static final String MVN_EXECUTABLE = "mvnExecutable";
 
     /** Command line for Git executable. */
     private final Commandline cmdGit = new Commandline();
@@ -123,13 +125,13 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /**
      * The path to the Maven executable. Defaults to "mvn".
      */
-    @Parameter(property = "mvnExecutable")
-    private String mvnExecutable = getenv("mvnExecutable");
+    @Parameter(property = MVN_EXECUTABLE)
+    private String mvnExecutable = getenv(MVN_EXECUTABLE);
     /**
      * The path to the Git executable. Defaults to "git".
      */
-    @Parameter(property = "gitExecutable")
-    private String gitExecutable = getenv("gitExecutable");
+    @Parameter(property = GIT_EXECUTABLE)
+    private String gitExecutable = getenv(GIT_EXECUTABLE);
 
     /** Maven session. */
     @Component
