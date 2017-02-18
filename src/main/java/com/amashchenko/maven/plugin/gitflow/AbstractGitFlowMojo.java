@@ -35,6 +35,8 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
+import static java.lang.System.getenv;
+
 /**
  * Abstract git flow mojo.
  * 
@@ -122,12 +124,12 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * The path to the Maven executable. Defaults to "mvn".
      */
     @Parameter(property = "mvnExecutable")
-    private String mvnExecutable;
+    private String mvnExecutable = getenv("mvnExecutable");
     /**
      * The path to the Git executable. Defaults to "git".
      */
     @Parameter(property = "gitExecutable")
-    private String gitExecutable;
+    private String gitExecutable = getenv("gitExecutable");
 
     /** Maven session. */
     @Component
