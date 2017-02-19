@@ -35,6 +35,8 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
+import static java.lang.System.getenv;
+
 /**
  * Abstract git flow mojo.
  * 
@@ -52,6 +54,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /** Success exit code. */
     private static final int SUCCESS_EXIT_CODE = 0;
+    public static final String GIT_EXECUTABLE = "gitExecutable";
+    public static final String MVN_EXECUTABLE = "mvnExecutable";
 
     /** Command line for Git executable. */
     private final Commandline cmdGit = new Commandline();
@@ -119,15 +123,17 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private boolean verbose = false;
 
     /**
-     * The path to the Maven executable. Defaults to "mvn".
+     * The path to the Maven executable - first looks for shell variable of same name, if not found and
+     * property not set then defaults to "mvn".
      */
-    @Parameter(property = "mvnExecutable")
-    private String mvnExecutable;
+    @Parameter(property = MVN_EXECUTABLE)
+    private String mvnExecutable = getenv(MVN_EXECUTABLE);
     /**
-     * The path to the Git executable. Defaults to "git".
+     * The path to the Git executable - first looks for shell variable of same name, if not found and
+     * property not set then defaults to "git".
      */
-    @Parameter(property = "gitExecutable")
-    private String gitExecutable;
+    @Parameter(property = GIT_EXECUTABLE)
+    private String gitExecutable = getenv(GIT_EXECUTABLE);
 
     /** Maven session. */
     @Component

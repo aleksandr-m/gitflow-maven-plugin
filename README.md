@@ -77,7 +77,7 @@ If version has qualifier then it will not be removed in the release or hotfix go
 # Plugin Common Parameters
 
 All parameters are optional. The `gitFlowConfig` parameters defaults are the same as in the example below.
-Maven and Git executables are assumed to be in the PATH, if executables are not available in the PATH or you want to use different version use `mvnExecutable` and `gitExecutable` parameters.
+Maven and Git executables are assumed to be in the PATH, if executables are not available in the PATH or you want to use different version use `mvnExecutable` and `gitExecutable` parameters (by default the plugin will first source these variables from the shell env).
 The `installProject` parameter controls whether the Maven `install` goal will be called during the mojo execution. The default value for this parameter is `false` (i.e. the project will NOT be installed).
 Since `1.0.7` version of this plugin the output of the executed commands will NOT be printed into the console. This can be changed by setting `verbose` parameter to `true`.
 
