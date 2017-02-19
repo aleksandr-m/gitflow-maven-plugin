@@ -26,6 +26,8 @@ import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
+import static java.util.regex.Pattern.matches;
+
 /**
  * The git flow feature start mojo.
  * 
@@ -35,6 +37,7 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 @Mojo(name = "feature-start", aggregator = true)
 public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
 
+    public static final String FEATURE_NAME_REGEX = ".*";
     /**
      * Whether to skip changing project version. Default is <code>false</code>
      * (the feature name will be appended to project version).
@@ -43,6 +46,13 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
      */
     @Parameter(property = "skipFeatureVersion", defaultValue = "false")
     private boolean skipFeatureVersion = false;
+
+    /**
+     * Regex used to enforce a naming convention for feature branches,
+     * by default it allows everything: {@link #FEATURE_NAME_REGEX}
+     */
+    @Parameter(property = "featureBranchRegex", defaultValue = FEATURE_NAME_REGEX)
+    String featureBranchRegex = FEATURE_NAME_REGEX;
 
     /** {@inheritDoc} */
     @Override
@@ -66,6 +76,11 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                             .prompt("What is a name of feature branch? "
                                     + gitFlowConfig.getFeatureBranchPrefix());
 
+                    if(!isBranchNameRegexCompliant(featureName)){
+                        getLog().warn("The name of the branch is not regex compliant, it does not match: " + featureBranchRegex);
+                        featureName = null;
+                        continue;
+                    }
                     if (!validBranchName(featureName)) {
                         getLog().info("The name of the branch is not valid.");
                         featureName = null;
@@ -123,5 +138,9 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
         } catch (CommandLineException e) {
             getLog().error(e);
         }
+    }
+
+    boolean isBranchNameRegexCompliant(String branchName){
+        return matches(featureBranchRegex, branchName);
     }
 }
