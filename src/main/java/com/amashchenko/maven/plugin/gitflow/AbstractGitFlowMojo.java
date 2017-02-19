@@ -123,12 +123,14 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private boolean verbose = false;
 
     /**
-     * The path to the Maven executable. Defaults to "mvn".
+     * The path to the Maven executable - first looks for shell variable of same name, if not found and
+     * property not set then defaults to "mvn".
      */
     @Parameter(property = MVN_EXECUTABLE)
     private String mvnExecutable = getenv(MVN_EXECUTABLE);
     /**
-     * The path to the Git executable. Defaults to "git".
+     * The path to the Git executable - first looks for shell variable of same name, if not found and
+     * property not set then defaults to "git".
      */
     @Parameter(property = GIT_EXECUTABLE)
     private String gitExecutable = getenv(GIT_EXECUTABLE);
