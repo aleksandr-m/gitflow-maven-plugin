@@ -27,6 +27,8 @@ import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
 import static java.util.regex.Pattern.matches;
+import static org.codehaus.plexus.util.StringUtils.isBlank;
+import static org.codehaus.plexus.util.StringUtils.isNotBlank;
 
 /**
  * The git flow feature start mojo.
@@ -71,19 +73,20 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
 
             String featureName = null;
             try {
-                while (StringUtils.isBlank(featureName)) {
+                while (isBlank(featureName)) {
                     featureName = prompter
                             .prompt("What is a name of feature branch? "
                                     + gitFlowConfig.getFeatureBranchPrefix());
-
-                    if(!isBranchNameRegexCompliant(featureName)){
-                        getLog().warn("The name of the branch is not regex compliant, it does not match: " + featureBranchRegex);
-                        featureName = null;
-                        continue;
-                    }
-                    if (!validBranchName(featureName)) {
-                        getLog().info("The name of the branch is not valid.");
-                        featureName = null;
+                    if(isNotBlank(featureName)) {
+                        if (!isBranchNameRegexCompliant(featureName)) {
+                            getLog().warn("The name of the branch is not regex compliant, it does not match: " + featureBranchRegex);
+                            featureName = null;
+                            continue;
+                        }
+                        if (!validBranchName(featureName)) {
+                            getLog().info("The name of the branch is not valid.");
+                            featureName = null;
+                        }
                     }
                 }
             } catch (PrompterException e) {
