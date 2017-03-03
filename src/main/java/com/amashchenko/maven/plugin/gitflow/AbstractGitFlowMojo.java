@@ -130,7 +130,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private String gitExecutable;
 
     /** Maven session. */
-    @Component
+    @Parameter(defaultValue = "${session}", readonly = true)
     private MavenSession mavenSession;
     /** Maven project. */
     @Parameter(defaultValue = "${project}", readonly = true)
