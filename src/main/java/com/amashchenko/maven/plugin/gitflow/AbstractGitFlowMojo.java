@@ -132,9 +132,6 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** Maven session. */
     @Parameter(defaultValue = "${session}", readonly = true)
     private MavenSession mavenSession;
-    /** Maven project. */
-    @Parameter(defaultValue = "${project}", readonly = true)
-    private MavenProject project;
     /** Default prompter. */
     @Component
     protected Prompter prompter;
@@ -171,8 +168,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         try {
             // read pom.xml
             final MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-            final FileReader fileReader = new FileReader(project.getFile()
-                    .getAbsoluteFile());
+            final FileReader fileReader = new FileReader(mavenSession
+                    .getCurrentProject().getFile().getAbsoluteFile());
             try {
                 final Model model = mavenReader.read(fileReader);
 
