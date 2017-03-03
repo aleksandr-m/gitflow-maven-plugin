@@ -16,6 +16,7 @@
 package com.amashchenko.maven.plugin.gitflow;
 
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.maven.artifact.ArtifactUtils;
@@ -217,15 +218,22 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     protected void checkSnapshotDependencies() throws MojoFailureException {
         getLog().info("Checking for SNAPSHOT versions in dependencies.");
+        List<String> snapshots = new ArrayList<String>();
         List<MavenProject> projects = mavenSession.getProjects();
         for (MavenProject project : projects) {
             List<Dependency> dependencies = project.getDependencies();
             for (Dependency d : dependencies) {
                 if (ArtifactUtils.isSnapshot(d.getVersion())) {
-                    throw new MojoFailureException(
-                            "There is some SNAPSHOT dependencies in the project. Change them or ignore with `allowSnapshots` property.");
+                    snapshots.add(project + " -> " + d);
                 }
             }
+        }
+        if (!snapshots.isEmpty()) {
+            for (String s : snapshots) {
+                getLog().warn(s);
+            }
+            throw new MojoFailureException(
+                    "There is some SNAPSHOT dependencies in the project, see warnings above. Change them or ignore with `allowSnapshots` property.");
         }
     }
 
