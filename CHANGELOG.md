@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.1
+
+* Fixed [#39](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/39) - Snapshot dependency check should not check internal dependencies of a multi module project
+* Improved error reporting of snapshot dependency check
+
 ## v1.4.0
 
 * Added support for `--ff-only` option for release merge ([#30](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/30))
