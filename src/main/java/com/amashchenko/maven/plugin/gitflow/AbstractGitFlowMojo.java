@@ -562,6 +562,28 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Fetches and checkouts from remote if local branch doesn't exist.
+     * 
+     * @param branchName
+     *            Branch name to check.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitFetchRemoteAndCreate(final String branchName)
+            throws MojoFailureException, CommandLineException {
+        if (!gitCheckBranchExists(branchName)) {
+            getLog().info(
+                    "Local branch '"
+                            + branchName
+                            + "' doesn't exist. Trying to fetch and check it out from '"
+                            + gitFlowConfig.getOrigin() + "'.");
+            gitFetchRemote(branchName);
+            gitCreateAndCheckout(branchName, gitFlowConfig.getOrigin() + "/"
+                    + branchName);
+        }
+    }
+
+    /**
      * Executes git fetch and compares local branch with the remote.
      * 
      * @param branchName
@@ -571,14 +593,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitFetchRemoteAndCompare(final String branchName)
             throws MojoFailureException, CommandLineException {
-        getLog().info(
-                "Fetching remote branch '" + gitFlowConfig.getOrigin() + " "
-                        + branchName + "'.");
-
-        CommandResult result = executeGitCommandExitCode("fetch", "--quiet",
-                gitFlowConfig.getOrigin(), branchName);
-
-        if (result.getExitCode() == SUCCESS_EXIT_CODE) {
+        if (gitFetchRemote(branchName)) {
             getLog().info(
                     "Comparing local branch '" + branchName + "' with remote '"
                             + gitFlowConfig.getOrigin() + "/" + branchName
@@ -596,7 +611,30 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                             "Remote branch is ahead of the local branch. Execute git pull.");
                 }
             }
-        } else {
+        }
+    }
+
+    /**
+     * Executes git fetch.
+     * 
+     * @param branchName
+     *            Branch name to fetch.
+     * @return <code>true</code> if git fetch returned success exit code,
+     *         <code>false</code> otherwise.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    private boolean gitFetchRemote(final String branchName)
+            throws MojoFailureException, CommandLineException {
+        getLog().info(
+                "Fetching remote branch '" + gitFlowConfig.getOrigin() + " "
+                        + branchName + "'.");
+
+        CommandResult result = executeGitCommandExitCode("fetch", "--quiet",
+                gitFlowConfig.getOrigin(), branchName);
+
+        boolean success = result.getExitCode() == SUCCESS_EXIT_CODE;
+        if (!success) {
             getLog().warn(
                     "There were some problems fetching remote branch '"
                             + gitFlowConfig.getOrigin()
@@ -604,6 +642,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                             + branchName
                             + "'. You can turn off remote branch fetching by setting the 'fetchRemote' parameter to false.");
         }
+
+        return success;
     }
 
     /**

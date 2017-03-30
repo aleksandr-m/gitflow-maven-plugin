@@ -92,20 +92,6 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             // check uncommitted changes
             checkUncommittedChanges();
 
-            // check snapshots dependencies
-            if (!allowSnapshots) {
-                checkSnapshotDependencies();
-            }
-
-            // fetch and check remote
-            if (fetchRemote) {
-                if (notSameProdDevName()) {
-                    gitFetchRemoteAndCompare(gitFlowConfig
-                            .getDevelopmentBranch());
-                }
-                gitFetchRemoteAndCompare(gitFlowConfig.getProductionBranch());
-            }
-
             // git for-each-ref --count=1 refs/heads/release/*
             final String releaseBranch = gitFindBranches(
                     gitFlowConfig.getReleaseBranchPrefix(), true);
@@ -115,9 +101,32 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                         "Release branch already exists. Cannot start release.");
             }
 
-            // need to be in develop to get correct project version
+            if (fetchRemote) {
+                // checkout from remote if doesn't exist
+                gitFetchRemoteAndCreate(gitFlowConfig.getDevelopmentBranch());
+
+                // fetch and check remote
+                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
+
+                if (notSameProdDevName()) {
+                    // checkout from remote if doesn't exist
+                    gitFetchRemoteAndCreate(gitFlowConfig.getProductionBranch());
+
+                    // fetch and check remote
+                    gitFetchRemoteAndCompare(gitFlowConfig
+                            .getProductionBranch());
+                }
+            }
+
+            // need to be in develop to check snapshots and to get correct
+            // project version
             // git checkout develop
             gitCheckout(gitFlowConfig.getDevelopmentBranch());
+
+            // check snapshots dependencies
+            if (!allowSnapshots) {
+                checkSnapshotDependencies();
+            }
 
             if (!skipTestProject) {
                 // mvn clean test

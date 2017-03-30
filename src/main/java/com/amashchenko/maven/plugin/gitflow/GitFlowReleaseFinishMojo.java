@@ -83,11 +83,6 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             // check uncommitted changes
             checkUncommittedChanges();
 
-            // check snapshots dependencies
-            if (!allowSnapshots) {
-                checkSnapshotDependencies();
-            }
-
             // git for-each-ref --format='%(refname:short)' refs/heads/release/*
             final String releaseBranch = gitFindBranches(
                     gitFlowConfig.getReleaseBranchPrefix(), false).trim();
@@ -100,13 +95,28 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                         "More than one release branch exists. Cannot finish release.");
             }
 
-            // fetch and check remote
+            // check snapshots dependencies
+            if (!allowSnapshots) {
+                gitCheckout(releaseBranch);
+
+                checkSnapshotDependencies();
+            }
+
             if (fetchRemote) {
+                // checkout from remote if doesn't exist
+                gitFetchRemoteAndCreate(gitFlowConfig.getDevelopmentBranch());
+
+                // fetch and check remote
+                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
+
                 if (notSameProdDevName()) {
+                    // checkout from remote if doesn't exist
+                    gitFetchRemoteAndCreate(gitFlowConfig.getProductionBranch());
+
+                    // fetch and check remote
                     gitFetchRemoteAndCompare(gitFlowConfig
-                            .getDevelopmentBranch());
+                            .getProductionBranch());
                 }
-                gitFetchRemoteAndCompare(gitFlowConfig.getProductionBranch());
             }
 
             if (!skipTestProject) {
