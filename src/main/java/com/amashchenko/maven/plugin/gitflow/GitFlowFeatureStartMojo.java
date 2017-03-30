@@ -44,6 +44,13 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipFeatureVersion", defaultValue = "false")
     private boolean skipFeatureVersion = false;
 
+    /**
+     * Regex pattern to enforce naming of the feature branches. Doesn't have
+     * effect if not set or blank.
+     */
+    @Parameter
+    private String featureNamePattern;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -66,7 +73,15 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                             .prompt("What is a name of feature branch? "
                                     + gitFlowConfig.getFeatureBranchPrefix());
 
-                    if (!validBranchName(featureName)) {
+                    if (validBranchName(featureName)) {
+                        if (StringUtils.isNotBlank(featureNamePattern)
+                                && !featureName.matches(featureNamePattern)) {
+                            getLog().info(
+                                    "The name of the branch doesn't match '"
+                                            + featureNamePattern + "'.");
+                            featureName = null;
+                        }
+                    } else {
                         getLog().info("The name of the branch is not valid.");
                         featureName = null;
                     }
