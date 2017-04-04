@@ -126,9 +126,9 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                         version = prompter.prompt("What is release version? ["
                                 + defaultVersion + "]");
 
-                        if (!"".equals(version) && !validBranchName(version)) {
-                            getLog().info(
-                                    "The name of the branch is not valid.");
+                        if (!"".equals(version)
+                                && (!validVersion(version) || !validBranchName(version))) {
+                            getLog().info("The version is not valid.");
                             version = null;
                         }
                     }
