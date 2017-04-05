@@ -15,6 +15,9 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -45,13 +48,58 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             // check uncommitted changes
             checkUncommittedChanges();
 
+            String branchName = gitFlowConfig.getProductionBranch();
+
+            final String supportBranches = gitFindBranches(
+                    gitFlowConfig.getSupportBranchPrefix(), false);
+
+            if (StringUtils.isNotBlank(supportBranches)) {
+                final String[] tmpBranches = supportBranches.split("\\r?\\n");
+
+                String[] branches = new String[tmpBranches.length + 1];
+                for (int i = 0; i < tmpBranches.length; i++) {
+                    branches[i] = tmpBranches[i];
+                }
+                // add production branch to the list
+                branches[tmpBranches.length] = gitFlowConfig
+                        .getProductionBranch();
+
+                List<String> numberedList = new ArrayList<String>();
+                StringBuilder str = new StringBuilder("Branches:").append(LS);
+                for (int i = 0; i < branches.length; i++) {
+                    str.append((i + 1) + ". " + branches[i] + LS);
+                    numberedList.add(String.valueOf(i + 1));
+                }
+                str.append("Choose branch to hotfix");
+
+                String branchNumber = null;
+                try {
+                    while (StringUtils.isBlank(branchNumber)) {
+                        branchNumber = prompter.prompt(str.toString(),
+                                numberedList);
+                    }
+                } catch (PrompterException e) {
+                    getLog().error(e);
+                }
+
+                if (branchNumber != null) {
+                    int num = Integer.parseInt(branchNumber);
+                    branchName = branches[num - 1];
+                }
+
+                if (StringUtils.isBlank(branchName)) {
+                    throw new MojoFailureException("Branch name is blank.");
+                }
+            }
+            //
+
             // need to be in master to get correct project version
             // git checkout master
-            gitCheckout(gitFlowConfig.getProductionBranch());
+            gitCheckout(branchName);
 
             // fetch and check remote
             if (fetchRemote) {
-                gitFetchRemoteAndCompare(gitFlowConfig.getProductionBranch());
+                gitFetchRemoteAndCompare(branchName);
             }
 
             // get current project version from pom
@@ -99,9 +147,18 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                 version = defaultVersion;
             }
 
+            // to finish hotfix on support branch
+            String branchVersionPart = version.replace('/', '_');
+
+            String hotfixBranchName = gitFlowConfig.getHotfixBranchPrefix()
+                    + branchVersionPart;
+            if (!gitFlowConfig.getProductionBranch().equals(branchName)) {
+                hotfixBranchName = gitFlowConfig.getHotfixBranchPrefix()
+                        + branchName + "/" + branchVersionPart;
+            }
+
             // git for-each-ref refs/heads/hotfix/...
-            final boolean hotfixBranchExists = gitCheckBranchExists(gitFlowConfig
-                    .getHotfixBranchPrefix() + version);
+            final boolean hotfixBranchExists = gitCheckBranchExists(hotfixBranchName);
 
             if (hotfixBranchExists) {
                 throw new MojoFailureException(
@@ -109,8 +166,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout -b hotfix/... master
-            gitCreateAndCheckout(gitFlowConfig.getHotfixBranchPrefix()
-                    + version, gitFlowConfig.getProductionBranch());
+            gitCreateAndCheckout(hotfixBranchName, branchName);
 
             // execute if version changed
             if (!version.equals(currentVersion)) {

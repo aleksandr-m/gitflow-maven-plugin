@@ -418,6 +418,27 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Executes git for-each-ref to get all tags.
+     * 
+     * @return Git tags.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected String gitFindTags() throws MojoFailureException,
+            CommandLineException {
+        String tags = executeGitCommandReturn("for-each-ref",
+                "--sort=*authordate", "--format=\"%(refname:short)\"",
+                "refs/tags/");
+
+        // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
+        if (tags != null && !tags.isEmpty()) {
+            tags = tags.replaceAll("\"", "");
+        }
+
+        return tags;
+    }
+
+    /**
      * Checks if local branch with given name exists.
      * 
      * @param branchName
