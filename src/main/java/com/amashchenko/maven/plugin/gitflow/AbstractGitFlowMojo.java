@@ -40,9 +40,9 @@ import org.codehaus.plexus.util.cli.Commandline;
 
 /**
  * Abstract git flow mojo.
- * 
+ *
  * @author Aleksandr Mashchenko
- * 
+ *
  */
 public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** A full name of the versions-maven-plugin set goal. */
@@ -67,7 +67,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Git commit messages.
-     * 
+     *
      * @since 1.2.1
      */
     @Parameter(defaultValue = "${commitMessages}")
@@ -75,7 +75,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Whether this is Tycho build.
-     * 
+     *
      * @since 1.1.0
      */
     @Parameter(defaultValue = "false")
@@ -83,7 +83,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Whether to call Maven install goal during the mojo execution.
-     * 
+     *
      * @since 1.0.5
      */
     @Parameter(property = "installProject", defaultValue = "false")
@@ -91,7 +91,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Whether to allow SNAPSHOT versions in dependencies.
-     * 
+     *
      * @since 1.2.2
      */
     @Parameter(property = "allowSnapshots", defaultValue = "false")
@@ -99,7 +99,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Whether to fetch remote branch and compare it with the local one.
-     * 
+     *
      * @since 1.3.0
      */
     @Parameter(property = "fetchRemote", defaultValue = "true")
@@ -107,7 +107,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Whether to push to the remote.
-     * 
+     *
      * @since 1.3.0
      */
     @Parameter(property = "pushRemote", defaultValue = "true")
@@ -115,7 +115,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Whether to print commands output into the console.
-     * 
+     *
      * @since 1.0.7
      */
     @Parameter(property = "verbose", defaultValue = "false")
@@ -144,7 +144,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Initializes command line executables.
-     * 
+     *
      */
     private void initExecutables() {
         if (StringUtils.isBlank(cmdMvn.getExecutable())) {
@@ -163,7 +163,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Gets current project version from pom.xml file.
-     * 
+     *
      * @return Current project version.
      * @throws MojoFailureException
      */
@@ -194,7 +194,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Compares the production branch name with the development branch name.
-     * 
+     *
      * @return <code>true</code> if the production branch name is different from
      *         the development branch name, <code>false</code> otherwise.
      */
@@ -205,7 +205,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Checks uncommitted changes.
-     * 
+     *
      * @throws MojoFailureException
      * @throws CommandLineException
      */
@@ -251,7 +251,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Checks if branch name is acceptable.
-     * 
+     *
      * @param branchName
      *            Branch name to check.
      * @return <code>true</code> when name is valid, <code>false</code>
@@ -268,7 +268,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Validates version.
-     * 
+     *
      * @param version
      *            Version to validate.
      * @return <code>true</code> when version is valid, <code>false</code>
@@ -290,7 +290,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git commands to check for uncommitted changes.
-     * 
+     *
      * @return <code>true</code> when there are uncommitted changes,
      *         <code>false</code> otherwise.
      * @throws CommandLineException
@@ -332,7 +332,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git config commands to set Git Flow configuration.
-     * 
+     *
      * @throws MojoFailureException
      * @throws CommandLineException
      */
@@ -359,7 +359,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git config command.
-     * 
+     *
      * @param name
      *            Option name.
      * @param value
@@ -379,7 +379,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git for-each-ref with <code>refname:short</code> format.
-     * 
+     *
      * @param branchName
      *            Branch name to find.
      * @param firstMatch
@@ -440,7 +440,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Checks if local branch with given name exists.
-     * 
+     *
      * @param branchName
      *            Name of the branch to check.
      * @return <code>true</code> if local branch exists, <code>false</code>
@@ -457,22 +457,22 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git checkout.
-     * 
-     * @param branchName
-     *            Branch name to checkout.
+     *
+     * @param gitRef
+     *            git reference (eg branch/tag) to checkout.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitCheckout(final String branchName)
+    protected void gitCheckout(final String gitRef)
             throws MojoFailureException, CommandLineException {
-        getLog().info("Checking out '" + branchName + "' branch.");
+        getLog().info("Checking out " + gitRef);
 
-        executeGitCommand("checkout", branchName);
+        executeGitCommand("checkout", gitRef);
     }
 
     /**
      * Executes git checkout -b.
-     * 
+     *
      * @param newBranchName
      *            Create branch with this name.
      * @param fromBranchName
@@ -492,7 +492,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git commit -a -m.
-     * 
+     *
      * @param message
      *            Commit message.
      * @throws MojoFailureException
@@ -507,7 +507,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git rebase or git merge --no-ff or git merge.
-     * 
+     *
      * @param branchName
      *            Branch name to merge.
      * @param rebase
@@ -539,7 +539,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git merge --no-ff.
-     * 
+     *
      * @param branchName
      *            Branch name to merge.
      * @throws MojoFailureException
@@ -552,7 +552,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git merge --squash.
-     * 
+     *
      * @param branchName
      *            Branch name to merge.
      * @throws MojoFailureException
@@ -566,7 +566,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git tag -a -m.
-     * 
+     *
      * @param tagName
      *            Name of the tag.
      * @param message
@@ -583,7 +583,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git branch -d.
-     * 
+     *
      * @param branchName
      *            Branch name to delete.
      * @throws MojoFailureException
@@ -598,7 +598,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git branch -D.
-     * 
+     *
      * @param branchName
      *            Branch name to delete.
      * @throws MojoFailureException
@@ -612,8 +612,21 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Returns the git branch we're currently on.
+     *
+     * @return git branch name we're currently on
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected String gitBranchGet()
+            throws MojoFailureException, CommandLineException {
+
+        return executeGitCommandReturn("rev-parse", "--abbrev-ref", "HEAD");
+    }
+
+    /**
      * Fetches and checkouts from remote if local branch doesn't exist.
-     * 
+     *
      * @param branchName
      *            Branch name to check.
      * @throws MojoFailureException
@@ -635,7 +648,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git fetch and compares local branch with the remote.
-     * 
+     *
      * @param branchName
      *            Branch name to fetch and compare.
      * @throws MojoFailureException
@@ -666,7 +679,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git fetch.
-     * 
+     *
      * @param branchName
      *            Branch name to fetch.
      * @return <code>true</code> if git fetch returned success exit code,
@@ -699,7 +712,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /**
      * Executes git push, optionally with the <code>--follow-tags</code>
      * argument.
-     * 
+     *
      * @param branchName
      *            Branch name to push.
      * @param pushTags
@@ -726,7 +739,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /**
      * Executes 'set' goal of versions-maven-plugin or 'set-version' of
      * tycho-versions-plugin in case it is tycho build.
-     * 
+     *
      * @param version
      *            New version to set.
      * @throws MojoFailureException
@@ -747,7 +760,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes mvn clean test.
-     * 
+     *
      * @throws MojoFailureException
      * @throws CommandLineException
      */
@@ -763,7 +776,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes mvn clean install.
-     * 
+     *
      * @throws MojoFailureException
      * @throws CommandLineException
      */
@@ -775,8 +788,25 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Checks out given {@code tagVersion}, executes mvn deploy & finally
+     * checks out the previous branch again.
+     *
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void mvnDeploy(String tagVersion) throws MojoFailureException,
+            CommandLineException {
+        getLog().info( String.format( "Deploying tag '%s' to nexus", tagVersion));
+        final String currentBranch = gitBranchGet();
+
+        gitCheckout(tagVersion);
+        executeMvnCommand("deploy");
+        gitCheckout(currentBranch);
+    }
+
+    /**
      * Executes Git command and returns output.
-     * 
+     *
      * @param args
      *            Git command line arguments.
      * @return Command output.
@@ -790,7 +820,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes Git command without failing on non successful exit code.
-     * 
+     *
      * @param args
      *            Git command line arguments.
      * @return Command result.
@@ -804,7 +834,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes Git command.
-     * 
+     *
      * @param args
      *            Git command line arguments.
      * @throws CommandLineException
@@ -817,7 +847,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes Maven command.
-     * 
+     *
      * @param args
      *            Maven command line arguments.
      * @throws CommandLineException
@@ -830,7 +860,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes command line.
-     * 
+     *
      * @param cmd
      *            Command line.
      * @param failOnError

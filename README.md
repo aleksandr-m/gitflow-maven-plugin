@@ -131,8 +131,12 @@ Note that although `${project.version}` can be used, any changes to version intr
 
 ## Additional goal parameters
 
-The `gitflow:release-finish`, `gitflow:release` and `gitflow:hotfix-finish` goals have `skipTag` parameter. This parameter controls whether the release/hotfix will be tagged in Git.
+The `gitflow:release-finish`, `gitflow:release` and `gitflow:hotfix-finish` goals have `skipTag` and `skipMvnDeploy` parameters:
+- `skipTag` controls whether the release/hotfix will be tagged in Git.
 The default value is `false` (i.e. the release/hotfix will be tagged).
+- `skipMvnDeploy` controls whether created Git tag will be deployed to nexus.
+Note deployment also requires `skipTag=true`, since only tags get deployed.
+Default value is `true` (i.e. maven artifact won't be deployed).
 
 The `gitflow:feature-start` goal has `skipFeatureVersion` parameter which controls whether the feature name will be appended to the project version or not.
 The default value is `false` (e.g. if the project version is `1.0.0-SNAPSHOT` and feature name is `feature_name` then after the execution it will be `1.0.0-feature_name-SNAPSHOT`).

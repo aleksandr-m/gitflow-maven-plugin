@@ -29,7 +29,7 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
  * The git flow release mojo.
- * 
+ *
  * @author Aleksandr Mashchenko
  * @since 1.2.0
  */
@@ -42,7 +42,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to skip calling Maven test goal before releasing.
-     * 
+     *
      * @since 1.0.5
      */
     @Parameter(property = "skipTestProject", defaultValue = "false")
@@ -51,7 +51,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     /**
      * Whether to rebase branch or merge. If <code>true</code> then rebase will
      * be performed.
-     * 
+     *
      * @since 1.2.3
      */
     @Parameter(property = "releaseRebase", defaultValue = "false")
@@ -59,7 +59,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to use <code>--no-ff</code> option when merging.
-     * 
+     *
      * @since 1.2.3
      */
     @Parameter(property = "releaseMergeNoFF", defaultValue = "true")
@@ -67,7 +67,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to use <code>--ff-only</code> option when merging.
-     * 
+     *
      * @since 1.4.0
      */
     @Parameter(property = "releaseMergeFFOnly", defaultValue = "false")
@@ -76,11 +76,19 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     /**
      * Release version to use instead of the default next release version in non
      * interactive mode.
-     * 
+     *
      * @since 1.3.1
      */
     @Parameter(property = "releaseVersion", defaultValue = "")
     private String releaseVersion = "";
+
+    /**
+     * Whether to skip deploying created tag to nexus, assuming tag was created.
+     *
+     * @since 1.4.2
+     */
+    @Parameter(property = "skipMvnDeploy", defaultValue = "true")
+    private boolean skipMvnDeploy = true;
 
     /** {@inheritDoc} */
     @Override
@@ -198,15 +206,18 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                         releaseMergeNoFF, releaseMergeFFOnly);
             }
 
+            String tagVersion = null;
+
             if (!skipTag) {
                 if (tychoBuild && ArtifactUtils.isSnapshot(version)) {
                     version = version.replace("-" + Artifact.SNAPSHOT_VERSION,
                             "");
                 }
 
+                tagVersion = gitFlowConfig.getVersionTagPrefix() + version;
+
                 // git tag -a ...
-                gitTag(gitFlowConfig.getVersionTagPrefix() + version,
-                        commitMessages.getTagReleaseMessage());
+                gitTag(tagVersion, commitMessages.getTagReleaseMessage());
             }
 
             if (notSameProdDevName()) {
@@ -248,6 +259,10 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 if (notSameProdDevName()) {
                     gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
                 }
+            }
+
+            if (!skipTag && !skipMvnDeploy) {
+                mvnDeploy(tagVersion);
             }
         } catch (CommandLineException e) {
             getLog().error(e);
