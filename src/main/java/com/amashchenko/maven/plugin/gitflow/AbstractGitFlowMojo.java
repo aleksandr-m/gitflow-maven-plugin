@@ -391,15 +391,20 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected String gitFindBranches(final String branchName,
             final boolean firstMatch) throws MojoFailureException,
             CommandLineException {
+        String wildcard = "*";
+        if (branchName.endsWith("/")) {
+            wildcard = "**";
+        }
+
         String branches;
         if (firstMatch) {
             branches = executeGitCommandReturn("for-each-ref", "--count=1",
                     "--format=\"%(refname:short)\"", "refs/heads/" + branchName
-                            + "*");
+                            + wildcard);
         } else {
             branches = executeGitCommandReturn("for-each-ref",
                     "--format=\"%(refname:short)\"", "refs/heads/" + branchName
-                            + "*");
+                            + wildcard);
         }
 
         // on *nix systems return values from git for-each-ref are wrapped in
