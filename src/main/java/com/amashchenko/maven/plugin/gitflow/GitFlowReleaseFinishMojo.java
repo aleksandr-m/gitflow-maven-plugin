@@ -28,9 +28,9 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
  * The git flow release finish mojo.
- * 
+ *
  * @author Aleksandr Mashchenko
- * 
+ *
  */
 @Mojo(name = "release-finish", aggregator = true)
 public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
@@ -45,7 +45,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to skip calling Maven test goal before merging the branch.
-     * 
+     *
      * @since 1.0.5
      */
     @Parameter(property = "skipTestProject", defaultValue = "false")
@@ -54,7 +54,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     /**
      * Whether to rebase branch or merge. If <code>true</code> then rebase will
      * be performed.
-     * 
+     *
      * @since 1.2.3
      */
     @Parameter(property = "releaseRebase", defaultValue = "false")
@@ -62,7 +62,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to use <code>--no-ff</code> option when merging.
-     * 
+     *
      * @since 1.2.3
      */
     @Parameter(property = "releaseMergeNoFF", defaultValue = "true")
@@ -70,11 +70,19 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to use <code>--ff-only</code> option when merging.
-     * 
+     *
      * @since 1.4.0
      */
     @Parameter(property = "releaseMergeFFOnly", defaultValue = "false")
     private boolean releaseMergeFFOnly = false;
+
+    /**
+     * Whether to skip deploying created tag to nexus, assuming tag was created.
+     *
+     * @since 1.4.2
+     */
+    @Parameter(property = "skipMvnDeploy", defaultValue = "true")
+    private boolean skipMvnDeploy = true;
 
     /** {@inheritDoc} */
     @Override
@@ -135,17 +143,18 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
+            String tagVersion = currentVersion;
 
             if (!skipTag) {
-                String tagVersion = currentVersion;
                 if (tychoBuild && ArtifactUtils.isSnapshot(currentVersion)) {
                     tagVersion = currentVersion.replace("-"
                             + Artifact.SNAPSHOT_VERSION, "");
                 }
 
+                tagVersion = gitFlowConfig.getVersionTagPrefix() + tagVersion;
+
                 // git tag -a ...
-                gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
-                        commitMessages.getTagReleaseMessage());
+                gitTag(tagVersion, commitMessages.getTagReleaseMessage());
             }
 
             if (notSameProdDevName()) {
@@ -195,6 +204,10 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 if (notSameProdDevName()) {
                     gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
                 }
+            }
+
+            if (!skipTag && !skipMvnDeploy) {
+                mvnDeploy(tagVersion);
             }
         } catch (CommandLineException e) {
             getLog().error(e);

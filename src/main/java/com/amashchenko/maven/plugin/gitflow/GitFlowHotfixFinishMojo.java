@@ -32,9 +32,9 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
  * The git flow hotfix finish mojo.
- * 
+ *
  * @author Aleksandr Mashchenko
- * 
+ *
  */
 @Mojo(name = "hotfix-finish", aggregator = true)
 public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
@@ -49,11 +49,19 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to skip calling Maven test goal before merging the branch.
-     * 
+     *
      * @since 1.0.5
      */
     @Parameter(property = "skipTestProject", defaultValue = "false")
     private boolean skipTestProject = false;
+
+    /**
+     * Whether to skip deploying created tag to nexus, assuming tag was created.
+     *
+     * @since 1.4.2
+     */
+    @Parameter(property = "skipMvnDeploy", defaultValue = "true")
+    private boolean skipMvnDeploy = true;
 
     /** {@inheritDoc} */
     @Override
@@ -67,7 +75,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     gitFlowConfig.getHotfixBranchPrefix(), false);
 
             if (StringUtils.isBlank(hotfixBranches)) {
-                throw new MojoFailureException("There is no hotfix branches.");
+                throw new MojoFailureException("There are no hotfix branches.");
             }
 
             // fetch and check remote
@@ -125,16 +133,18 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             // git merge --no-ff hotfix/...
             gitMergeNoff(hotfixBranchName);
 
+            String tagVersion = getCurrentProjectVersion();
+
             if (!skipTag) {
-                String tagVersion = getCurrentProjectVersion();
                 if (tychoBuild && ArtifactUtils.isSnapshot(tagVersion)) {
                     tagVersion = tagVersion.replace("-"
                             + Artifact.SNAPSHOT_VERSION, "");
                 }
 
+                tagVersion = gitFlowConfig.getVersionTagPrefix() + tagVersion;
+
                 // git tag -a ...
-                gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
-                        commitMessages.getTagHotfixMessage());
+                gitTag(tagVersion, commitMessages.getTagHotfixMessage());
             }
 
             // check whether release branch exists
@@ -203,6 +213,10 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 if (StringUtils.isBlank(releaseBranch) && notSameProdDevName()) {
                     gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
                 }
+            }
+
+            if (!skipTag && !skipMvnDeploy) {
+                mvnDeploy(tagVersion);
             }
         } catch (CommandLineException e) {
             getLog().error(e);
