@@ -30,7 +30,6 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 /**
  * The git flow release mojo.
  * 
- * @author Aleksandr Mashchenko
  * @since 1.2.0
  */
 @Mojo(name = "release", aggregator = true)

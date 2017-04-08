@@ -33,8 +33,6 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 /**
  * The git flow hotfix finish mojo.
  * 
- * @author Aleksandr Mashchenko
- * 
  */
 @Mojo(name = "hotfix-finish", aggregator = true)
 public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {

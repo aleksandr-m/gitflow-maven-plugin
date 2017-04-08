@@ -29,8 +29,6 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 /**
  * The git flow release finish mojo.
  * 
- * @author Aleksandr Mashchenko
- * 
  */
 @Mojo(name = "release-finish", aggregator = true)
 public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {

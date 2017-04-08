@@ -28,8 +28,6 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 /**
  * The git flow release start mojo.
  * 
- * @author Aleksandr Mashchenko
- * 
  */
 @Mojo(name = "release-start", aggregator = true)
 public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {

@@ -41,8 +41,6 @@ import org.codehaus.plexus.util.cli.Commandline;
 /**
  * Abstract git flow mojo.
  * 
- * @author Aleksandr Mashchenko
- * 
  */
 public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** A full name of the versions-maven-plugin set goal. */

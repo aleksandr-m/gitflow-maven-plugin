@@ -18,8 +18,6 @@ package com.amashchenko.maven.plugin.gitflow;
 /**
  * Git commit messages.
  * 
- * @author Aleksandr Mashchenko
- * 
  */
 public class CommitMessages {
     private String featureStartMessage;
