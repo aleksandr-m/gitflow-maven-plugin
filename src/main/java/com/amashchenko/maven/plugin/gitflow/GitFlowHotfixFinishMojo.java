@@ -64,7 +64,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     gitFlowConfig.getHotfixBranchPrefix(), false);
 
             if (StringUtils.isBlank(hotfixBranches)) {
-                throw new MojoFailureException("There is no hotfix branches.");
+                throw new MojoFailureException("There are no hotfix branches.");
             }
 
             String[] branches = hotfixBranches.split("\\r?\\n");
