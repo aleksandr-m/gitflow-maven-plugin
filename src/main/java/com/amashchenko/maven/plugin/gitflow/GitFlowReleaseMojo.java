@@ -21,7 +21,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
@@ -140,15 +139,8 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 defaultVersion = currentVersion;
             } else {
                 // get default release version
-                try {
-                    final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
-                            currentVersion);
-                    defaultVersion = versionInfo.getReleaseVersionString();
-                } catch (VersionParseException e) {
-                    if (getLog().isDebugEnabled()) {
-                        getLog().debug(e);
-                    }
-                }
+                defaultVersion = new GitFlowVersionInfo(currentVersion)
+                        .getReleaseVersionString();
             }
 
             if (defaultVersion == null) {
@@ -164,7 +156,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                                 + defaultVersion + "]");
 
                         if (!"".equals(version)
-                                && (!validVersion(version) || !validBranchName(version))) {
+                                && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
                             getLog().info("The version is not valid.");
                             version = null;
                         }
@@ -213,18 +205,9 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 gitCheckout(gitFlowConfig.getDevelopmentBranch());
             }
 
-            String nextSnapshotVersion = null;
             // get next snapshot version
-            try {
-                final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
-                        version);
-                nextSnapshotVersion = versionInfo.getNextVersion()
-                        .getSnapshotVersionString();
-            } catch (VersionParseException e) {
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug(e);
-                }
-            }
+            final String nextSnapshotVersion = new GitFlowVersionInfo(
+                    currentVersion).nextSnapshotVersion();
 
             if (StringUtils.isBlank(nextSnapshotVersion)) {
                 throw new MojoFailureException(
@@ -249,6 +232,8 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 }
             }
         } catch (CommandLineException e) {
+            getLog().error(e);
+        } catch (VersionParseException e) {
             getLog().error(e);
         }
     }

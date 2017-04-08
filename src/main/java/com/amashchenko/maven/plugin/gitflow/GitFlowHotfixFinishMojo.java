@@ -24,7 +24,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
@@ -182,18 +181,9 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     // get current project version from pom
                     final String currentVersion = getCurrentProjectVersion();
 
-                    String nextSnapshotVersion = null;
                     // get next snapshot version
-                    try {
-                        final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
-                                currentVersion);
-                        nextSnapshotVersion = versionInfo.getNextVersion()
-                                .getSnapshotVersionString();
-                    } catch (VersionParseException e) {
-                        if (getLog().isDebugEnabled()) {
-                            getLog().debug(e);
-                        }
-                    }
+                    final String nextSnapshotVersion = new GitFlowVersionInfo(
+                            currentVersion).nextSnapshotVersion();
 
                     if (StringUtils.isBlank(nextSnapshotVersion)) {
                         throw new MojoFailureException(
@@ -233,6 +223,8 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 }
             }
         } catch (CommandLineException e) {
+            getLog().error(e);
+        } catch (VersionParseException e) {
             getLog().error(e);
         }
     }

@@ -18,7 +18,6 @@ package com.amashchenko.maven.plugin.gitflow;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.MavenSession;
@@ -31,7 +30,6 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
-import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.codehaus.plexus.components.interactivity.Prompter;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
@@ -262,28 +260,6 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         CommandResult r = executeGitCommandExitCode("check-ref-format",
                 "--allow-onelevel", branchName);
         return r.getExitCode() == SUCCESS_EXIT_CODE;
-    }
-
-    /**
-     * Validates version.
-     * 
-     * @param version
-     *            Version to validate.
-     * @return <code>true</code> when version is valid, <code>false</code>
-     *         otherwise.
-     */
-    protected boolean validVersion(final String version) {
-        boolean res = false;
-        Matcher alternateMatcher = DefaultVersionInfo.ALTERNATE_PATTERN
-                .matcher(version);
-        if (alternateMatcher.matches()) {
-            res = true;
-        } else {
-            Matcher standardMatcher = DefaultVersionInfo.STANDARD_PATTERN
-                    .matcher(version);
-            res = standardMatcher.matches();
-        }
-        return res;
     }
 
     /**

@@ -18,12 +18,9 @@ package com.amashchenko.maven.plugin.gitflow;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
@@ -103,22 +100,9 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
 
-            String defaultVersion = null;
             // get default hotfix version
-            try {
-                final DefaultVersionInfo versionInfo = new DefaultVersionInfo(
-                        currentVersion);
-                defaultVersion = versionInfo.getNextVersion()
-                        .getReleaseVersionString();
-
-                if (tychoBuild && ArtifactUtils.isSnapshot(currentVersion)) {
-                    defaultVersion += "-" + Artifact.SNAPSHOT_VERSION;
-                }
-            } catch (VersionParseException e) {
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug(e);
-                }
-            }
+            final String defaultVersion = new GitFlowVersionInfo(currentVersion)
+                    .hotfixVersion(tychoBuild);
 
             if (defaultVersion == null) {
                 throw new MojoFailureException(
@@ -132,7 +116,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                             + defaultVersion + "]");
 
                     if (!"".equals(version)
-                            && (!validVersion(version) || !validBranchName(version))) {
+                            && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
                         getLog().info("The version is not valid.");
                         version = null;
                     }
@@ -180,6 +164,8 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                 mvnCleanInstall();
             }
         } catch (CommandLineException e) {
+            getLog().error(e);
+        } catch (VersionParseException e) {
             getLog().error(e);
         }
     }
