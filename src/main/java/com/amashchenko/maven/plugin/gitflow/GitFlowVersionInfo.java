@@ -72,15 +72,16 @@ public class GitFlowVersionInfo extends DefaultVersionInfo {
 
         if (digits != null) {
             if (index != null && index >= 0 && index < digits.size()) {
+                int origDigitsLength = joinDigitString(digits).length();
                 digits.set(index,
                         incrementVersionString((String) digits.get(index)));
+                for (int i = index + 1; i < digits.size(); i++) {
+                    digits.set(i, "0");
+                }
                 String digitsStr = joinDigitString(digits);
                 nextVersion = digitsStr
                         + getSnapshotVersionString()
-                                .substring(
-                                        toString().length() < digitsStr
-                                                .length() ? toString().length()
-                                                : digitsStr.length());
+                                .substring(origDigitsLength);
             } else {
                 nextVersion = getNextVersion().getSnapshotVersionString();
             }
