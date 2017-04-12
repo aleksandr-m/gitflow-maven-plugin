@@ -22,7 +22,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.4.1</version>
+                <version>1.5.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -40,6 +40,7 @@ The plugin is available from Maven Central.
 - `gitflow:feature-finish` - Merges a feature branch.
 - `gitflow:hotfix-start` - Starts a hotfix branch and updates version(s) to hotfix version.
 - `gitflow:hotfix-finish` - Merges a hotfix branch.
+- `gitflow:support-start` - Starts a support branch from the production tag.
 - `gitflow:help` - Displays help information.
 
 
@@ -137,6 +138,9 @@ The default value is `false` (i.e. the release/hotfix will be tagged).
 The `gitflow:feature-start` goal has `skipFeatureVersion` parameter which controls whether the feature name will be appended to the project version or not.
 The default value is `false` (e.g. if the project version is `1.0.0-SNAPSHOT` and feature name is `feature_name` then after the execution it will be `1.0.0-feature_name-SNAPSHOT`).
 
+The `gitflow:feature-start` goal has `featureNamePattern` parameter which allows to enforce naming of the feature branches with a regular expression. Doesn't have effect if it isn't set or left blank.
+By default it isn't set.
+
 All `-finish` goals have `keepBranch` parameter which controls whether created support branch will be kept in Git after the goal finishes.
 The default value is `false` (i.e. the supporting branch will be deleted).
 
@@ -147,7 +151,8 @@ All `release` goals have `allowSnapshots` parameter which controls whether SNAPS
 
 ### Remote interaction
 
-At the start of the each goal remote branch(es) will be fetched and compared with the local branch(es). This can be turned off by setting `fetchRemote` parameter to `false`.
+At the start of the each goal remote branch(es) will be fetched and compared with the local branch(es). If the local branch doesn't exist it will be checked out from the remote.
+Both of these options can be turned off by setting `fetchRemote` parameter to `false`.
 At the end of the `-finish` goals development or production and development branches will be pushed to remote. This can be turned off by setting `pushRemote` parameter to `false`.
 The default remote name is `origin`. It can be customized with `<gitFlowConfig><origin>custom_origin</origin></gitFlowConfig>` configuration in pom.xml.
 

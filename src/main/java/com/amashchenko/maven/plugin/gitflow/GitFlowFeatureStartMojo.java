@@ -43,6 +43,8 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
     /**
      * Regex pattern to enforce naming of the feature branches. Doesn't have
      * effect if not set or blank.
+     * 
+     * @since 1.5.0
      */
     @Parameter
     private String featureNamePattern;

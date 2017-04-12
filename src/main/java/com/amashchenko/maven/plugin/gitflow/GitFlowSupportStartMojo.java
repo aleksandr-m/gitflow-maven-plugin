@@ -27,6 +27,7 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 /**
  * The git flow support start mojo.
  * 
+ * @since 1.5.0
  */
 @Mojo(name = "support-start", aggregator = true)
 public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {

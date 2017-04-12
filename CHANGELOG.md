@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.5.0
+
+* Added ability to fetch and checkout from the remote if local branch doesn't exist - closes [#40](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/40)
+* Added support for the `support` branches - see [#23](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/23)
+* Added ability to enforce naming of the feature branches - closes [#38](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/38)
+* Added validation for version received via prompt
+* Improved getting project versions
+* Other small fixes and code improvements
+
 ## v1.4.1
 
 * Fixed [#39](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/39) - Snapshot dependency check should not check internal dependencies of a multi module project
