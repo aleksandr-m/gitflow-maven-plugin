@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20170412" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>Git-Flow Maven Plugin &#x2013; gitflow:feature-finish</title>
+    <title>Git-Flow Maven Plugin &#x2013; gitflow:support-start</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.4.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -69,7 +69,7 @@
         Git-Flow Maven Plugin</a>
                     <span class="divider">/</span>
       </li>
-        <li class="active ">gitflow:feature-finish</li>
+        <li class="active ">gitflow:support-start</li>
         
                 
                     
@@ -142,15 +142,15 @@
             
   
     <div class="section">
-<h2><a name="gitflow:feature-finish"></a>gitflow:feature-finish</h2>
+<h2><a name="gitflow:support-start"></a>gitflow:support-start</h2>
       
 <p><b>Full name</b>:</p>
       
-<p>com.amashchenko.maven.plugin:gitflow-maven-plugin:1.5.0:feature-finish</p>
+<p>com.amashchenko.maven.plugin:gitflow-maven-plugin:1.5.0:support-start</p>
       
 <p><b>Description</b>:</p>
       
-<div>The git flow feature finish mojo.</div>
+<div>The git flow support start mojo.</div>
       
 <p><b>Attributes</b>:</p>
       
@@ -159,6 +159,8 @@
 <li>Requires a Maven project to be executed.</li>
         
 <li>Executes as an aggregator plugin.</li>
+        
+<li>Since version: <tt>1.5.0</tt>.</li>
       </ul>
       
 <div class="section">
@@ -201,18 +203,6 @@
           
 <tr class="b">
             
-<td><b><a href="#featureSquash">featureSquash</a></b></td>
-            
-<td><tt>boolean</tt></td>
-            
-<td><tt>1.2.3</tt></td>
-            
-<td>Whether to squash feature branch commits into a single commit upon
-merging.<br /><b>Default value is</b>: <tt>false</tt>.<br /><b>User property is</b>: <tt>featureSquash</tt>.</td>
-          </tr>
-          
-<tr class="a">
-            
 <td><b><a href="#fetchRemote">fetchRemote</a></b></td>
             
 <td><tt>boolean</tt></td>
@@ -222,29 +212,29 @@ merging.<br /><b>Default value is</b>: <tt>false</tt>.<br /><b>User property is<
 <td>Whether to fetch remote branch and compare it with the local one.<br /><b>Default value is</b>: <tt>true</tt>.<br /><b>User property is</b>: <tt>fetchRemote</tt>.</td>
           </tr>
           
-<tr class="b">
+<tr class="a">
             
 <td><b><a href="#gitExecutable">gitExecutable</a></b></td>
             
 <td><tt>String</tt></td>
             
-<td><tt>-</tt></td>
+<td><tt>1.5.0</tt></td>
             
 <td>The path to the Git executable. Defaults to &quot;git&quot;.<br /><b>User property is</b>: <tt>gitExecutable</tt>.</td>
           </tr>
           
-<tr class="a">
+<tr class="b">
             
 <td><b><a href="#gitFlowConfig">gitFlowConfig</a></b></td>
             
 <td><tt>GitFlowConfig</tt></td>
             
-<td><tt>-</tt></td>
+<td><tt>1.5.0</tt></td>
             
 <td>Git flow configuration.<br /><b>Default value is</b>: <tt>${gitFlowConfig}</tt>.<br /></td>
           </tr>
           
-<tr class="b">
+<tr class="a">
             
 <td><b><a href="#installProject">installProject</a></b></td>
             
@@ -255,24 +245,13 @@ merging.<br /><b>Default value is</b>: <tt>false</tt>.<br /><b>User property is<
 <td>Whether to call Maven install goal during the mojo execution.<br /><b>Default value is</b>: <tt>false</tt>.<br /><b>User property is</b>: <tt>installProject</tt>.</td>
           </tr>
           
-<tr class="a">
-            
-<td><b><a href="#keepBranch">keepBranch</a></b></td>
-            
-<td><tt>boolean</tt></td>
-            
-<td><tt>-</tt></td>
-            
-<td>Whether to keep feature branch after finish.<br /><b>Default value is</b>: <tt>false</tt>.<br /><b>User property is</b>: <tt>keepBranch</tt>.</td>
-          </tr>
-          
 <tr class="b">
             
 <td><b><a href="#mvnExecutable">mvnExecutable</a></b></td>
             
 <td><tt>String</tt></td>
             
-<td><tt>-</tt></td>
+<td><tt>1.5.0</tt></td>
             
 <td>The path to the Maven executable. Defaults to &quot;mvn&quot;.<br /><b>User property is</b>: <tt>mvnExecutable</tt>.</td>
           </tr>
@@ -290,17 +269,6 @@ merging.<br /><b>Default value is</b>: <tt>false</tt>.<br /><b>User property is<
           
 <tr class="b">
             
-<td><b><a href="#skipTestProject">skipTestProject</a></b></td>
-            
-<td><tt>boolean</tt></td>
-            
-<td><tt>1.0.5</tt></td>
-            
-<td>Whether to skip calling Maven test goal before merging the branch.<br /><b>Default value is</b>: <tt>false</tt>.<br /><b>User property is</b>: <tt>skipTestProject</tt>.</td>
-          </tr>
-          
-<tr class="a">
-            
 <td><b><a href="#tychoBuild">tychoBuild</a></b></td>
             
 <td><tt>boolean</tt></td>
@@ -310,7 +278,7 @@ merging.<br /><b>Default value is</b>: <tt>false</tt>.<br /><b>User property is<
 <td>Whether this is Tycho build.<br /><b>Default value is</b>: <tt>false</tt>.<br /></td>
           </tr>
           
-<tr class="b">
+<tr class="a">
             
 <td><b><a href="#verbose">verbose</a></b></td>
             
@@ -356,23 +324,6 @@ merging.<br /><b>Default value is</b>: <tt>false</tt>.<br /><b>User property is<
           
 <li><b>Default</b>: <tt>${commitMessages}</tt></li>
         </ul><hr />
-<p><b><a name="featureSquash">featureSquash</a>:</b></p>
-        
-<div>Whether to squash feature branch commits into a single commit upon
-merging.</div>
-        
-<ul>
-          
-<li><b>Type</b>: <tt>boolean</tt></li>
-          
-<li><b>Since</b>: <tt>1.2.3</tt></li>
-          
-<li><b>Required</b>: <tt>No</tt></li>
-          
-<li><b>User Property</b>: <tt>featureSquash</tt></li>
-          
-<li><b>Default</b>: <tt>false</tt></li>
-        </ul><hr />
 <p><b><a name="fetchRemote">fetchRemote</a>:</b></p>
         
 <div>Whether to fetch remote branch and compare it with the local one.</div>
@@ -397,6 +348,8 @@ merging.</div>
           
 <li><b>Type</b>: <tt>java.lang.String</tt></li>
           
+<li><b>Since</b>: <tt>1.5.0</tt></li>
+          
 <li><b>Required</b>: <tt>No</tt></li>
           
 <li><b>User Property</b>: <tt>gitExecutable</tt></li>
@@ -408,6 +361,8 @@ merging.</div>
 <ul>
           
 <li><b>Type</b>: <tt>com.amashchenko.maven.plugin.gitflow.GitFlowConfig</tt></li>
+          
+<li><b>Since</b>: <tt>1.5.0</tt></li>
           
 <li><b>Required</b>: <tt>No</tt></li>
           
@@ -429,20 +384,6 @@ merging.</div>
           
 <li><b>Default</b>: <tt>false</tt></li>
         </ul><hr />
-<p><b><a name="keepBranch">keepBranch</a>:</b></p>
-        
-<div>Whether to keep feature branch after finish.</div>
-        
-<ul>
-          
-<li><b>Type</b>: <tt>boolean</tt></li>
-          
-<li><b>Required</b>: <tt>No</tt></li>
-          
-<li><b>User Property</b>: <tt>keepBranch</tt></li>
-          
-<li><b>Default</b>: <tt>false</tt></li>
-        </ul><hr />
 <p><b><a name="mvnExecutable">mvnExecutable</a>:</b></p>
         
 <div>The path to the Maven executable. Defaults to &quot;mvn&quot;.</div>
@@ -450,6 +391,8 @@ merging.</div>
 <ul>
           
 <li><b>Type</b>: <tt>java.lang.String</tt></li>
+          
+<li><b>Since</b>: <tt>1.5.0</tt></li>
           
 <li><b>Required</b>: <tt>No</tt></li>
           
@@ -470,22 +413,6 @@ merging.</div>
 <li><b>User Property</b>: <tt>pushRemote</tt></li>
           
 <li><b>Default</b>: <tt>true</tt></li>
-        </ul><hr />
-<p><b><a name="skipTestProject">skipTestProject</a>:</b></p>
-        
-<div>Whether to skip calling Maven test goal before merging the branch.</div>
-        
-<ul>
-          
-<li><b>Type</b>: <tt>boolean</tt></li>
-          
-<li><b>Since</b>: <tt>1.0.5</tt></li>
-          
-<li><b>Required</b>: <tt>No</tt></li>
-          
-<li><b>User Property</b>: <tt>skipTestProject</tt></li>
-          
-<li><b>Default</b>: <tt>false</tt></li>
         </ul><hr />
 <p><b><a name="tychoBuild">tychoBuild</a>:</b></p>
         
