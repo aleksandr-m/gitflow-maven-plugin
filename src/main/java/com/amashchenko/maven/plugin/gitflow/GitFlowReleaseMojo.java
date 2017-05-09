@@ -206,8 +206,8 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             }
 
             // get next snapshot version
-            final String nextSnapshotVersion = new GitFlowVersionInfo(
-                    currentVersion).nextSnapshotVersion();
+            final String nextSnapshotVersion = new GitFlowVersionInfo(version)
+                    .nextSnapshotVersion();
 
             if (StringUtils.isBlank(nextSnapshotVersion)) {
                 throw new MojoFailureException(
