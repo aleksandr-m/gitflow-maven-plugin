@@ -615,8 +615,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             if (counts != null && counts.length > 1) {
                 if (!"0".equals(org.apache.commons.lang3.StringUtils
                         .deleteWhitespace(counts[1]))) {
-                    throw new MojoFailureException(
-                            "Remote branch is ahead of the local branch. Execute git pull.");
+                    throw new MojoFailureException("Remote branch '"
+                            + gitFlowConfig.getOrigin() + "/" + branchName
+                            + "' is ahead of the local branch '" + branchName
+                            + "'. Execute git pull.");
                 }
             }
         }
