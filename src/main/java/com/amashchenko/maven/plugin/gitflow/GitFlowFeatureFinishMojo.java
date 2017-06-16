@@ -54,6 +54,14 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "featureSquash", defaultValue = "false")
     private boolean featureSquash = false;
 
+    /**
+     * Whether to push to the remote.
+     * 
+     * @since 1.3.0
+     */
+    @Parameter(property = "pushRemote", defaultValue = "true")
+    private boolean pushRemote;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {

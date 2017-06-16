@@ -86,28 +86,12 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected boolean installProject = false;
 
     /**
-     * Whether to allow SNAPSHOT versions in dependencies.
-     * 
-     * @since 1.2.2
-     */
-    @Parameter(property = "allowSnapshots", defaultValue = "false")
-    protected boolean allowSnapshots = false;
-
-    /**
      * Whether to fetch remote branch and compare it with the local one.
      * 
      * @since 1.3.0
      */
     @Parameter(property = "fetchRemote", defaultValue = "true")
     protected boolean fetchRemote;
-
-    /**
-     * Whether to push to the remote.
-     * 
-     * @since 1.3.0
-     */
-    @Parameter(property = "pushRemote", defaultValue = "true")
-    protected boolean pushRemote;
 
     /**
      * Whether to print commands output into the console.

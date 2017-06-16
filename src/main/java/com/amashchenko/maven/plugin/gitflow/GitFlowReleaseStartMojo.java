@@ -47,6 +47,14 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     private boolean sameBranchName = false;
 
     /**
+     * Whether to allow SNAPSHOT versions in dependencies.
+     * 
+     * @since 1.2.2
+     */
+    @Parameter(property = "allowSnapshots", defaultValue = "false")
+    private boolean allowSnapshots = false;
+
+    /**
      * Release version to use instead of the default next release version in non
      * interactive mode.
      * 

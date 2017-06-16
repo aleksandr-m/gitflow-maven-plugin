@@ -49,6 +49,14 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     private boolean skipTestProject = false;
 
     /**
+     * Whether to allow SNAPSHOT versions in dependencies.
+     * 
+     * @since 1.2.2
+     */
+    @Parameter(property = "allowSnapshots", defaultValue = "false")
+    private boolean allowSnapshots = false;
+
+    /**
      * Whether to rebase branch or merge. If <code>true</code> then rebase will
      * be performed.
      * 
@@ -64,6 +72,14 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
      */
     @Parameter(property = "releaseMergeNoFF", defaultValue = "true")
     private boolean releaseMergeNoFF = true;
+
+    /**
+     * Whether to push to the remote.
+     * 
+     * @since 1.3.0
+     */
+    @Parameter(property = "pushRemote", defaultValue = "true")
+    private boolean pushRemote;
 
     /**
      * Whether to use <code>--ff-only</code> option when merging.
