@@ -122,6 +122,8 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
             // fetch and check remote
             if (fetchRemote) {
+                gitFetchRemoteAndCompare(hotfixBranchName);
+
                 if (supportBranchName != null) {
                     gitFetchRemoteAndCompare(supportBranchName);
                 } else {

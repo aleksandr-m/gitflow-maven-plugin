@@ -77,11 +77,6 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 throw new MojoFailureException("There are no feature branches.");
             }
 
-            // fetch and check remote
-            if (fetchRemote) {
-                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
-            }
-
             final String[] branches = featureBranches.split("\\r?\\n");
 
             List<String> numberedList = new ArrayList<String>();
@@ -112,6 +107,13 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             if (StringUtils.isBlank(featureBranchName)) {
                 throw new MojoFailureException(
                         "Feature branch name to finish is blank.");
+            }
+
+            // fetch and check remote
+            if (fetchRemote) {
+                gitFetchRemoteAndCompare(featureBranchName);
+
+                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
             }
 
             if (!skipTestProject) {

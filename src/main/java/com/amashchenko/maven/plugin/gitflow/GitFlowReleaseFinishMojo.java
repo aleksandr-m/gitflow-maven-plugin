@@ -116,6 +116,9 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (fetchRemote) {
+                // fetch and check remote
+                gitFetchRemoteAndCompare(releaseBranch);
+
                 // checkout from remote if doesn't exist
                 gitFetchRemoteAndCreate(gitFlowConfig.getDevelopmentBranch());
 
