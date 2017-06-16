@@ -683,6 +683,23 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
     }
 
+    protected void gitPushDelete(final String branchName)
+            throws MojoFailureException, CommandLineException {
+        getLog().info(
+                "Deleting remote branch '" + branchName + "' from '"
+                        + gitFlowConfig.getOrigin() + "'.");
+
+        CommandResult result = executeGitCommandExitCode("push", "--delete",
+                gitFlowConfig.getOrigin(), branchName);
+
+        if (result.getExitCode() != SUCCESS_EXIT_CODE) {
+            getLog().warn(
+                    "There were some problems deleting remote branch '"
+                            + branchName + "' from '"
+                            + gitFlowConfig.getOrigin() + "'.");
+        }
+    }
+
     /**
      * Executes 'set' goal of versions-maven-plugin or 'set-version' of
      * tycho-versions-plugin in case it is tycho build.

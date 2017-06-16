@@ -202,6 +202,10 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 if (notSameProdDevName()) {
                     gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
                 }
+
+                if (!keepBranch) {
+                    gitPushDelete(releaseBranch);
+                }
             }
         } catch (CommandLineException e) {
             getLog().error(e);

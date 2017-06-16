@@ -170,6 +170,10 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
             if (pushRemote) {
                 gitPush(gitFlowConfig.getDevelopmentBranch(), false);
+
+                if (!keepBranch) {
+                    gitPushDelete(featureBranchName);
+                }
             }
         } catch (CommandLineException e) {
             getLog().error(e);

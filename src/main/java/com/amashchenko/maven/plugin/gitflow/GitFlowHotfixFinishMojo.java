@@ -231,6 +231,10 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                         gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
                     }
                 }
+
+                if (!keepBranch) {
+                    gitPushDelete(hotfixBranchName);
+                }
             }
         } catch (CommandLineException e) {
             getLog().error(e);
