@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
@@ -32,6 +33,13 @@ import org.codehaus.plexus.util.cli.CommandLineException;
  */
 @Mojo(name = "hotfix-start", aggregator = true)
 public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
+
+    /**
+     * Whether to push to the remote.
+     * 
+     */
+    @Parameter(property = "pushRemote", defaultValue = "false")
+    private boolean pushRemote;
 
     /** {@inheritDoc} */
     @Override
@@ -162,6 +170,10 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             if (installProject) {
                 // mvn clean install
                 mvnCleanInstall();
+            }
+
+            if (pushRemote) {
+                gitPush(hotfixBranchName, false);
             }
         } catch (CommandLineException e) {
             getLog().error(e);

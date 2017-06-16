@@ -63,6 +63,13 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "releaseVersion", defaultValue = "")
     private String releaseVersion = "";
 
+    /**
+     * Whether to push to the remote.
+     * 
+     */
+    @Parameter(property = "pushRemote", defaultValue = "false")
+    private boolean pushRemote;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -162,6 +169,10 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             if (installProject) {
                 // mvn clean install
                 mvnCleanInstall();
+            }
+
+            if (pushRemote) {
+                gitPush(branchName, false);
             }
         } catch (CommandLineException e) {
             getLog().error(e);

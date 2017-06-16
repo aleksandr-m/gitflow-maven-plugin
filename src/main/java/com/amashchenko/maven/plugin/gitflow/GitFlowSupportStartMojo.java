@@ -20,6 +20,7 @@ import java.util.Arrays;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
@@ -31,6 +32,13 @@ import org.codehaus.plexus.util.cli.CommandLineException;
  */
 @Mojo(name = "support-start", aggregator = true)
 public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
+
+    /**
+     * Whether to push to the remote.
+     * 
+     */
+    @Parameter(property = "pushRemote", defaultValue = "true")
+    private boolean pushRemote;
 
     /** {@inheritDoc} */
     @Override
@@ -73,6 +81,10 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
             if (installProject) {
                 // mvn clean install
                 mvnCleanInstall();
+            }
+
+            if (pushRemote) {
+                gitPush(gitFlowConfig.getSupportBranchPrefix() + tagName, false);
             }
         } catch (CommandLineException e) {
             getLog().error(e);
