@@ -30,7 +30,7 @@ try {
     String expected = FileUtils.fileRead(expectedFile, "UTF-8");
 
     if (!expected.equals(actual)) {
-        System.out.println("release-finish expected: " + expected + " actual was:" + actual);
+        System.out.println("release expected: " + expected + " actual was:" + actual);
         return false;
     }
 
@@ -44,7 +44,7 @@ try {
     expected = FileUtils.fileRead(expectedFile, "UTF-8");
 
     if (!expected.equals(actual)) {
-        System.out.println("release-finish expected: " + expected + " actual was:" + actual);
+        System.out.println("release expected: " + expected + " actual was:" + actual);
         return false;
     }
 
