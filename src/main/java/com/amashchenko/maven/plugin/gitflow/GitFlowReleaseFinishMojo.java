@@ -89,6 +89,13 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "releaseMergeFFOnly", defaultValue = "false")
     private boolean releaseMergeFFOnly = false;
 
+    /**
+     * Whether to remove qualifiers from the next development version.
+     * 
+     */
+    @Parameter(property = "digitsOnlyDevVersion", defaultValue = "false")
+    private boolean digitsOnlyDevVersion = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -172,9 +179,15 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                         releaseMergeFFOnly);
             }
 
+            GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(
+                    currentVersion);
+            if (digitsOnlyDevVersion) {
+                versionInfo = versionInfo.digitsVersionInfo();
+            }
+
             // get next snapshot version
-            final String nextSnapshotVersion = new GitFlowVersionInfo(
-                    currentVersion).nextSnapshotVersion();
+            final String nextSnapshotVersion = versionInfo
+                    .nextSnapshotVersion();
 
             if (StringUtils.isBlank(nextSnapshotVersion)) {
                 throw new MojoFailureException(

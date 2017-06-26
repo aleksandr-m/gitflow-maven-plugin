@@ -74,4 +74,23 @@ public class GitFlowVersionInfoTest {
         Assert.assertNotNull(info);
         Assert.assertEquals("0.10-SNAPSHOT", info.hotfixVersion(true));
     }
+
+    @Test
+    public void testDigitsVersionInfo() throws Exception {
+        GitFlowVersionInfo info = new GitFlowVersionInfo("0.9");
+        Assert.assertNotNull(info);
+        info = info.digitsVersionInfo();
+        Assert.assertNotNull(info);
+        Assert.assertEquals(new GitFlowVersionInfo("0.9"), info);
+    }
+
+    @Test
+    public void testDigitsVersionInfo2() throws Exception {
+        GitFlowVersionInfo info = new GitFlowVersionInfo(
+                "0.9-RC3-feature-SNAPSHOT");
+        Assert.assertNotNull(info);
+        info = info.digitsVersionInfo();
+        Assert.assertNotNull(info);
+        Assert.assertEquals(new GitFlowVersionInfo("0.9"), info);
+    }
 }
