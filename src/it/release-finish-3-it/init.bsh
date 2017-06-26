@@ -1,0 +1,23 @@
+try {
+    new File(basedir, "gitignorefile").renameTo(new File(basedir, ".gitignore"));
+
+    Process p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " init");
+    p.waitFor();
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " add .");
+    p.waitFor();
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " commit -m init");
+    p.waitFor();
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " branch release/0.0.3-RC1-feature1");
+    p.waitFor();
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " checkout -b develop");
+    p.waitFor();
+
+} catch (Exception e) {
+    e.printStackTrace();
+    return false;
+}
+return true;
