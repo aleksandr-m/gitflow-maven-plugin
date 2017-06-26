@@ -96,6 +96,14 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "digitsOnlyDevVersion", defaultValue = "false")
     private boolean digitsOnlyDevVersion = false;
 
+    /**
+     * Development version to use instead of the default next development
+     * version in non interactive mode.
+     * 
+     */
+    @Parameter(property = "developmentVersion", defaultValue = "")
+    private String developmentVersion = "";
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -179,15 +187,20 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                         releaseMergeFFOnly);
             }
 
-            GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(
-                    currentVersion);
-            if (digitsOnlyDevVersion) {
-                versionInfo = versionInfo.digitsVersionInfo();
-            }
-
             // get next snapshot version
-            final String nextSnapshotVersion = versionInfo
-                    .nextSnapshotVersion();
+            final String nextSnapshotVersion;
+            if (!settings.isInteractiveMode()
+                    && StringUtils.isNotBlank(developmentVersion)) {
+                nextSnapshotVersion = developmentVersion;
+            } else {
+                GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(
+                        currentVersion);
+                if (digitsOnlyDevVersion) {
+                    versionInfo = versionInfo.digitsVersionInfo();
+                }
+
+                nextSnapshotVersion = versionInfo.nextSnapshotVersion();
+            }
 
             if (StringUtils.isBlank(nextSnapshotVersion)) {
                 throw new MojoFailureException(
