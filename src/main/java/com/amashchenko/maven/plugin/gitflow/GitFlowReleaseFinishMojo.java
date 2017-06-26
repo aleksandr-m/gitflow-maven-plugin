@@ -104,6 +104,14 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "developmentVersion", defaultValue = "")
     private String developmentVersion = "";
 
+    /**
+     * Which digit to increment in the next development version. Starts from
+     * zero.
+     * 
+     */
+    @Parameter(property = "versionDigitToIncrement")
+    private Integer versionDigitToIncrement;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -199,7 +207,8 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                     versionInfo = versionInfo.digitsVersionInfo();
                 }
 
-                nextSnapshotVersion = versionInfo.nextSnapshotVersion();
+                nextSnapshotVersion = versionInfo
+                        .nextSnapshotVersion(versionDigitToIncrement);
             }
 
             if (StringUtils.isBlank(nextSnapshotVersion)) {
