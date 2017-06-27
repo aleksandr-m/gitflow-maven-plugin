@@ -675,11 +675,11 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                         + gitFlowConfig.getOrigin() + "'.");
 
         if (pushTags) {
-            executeGitCommand("push", "--quiet", "--follow-tags",
+            executeGitCommand("push", "--quiet", "-u", "--follow-tags",
                     gitFlowConfig.getOrigin(), branchName);
         } else {
-            executeGitCommand("push", "--quiet", gitFlowConfig.getOrigin(),
-                    branchName);
+            executeGitCommand("push", "--quiet", "-u",
+                    gitFlowConfig.getOrigin(), branchName);
         }
     }
 
