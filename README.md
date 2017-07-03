@@ -22,7 +22,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.5.0</version>
+                <version>1.6.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -142,18 +142,32 @@ The `gitflow:feature-start` goal has `featureNamePattern` parameter which allows
 By default it isn't set.
 
 All `-finish` goals have `keepBranch` parameter which controls whether created support branch will be kept in Git after the goal finishes.
-The default value is `false` (i.e. the supporting branch will be deleted).
+The default value is `false` (i.e. the supporting branch will be deleted). If the `pushRemote` parameter is set to `true` and `keepBranch` is `false` remote branch will be deleted as well.
 
 All `-finish` goals and `gitflow:release` have `skipTestProject` parameter which controls whether Maven `test` goal will be called before merging branches.
 The default value is `false` (i.e. the project will be tested before merging branches).
 
 All `release` goals have `allowSnapshots` parameter which controls whether SNAPSHOT dependencies are allowed. The default value is `false` (i.e. build fails if there SNAPSHOT dependency in project).
 
+The `gitflow:release-finish` and `gitflow:release` goals have `digitsOnlyDevVersion` parameter which will remove qualifiers from the next development version if set to `true`.
+For example, if the release version is `1.0.0-Final` then development version will be `1.0.1-SNAPSHOT`.
+The default value is `false` (i.e. qualifiers will be preserved in next development version).
+
+The `gitflow:release-finish` and `gitflow:release` goals have `developmentVersion` parameter which can be used to set the next development version in non-interactive mode.
+
+The `gitflow:release-finish` and `gitflow:release` goals have `versionDigitToIncrement` parameter which controls which digit to increment in the next development version. Starts from zero.
+For example, if the release version is `1.2.3.4` and `versionDigitToIncrement` is set to `1` then the next development version will be `1.3.0.0-SNAPSHOT`.
+If not set or set to not valid value defaults to increment last digit in the version.
+
 ### Remote interaction
 
 At the start of the each goal remote branch(es) will be fetched and compared with the local branch(es). If the local branch doesn't exist it will be checked out from the remote.
 Both of these options can be turned off by setting `fetchRemote` parameter to `false`.
+
 At the end of the `-finish` goals development or production and development branches will be pushed to remote. This can be turned off by setting `pushRemote` parameter to `false`.
+
+At the end of the `-start` goals newly created branch (release / feature / hotfix) can be pushed to the remote. This can be achieved by setting `pushRemote` parameter to `true`.
+
 The default remote name is `origin`. It can be customized with `<gitFlowConfig><origin>custom_origin</origin></gitFlowConfig>` configuration in pom.xml.
 
 ### Rebase, Merge, Fast Forward, Squash

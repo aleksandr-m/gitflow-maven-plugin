@@ -99,6 +99,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     /**
      * Whether to remove qualifiers from the next development version.
      * 
+     * @since 1.6.0
      */
     @Parameter(property = "digitsOnlyDevVersion", defaultValue = "false")
     private boolean digitsOnlyDevVersion = false;
@@ -107,6 +108,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
      * Development version to use instead of the default next development
      * version in non interactive mode.
      * 
+     * @since 1.6.0
      */
     @Parameter(property = "developmentVersion", defaultValue = "")
     private String developmentVersion = "";
@@ -115,6 +117,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
      * Which digit to increment in the next development version. Starts from
      * zero.
      * 
+     * @since 1.6.0
      */
     @Parameter(property = "versionDigitToIncrement")
     private Integer versionDigitToIncrement;

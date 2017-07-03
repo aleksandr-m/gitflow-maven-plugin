@@ -52,6 +52,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
     /**
      * Whether to push to the remote.
      * 
+     * @since 1.6.0
      */
     @Parameter(property = "pushRemote", defaultValue = "false")
     private boolean pushRemote;

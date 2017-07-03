@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.6.0
+
+* Fixed [#47](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/47) - Wrong development version after `release` goal
+* Added option to push to the remote in start goals - [#32](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/32)
+* Added ability to delete remote branch in finish goals - [#44](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/44)
+* Added ability to remove qualifiers from next development version during the release - [#42](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/42)
+* Added ability to set next development version from property in non interactive mode - [#42](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/42)
+* Added ability to increment other digits in next development version - [#42](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/42)
+* Added upstream (tracking) reference for the branch when pushing to remote - [#52](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/52)
+* Various improvements
+
 ## v1.5.0
 
 * Added ability to fetch and checkout from the remote if local branch doesn't exist - closes [#40](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/40)
