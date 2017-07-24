@@ -115,6 +115,15 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "versionDigitToIncrement")
     private Integer versionDigitToIncrement;
 
+    /**
+     * Whether to commit development version when starting the release
+     * (vs when finishing the release which is the default).
+     *
+     * @since 1.7.0
+     */
+    @Parameter(property = "commitDevelopmentVersionAtStart", defaultValue = "false")
+    private boolean commitDevelopmentVersionAtStart;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -198,32 +207,34 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                         releaseMergeFFOnly);
             }
 
-            // get next snapshot version
-            final String nextSnapshotVersion;
-            if (!settings.isInteractiveMode()
-                    && StringUtils.isNotBlank(developmentVersion)) {
-                nextSnapshotVersion = developmentVersion;
-            } else {
-                GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(
-                        currentVersion);
-                if (digitsOnlyDevVersion) {
-                    versionInfo = versionInfo.digitsVersionInfo();
+            if (!commitDevelopmentVersionAtStart) {
+                // get next snapshot version
+                final String nextSnapshotVersion;
+                if (!settings.isInteractiveMode()
+                        && StringUtils.isNotBlank(developmentVersion)) {
+                    nextSnapshotVersion = developmentVersion;
+                } else {
+                    GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(
+                            currentVersion);
+                    if (digitsOnlyDevVersion) {
+                        versionInfo = versionInfo.digitsVersionInfo();
+                    }
+
+                    nextSnapshotVersion = versionInfo
+                            .nextSnapshotVersion(versionDigitToIncrement);
                 }
 
-                nextSnapshotVersion = versionInfo
-                        .nextSnapshotVersion(versionDigitToIncrement);
+                if (StringUtils.isBlank(nextSnapshotVersion)) {
+                    throw new MojoFailureException(
+                            "Next snapshot version is blank.");
+                }
+
+                // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
+                mvnSetVersions(nextSnapshotVersion);
+
+                // git commit -a -m updating for next development version
+                gitCommit(commitMessages.getReleaseFinishMessage());
             }
-
-            if (StringUtils.isBlank(nextSnapshotVersion)) {
-                throw new MojoFailureException(
-                        "Next snapshot version is blank.");
-            }
-
-            // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-            mvnSetVersions(nextSnapshotVersion);
-
-            // git commit -a -m updating for next development version
-            gitCommit(commitMessages.getReleaseFinishMessage());
 
             if (installProject) {
                 // mvn clean install
