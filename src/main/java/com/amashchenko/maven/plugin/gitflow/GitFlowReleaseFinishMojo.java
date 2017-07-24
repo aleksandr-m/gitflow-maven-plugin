@@ -195,7 +195,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
                 gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF,
-                        releaseMergeFFOnly);
+                        false);
             }
 
             // get next snapshot version
