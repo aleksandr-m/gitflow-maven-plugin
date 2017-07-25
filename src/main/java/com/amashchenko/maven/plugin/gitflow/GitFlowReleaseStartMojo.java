@@ -189,7 +189,9 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             }
 
             if (pushRemote) {
-                gitPush(gitFlowConfig.getDevelopmentBranch(), false);
+                if (commitDevelopmentVersionAtStart) {
+                    gitPush(gitFlowConfig.getDevelopmentBranch(), false);
+                }
 
                 gitPush(branchName, false);
             }
