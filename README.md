@@ -159,6 +159,8 @@ The `gitflow:release-finish` and `gitflow:release` goals have `versionDigitToInc
 For example, if the release version is `1.2.3.4` and `versionDigitToIncrement` is set to `1` then the next development version will be `1.3.0.0-SNAPSHOT`.
 If not set or set to not valid value defaults to increment last digit in the version.
 
+The `gitflow:release-start` and `gitflow:release-finish` have `commitDevelopmentVersionAtStart` parameter which controls whether the next development version is set and committed at start or after finish. By default the value is `false` which means that the next development version is set on the development branch after the release branch has been merged onto the development branch when finishing the release. This has the benefit of being able to easily cancel the release process simply by deleting the release branch. If the value is `true` then versioning happens on `gitflow:release-start`. First the project version is set to the release version on the development branch and the release branch is created. Then the development branch is set to the next development version. This allows the development branch to continue immediately with a new version and helps avoid any future merge conflicts related to project versioning.
+
 ### Remote interaction
 
 At the start of the each goal remote branch(es) will be fetched and compared with the local branch(es). If the local branch doesn't exist it will be checked out from the remote.
