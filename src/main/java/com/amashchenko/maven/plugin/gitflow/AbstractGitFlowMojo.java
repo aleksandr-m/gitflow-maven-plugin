@@ -430,7 +430,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git checkout -b.
-     * 
+     *
      * @param newBranchName
      *            Create branch with this name.
      * @param fromBranchName
@@ -446,6 +446,25 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                         + fromBranchName + "' and checking it out.");
 
         executeGitCommand("checkout", "-b", newBranchName, fromBranchName);
+    }
+
+    /**
+     * Executes git branch.
+     *
+     * @param newBranchName
+     *            Create branch with this name.
+     * @param fromBranchName
+     *            Create branch from this branch.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitCreateBranch(final String newBranchName, final String fromBranchName)
+            throws MojoFailureException, CommandLineException {
+        getLog().info(
+                "Creating a new branch '" + newBranchName + "' from '"
+                        + fromBranchName + "'.");
+
+        executeGitCommand("branch", newBranchName, fromBranchName);
     }
 
     /**
