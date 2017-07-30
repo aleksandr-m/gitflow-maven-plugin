@@ -72,9 +72,10 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     private boolean pushRemote;
 
     /**
-     * Whether to commit development version when starting the release
-     * (vs when finishing the release which is the default).
-     *
+     * Whether to commit development version when starting the release (vs when
+     * finishing the release which is the default). Has effect only when there
+     * are separate development and production branches.
+     * 
      * @since 1.7.0
      */
     @Parameter(property = "commitDevelopmentVersionAtStart", defaultValue = "false")
@@ -142,6 +143,12 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 checkSnapshotDependencies();
             }
 
+            if (commitDevelopmentVersionAtStart && !notSameProdDevName()) {
+                getLog().warn(
+                        "The commitDevelopmentVersionAtStart will not have effect. It can be enabled only when there are separate branches for development and production.");
+                commitDevelopmentVersionAtStart = false;
+            }
+
             // get release version
             final String releaseVersion = getReleaseVersion();
 
@@ -171,8 +178,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
                 // git checkout release/...
                 gitCheckout(branchName);
-            }
-            else {
+            } else {
                 // git checkout -b release/... develop
                 gitCreateAndCheckout(branchName,
                         gitFlowConfig.getDevelopmentBranch());

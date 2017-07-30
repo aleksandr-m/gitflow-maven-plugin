@@ -116,9 +116,10 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     private Integer versionDigitToIncrement;
 
     /**
-     * Whether to commit development version when starting the release
-     * (vs when finishing the release which is the default).
-     *
+     * Whether to commit development version when starting the release (vs when
+     * finishing the release which is the default). Has effect only when there
+     * are separate development and production branches.
+     * 
      * @since 1.7.0
      */
     @Parameter(property = "commitDevelopmentVersionAtStart", defaultValue = "false")
@@ -203,8 +204,13 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 // git checkout develop
                 gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
-                gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF,
-                        false);
+                gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, false);
+            }
+
+            if (commitDevelopmentVersionAtStart && !notSameProdDevName()) {
+                getLog().warn(
+                        "The commitDevelopmentVersionAtStart will not have effect. It can be enabled only when there are separate branches for development and production.");
+                commitDevelopmentVersionAtStart = false;
             }
 
             if (!commitDevelopmentVersionAtStart) {
