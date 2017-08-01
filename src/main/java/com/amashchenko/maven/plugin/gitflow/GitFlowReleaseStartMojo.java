@@ -107,6 +107,14 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "versionDigitToIncrement")
     private Integer versionDigitToIncrement;
 
+    /**
+     * Start a release branch from this commit (SHA).
+     * 
+     * @since 1.7.0
+     */
+    @Parameter(property = "fromCommit")
+    private String fromCommit;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -134,9 +142,16 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
             }
 
+            final String startPoint;
+            if (StringUtils.isNotBlank(fromCommit) && notSameProdDevName()) {
+                startPoint = fromCommit;
+            } else {
+                startPoint = gitFlowConfig.getDevelopmentBranch();
+            }
+
             // need to be in develop to check snapshots and to get
             // correct project version
-            gitCheckout(gitFlowConfig.getDevelopmentBranch());
+            gitCheckout(startPoint);
 
             // check snapshots dependencies
             if (!allowSnapshots) {
@@ -165,8 +180,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                         commitMessages.getReleaseStartMessage());
 
                 // git branch release/... develop
-                gitCreateBranch(branchName,
-                        gitFlowConfig.getDevelopmentBranch());
+                gitCreateBranch(branchName, startPoint);
 
                 final String nextSnapshotVersion =
                         getNextSnapshotVersion(releaseVersion);
@@ -180,8 +194,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 gitCheckout(branchName);
             } else {
                 // git checkout -b release/... develop
-                gitCreateAndCheckout(branchName,
-                        gitFlowConfig.getDevelopmentBranch());
+                gitCreateAndCheckout(branchName, startPoint);
 
                 // mvn versions:set ...
                 // git commit -a -m ...
