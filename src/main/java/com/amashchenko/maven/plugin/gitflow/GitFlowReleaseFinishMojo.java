@@ -15,6 +15,9 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -238,8 +241,11 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(nextSnapshotVersion);
 
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("version", nextSnapshotVersion);
+
                 // git commit -a -m updating for next development version
-                gitCommit(commitMessages.getReleaseFinishMessage());
+                gitCommit(commitMessages.getReleaseFinishMessage(), properties);
             }
 
             if (installProject) {

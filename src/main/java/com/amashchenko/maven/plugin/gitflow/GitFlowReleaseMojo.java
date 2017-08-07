@@ -15,6 +15,9 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -219,8 +222,11 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 // mvn set version
                 mvnSetVersions(version);
 
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("version", version);
+
                 // git commit -a -m updating versions for release
-                gitCommit(commitMessages.getReleaseStartMessage());
+                gitCommit(commitMessages.getReleaseStartMessage(), properties);
             }
 
             if (notSameProdDevName()) {
@@ -270,8 +276,11 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             // mvn set version
             mvnSetVersions(nextSnapshotVersion);
 
+            Map<String, String> properties = new HashMap<String, String>();
+            properties.put("version", nextSnapshotVersion);
+
             // git commit -a -m updating for next development version
-            gitCommit(commitMessages.getReleaseFinishMessage());
+            gitCommit(commitMessages.getReleaseFinishMessage(), properties);
 
             if (installProject) {
                 // mvn clean install

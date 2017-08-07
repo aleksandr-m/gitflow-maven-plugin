@@ -152,6 +152,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 mvnSetVersions(version);
 
                 Map<String, String> properties = new HashMap<String, String>();
+                properties.put("version", version);
                 properties.put("featureName", featureName);
 
                 // git commit -a -m updating versions for development branch

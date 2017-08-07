@@ -16,7 +16,9 @@
 package com.amashchenko.maven.plugin.gitflow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -164,8 +166,11 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(version);
 
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("version", version);
+
                 // git commit -a -m updating versions for hotfix
-                gitCommit(commitMessages.getHotfixStartMessage());
+                gitCommit(commitMessages.getHotfixStartMessage(), properties);
             }
 
             if (installProject) {

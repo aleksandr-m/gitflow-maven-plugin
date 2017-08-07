@@ -16,7 +16,9 @@
 package com.amashchenko.maven.plugin.gitflow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
@@ -204,8 +206,12 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     // -DgenerateBackupPoms=false
                     mvnSetVersions(nextSnapshotVersion);
 
+                    Map<String, String> properties = new HashMap<String, String>();
+                    properties.put("version", nextSnapshotVersion);
+
                     // git commit -a -m updating for next development version
-                    gitCommit(commitMessages.getHotfixFinishMessage());
+                    gitCommit(commitMessages.getHotfixFinishMessage(),
+                            properties);
                 }
             }
 
