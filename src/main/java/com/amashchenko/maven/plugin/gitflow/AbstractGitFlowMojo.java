@@ -18,6 +18,8 @@ package com.amashchenko.maven.plugin.gitflow;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.MavenSession;
@@ -478,6 +480,32 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected void gitCommit(final String message) throws MojoFailureException,
             CommandLineException {
         getLog().info("Committing changes.");
+
+        executeGitCommand("commit", "-a", "-m", message);
+    }
+
+    /**
+     * Executes git commit -a -m, replacing <code>@{map.key}</code> with
+     * <code>map.value</code>.
+     * 
+     * @param message
+     *            Commit message.
+     * @param map
+     *            Key is a string to replace wrapped in <code>@{...}</code>.
+     *            Value is a string to replace with.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitCommit(String message, Map<String, String> map)
+            throws MojoFailureException, CommandLineException {
+        getLog().info("Committing changes.");
+
+        if (map != null) {
+            for (Entry<String, String> entr : map.entrySet()) {
+                message = StringUtils.replace(message, "@{" + entr.getKey()
+                        + "}", entr.getValue());
+            }
+        }
 
         executeGitCommand("commit", "-a", "-m", message);
     }

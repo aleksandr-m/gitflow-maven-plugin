@@ -15,6 +15,9 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -123,8 +126,12 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                     // -DgenerateBackupPoms=false
                     mvnSetVersions(version);
 
+                    Map<String, String> properties = new HashMap<String, String>();
+                    properties.put("featureName", featureName);
+
                     // git commit -a -m updating versions for feature branch
-                    gitCommit(commitMessages.getFeatureStartMessage());
+                    gitCommit(commitMessages.getFeatureStartMessage(),
+                            properties);
                 }
             }
 
