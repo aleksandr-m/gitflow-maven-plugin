@@ -62,6 +62,15 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "pushRemote", defaultValue = "true")
     private boolean pushRemote;
 
+
+    /**
+     * Whether to finish the default (first in the list) hotfix branch.
+     *
+     * @since 1.X.X
+     */
+    @Parameter(property = "nonInteractive", defaultValue = "false")
+    private boolean nonInteractive = true;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -89,6 +98,9 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             str.append("Choose hotfix branch to finish");
 
             String hotfixNumber = null;
+            if (nonInteractive) {
+                hotfixNumber = "1";
+            }
             try {
                 while (StringUtils.isBlank(hotfixNumber)) {
                     hotfixNumber = prompter
