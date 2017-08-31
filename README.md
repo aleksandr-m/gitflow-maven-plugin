@@ -22,7 +22,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <version>1.7.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -128,7 +128,13 @@ Since `1.2.1` commit messages can be changed in plugin's configuration section i
 Maven properties can be used in commit messages. For example `<featureStartMessage>updating ${artifactId} project for feature branch</featureStartMessage>` will produce message where 
 `${artifactId}` will be substituted for projects `<artifactId>`.
 
-Note that although `${project.version}` can be used, any changes to version introduced by this goal won't be reflected in a commit message for this goal.
+Note that although `${project.version}` can be used, any changes to version introduced by this goal won't be reflected in a commit message for this goal (see Custom properties).
+
+### Custom properties in commit messages
+
+`@{version}` will be replaced with the updated version.
+
+`@{featureName}` will be replaced in `feature-` goals with the name of the current feature.
 
 ## Additional goal parameters
 
@@ -166,6 +172,8 @@ If the value is `true` then versioning happens on `gitflow:release-start`. First
 Then the development branch is set to the next development version.
 This allows the development branch to continue immediately with a new version and helps avoid any future merge conflicts related to project versioning.
 Has effect only when there are separate development and production branches.
+
+The `gitflow:release-start` goal have `fromCommit` parameter which allows to start the release from the specific commit (SHA).
 
 ### Remote interaction
 

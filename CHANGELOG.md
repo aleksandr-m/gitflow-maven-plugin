@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.7.0
+
+* Fixed [#19](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/19) - Avoid merge conflict in `hotfix-finish`
+* Fixed [#60](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/60) - The `releaseMergeFFOnly` is used when merging release to develop
+* Added option to update versions on the develop branch when starting a release - [#61](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/61)
+* Added option to set the starting point on `release-start` goal - [#56](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/56)
+* Added ability to replace `@{featureName}` in commit messages - [#62](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/62)
+* Added ability to replace `@{version}` with updated version in commit messages - [#41](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/41)
+
 ## v1.6.0
 
 * Fixed [#47](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/47) - Wrong development version after `release` goal
