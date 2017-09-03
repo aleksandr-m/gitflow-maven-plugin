@@ -62,6 +62,13 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "pushRemote", defaultValue = "true")
     private boolean pushRemote;
 
+    /**
+     * Hotfix Branch Name to finish instead of using the prompter in non interactive mode.
+     *
+     * @since 1.7.1
+     */
+    @Parameter(property = "branchName", defaultValue = "")
+    private String branchName = "";
 
     /** {@inheritDoc} */
     @Override
@@ -90,8 +97,8 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             str.append("Choose hotfix branch to finish");
 
             String hotfixNumber = null;
-            if (settings.isInteractiveMode()) {
-                hotfixNumber = "1";
+            if (!settings.isInteractiveMode() && StringUtils.isNotBlank(branchName)) {
+                hotfixNumber = getIndexNumberByBranchName(branches, branchName);
             }
             try {
                 while (StringUtils.isBlank(hotfixNumber)) {
@@ -213,7 +220,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
                     // get next snapshot version
                     final String nextSnapshotVersion = developVersionInfo
-                            .nextSnapshotVersion();
+                            .getSnapshotVersionString();
 
                     if (StringUtils.isBlank(nextSnapshotVersion)) {
                         throw new MojoFailureException(
@@ -265,5 +272,16 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
         } catch (VersionParseException e) {
             getLog().error(e);
         }
+    }
+
+    private String getIndexNumberByBranchName(final String[] branches, final String branchName) {
+        for (int i = 0; i < branches.length; i++) {
+            if (branchName.equals(branches[i])) {
+                return String.valueOf(i + 1);
+            }
+            i++;
+        }
+        // If branchName is not one of the valid branches, then return blank and prompter will be used
+        return "";
     }
 }
