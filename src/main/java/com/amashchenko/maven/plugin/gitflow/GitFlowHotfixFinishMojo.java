@@ -160,8 +160,9 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             // git merge --no-ff hotfix/...
             gitMergeNoff(hotfixBranchName);
 
+            final String hotfixVersion = getCurrentProjectVersion();
             if (!skipTag) {
-                String tagVersion = getCurrentProjectVersion();
+                String tagVersion = hotfixVersion;
                 if (tychoBuild && ArtifactUtils.isSnapshot(tagVersion)) {
                     tagVersion = tagVersion.replace("-"
                             + Artifact.SNAPSHOT_VERSION, "");
@@ -186,20 +187,33 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     // git merge --no-ff hotfix/...
                     gitMergeNoff(hotfixBranchName);
                 } else {
+                    GitFlowVersionInfo developVersionInfo = new GitFlowVersionInfo(
+                            hotfixVersion);
                     if (notSameProdDevName()) {
                         // git checkout develop
                         gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
+                        developVersionInfo = new GitFlowVersionInfo(
+                                getCurrentProjectVersion());
+
+                        // set version to avoid merge conflict
+                        mvnSetVersions(hotfixVersion);
+                        gitCommit("update to hotfix version");
+
                         // git merge --no-ff hotfix/...
                         gitMergeNoff(hotfixBranchName);
+
+                        // which version to increment
+                        GitFlowVersionInfo hotfixVersionInfo = new GitFlowVersionInfo(
+                                hotfixVersion);
+                        if (developVersionInfo.compareTo(hotfixVersionInfo) < 0) {
+                            developVersionInfo = hotfixVersionInfo;
+                        }
                     }
 
-                    // get current project version from pom
-                    final String currentVersion = getCurrentProjectVersion();
-
                     // get next snapshot version
-                    final String nextSnapshotVersion = new GitFlowVersionInfo(
-                            currentVersion).nextSnapshotVersion();
+                    final String nextSnapshotVersion = developVersionInfo
+                            .nextSnapshotVersion();
 
                     if (StringUtils.isBlank(nextSnapshotVersion)) {
                         throw new MojoFailureException(
