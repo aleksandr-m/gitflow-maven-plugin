@@ -40,8 +40,9 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
      * Whether to use the same name of the release branch for every release.
      * Default is <code>false</code>, i.e. project version will be added to
      * release branch prefix. <br/>
+     * Will have no effect if the <code>branchName</code> parameter is set.
      * <br/>
-     * 
+     *
      * Note: By itself the default releaseBranchPrefix is not a valid branch
      * name. You must change it when setting sameBranchName to <code>true</code>
      * .
@@ -128,6 +129,14 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "useSnapshotInRelease", defaultValue = "false")
     private boolean useSnapshotInRelease;
 
+    /**
+     * Name of the created release branch.<br>
+     * The effective branch name will be a composite of this branch name and the
+     * <code>releaseBranchPrefix</code>.
+     */
+    @Parameter(property = "branchName", defaultValue = "")
+    private String branchNameSuffix;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -184,7 +193,9 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             // get release branch
             String branchName = gitFlowConfig.getReleaseBranchPrefix();
-            if (!sameBranchName) {
+            if(StringUtils.isNotBlank(branchNameSuffix)){
+                branchName += branchNameSuffix;
+            } else if (!sameBranchName) {
                 branchName += releaseVersion;
             }
 
