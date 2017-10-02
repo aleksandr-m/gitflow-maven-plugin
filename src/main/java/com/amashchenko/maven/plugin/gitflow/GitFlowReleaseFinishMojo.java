@@ -131,6 +131,8 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        validateConfiguration();
+
         try {
             // check uncommitted changes
             checkUncommittedChanges();

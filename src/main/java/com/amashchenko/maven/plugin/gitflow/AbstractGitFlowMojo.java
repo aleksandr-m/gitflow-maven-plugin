@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.MavenSession;
@@ -53,6 +54,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /** Success exit code. */
     private static final int SUCCESS_EXIT_CODE = 0;
+
+    /** Pattern of disallowed characters in Maven commands. */
+    private static final Pattern MAVEN_DISALLOWED_PATTERN = Pattern
+            .compile("[&|;]");
 
     /** Command line for Git executable. */
     private final Commandline cmdGit = new Commandline();
@@ -104,6 +109,14 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private boolean verbose = false;
 
     /**
+     * Command line arguments to pass to the underlying Maven commands.
+     * 
+     * @since 1.8.0
+     */
+    @Parameter(property = "argLine")
+    private String argLine;
+
+    /**
      * The path to the Maven executable. Defaults to "mvn".
      */
     @Parameter(property = "mvnExecutable")
@@ -140,6 +153,21 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                 gitExecutable = "git";
             }
             cmdGit.setExecutable(gitExecutable);
+        }
+    }
+
+    /**
+     * Validates plugin configuration. Throws exception if configuration is not
+     * valid.
+     * 
+     * @throws MojoFailureException
+     *             If configuration is not valid.
+     */
+    protected void validateConfiguration() throws MojoFailureException {
+        if (StringUtils.isNotBlank(argLine)
+                && MAVEN_DISALLOWED_PATTERN.matcher(argLine).find()) {
+            throw new MojoFailureException(
+                    "The argLine doesn't match allowed pattern.");
         }
     }
 
@@ -809,7 +837,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private String executeGitCommandReturn(final String... args)
             throws CommandLineException, MojoFailureException {
-        return executeCommand(cmdGit, true, args).getOut();
+        return executeCommand(cmdGit, true, null, args).getOut();
     }
 
     /**
@@ -823,7 +851,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private CommandResult executeGitCommandExitCode(final String... args)
             throws CommandLineException, MojoFailureException {
-        return executeCommand(cmdGit, false, args);
+        return executeCommand(cmdGit, false, null, args);
     }
 
     /**
@@ -836,7 +864,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private void executeGitCommand(final String... args)
             throws CommandLineException, MojoFailureException {
-        executeCommand(cmdGit, true, args);
+        executeCommand(cmdGit, true, null, args);
     }
 
     /**
@@ -849,7 +877,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private void executeMvnCommand(final String... args)
             throws CommandLineException, MojoFailureException {
-        executeCommand(cmdMvn, true, args);
+        executeCommand(cmdMvn, true, argLine, args);
     }
 
     /**
@@ -859,6 +887,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *            Command line.
      * @param failOnError
      *            Whether to throw exception on NOT success exit code.
+     * @param argStr
+     *            Command line arguments as a string.
      * @param args
      *            Command line arguments.
      * @return {@link CommandResult} instance holding command exit code, output
@@ -869,18 +899,24 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *             exit code is NOT equals to 0.
      */
     private CommandResult executeCommand(final Commandline cmd,
-            final boolean failOnError, final String... args)
-            throws CommandLineException, MojoFailureException {
+            final boolean failOnError, final String argStr,
+            final String... args) throws CommandLineException,
+            MojoFailureException {
         // initialize executables
         initExecutables();
 
         if (getLog().isDebugEnabled()) {
             getLog().debug(
-                    cmd.getExecutable() + " " + StringUtils.join(args, " "));
+                    cmd.getExecutable() + " " + StringUtils.join(args, " ")
+                            + (argStr == null ? "" : " " + argStr));
         }
 
         cmd.clearArgs();
         cmd.addArguments(args);
+
+        if (StringUtils.isNotBlank(argStr)) {
+            cmd.createArg().setLine(argStr);
+        }
 
         final StringBufferStreamConsumer out = new StringBufferStreamConsumer(
                 verbose);
@@ -937,5 +973,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         public String getError() {
             return error;
         }
+    }
+
+    public void setArgLine(String argLine) {
+        this.argLine = argLine;
     }
 }
