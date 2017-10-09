@@ -24,9 +24,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
  * The git flow release finish mojo.
@@ -128,10 +126,27 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "commitDevelopmentVersionAtStart", defaultValue = "false")
     private boolean commitDevelopmentVersionAtStart;
 
+    /**
+     * Maven goals to execute in the release branch before merging into the
+     * production branch.
+     * 
+     * @since 1.8.0
+     */
+    @Parameter(property = "preReleaseGoals")
+    private String preReleaseGoals;
+
+    /**
+     * Maven goals to execute in the production branch after the release.
+     * 
+     * @since 1.8.0
+     */
+    @Parameter(property = "postReleaseGoals")
+    private String postReleaseGoals;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        validateConfiguration();
+        validateConfiguration(preReleaseGoals, postReleaseGoals);
 
         try {
             // check uncommitted changes
@@ -184,6 +199,13 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 mvnCleanTest();
             }
 
+            // maven goals before merge
+            if (StringUtils.isNotBlank(preReleaseGoals)) {
+                gitCheckout(releaseBranch);
+
+                mvnRun(preReleaseGoals);
+            }
+
             // git checkout master
             gitCheckout(gitFlowConfig.getProductionBranch());
 
@@ -203,6 +225,11 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
                         commitMessages.getTagReleaseMessage());
+            }
+
+            // maven goals after merge
+            if (StringUtils.isNotBlank(postReleaseGoals)) {
+                mvnRun(postReleaseGoals);
             }
 
             if (notSameProdDevName()) {
@@ -270,9 +297,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                     gitPushDelete(releaseBranch);
                 }
             }
-        } catch (CommandLineException e) {
-            getLog().error(e);
-        } catch (VersionParseException e) {
+        } catch (Exception e) {
             getLog().error(e);
         }
     }

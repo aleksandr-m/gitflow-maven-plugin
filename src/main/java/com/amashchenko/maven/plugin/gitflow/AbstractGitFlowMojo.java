@@ -160,14 +160,26 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * Validates plugin configuration. Throws exception if configuration is not
      * valid.
      * 
+     * @param params
+     *            Configuration parameters to validate.
      * @throws MojoFailureException
      *             If configuration is not valid.
      */
-    protected void validateConfiguration() throws MojoFailureException {
+    protected void validateConfiguration(String... params)
+            throws MojoFailureException {
         if (StringUtils.isNotBlank(argLine)
                 && MAVEN_DISALLOWED_PATTERN.matcher(argLine).find()) {
             throw new MojoFailureException(
                     "The argLine doesn't match allowed pattern.");
+        }
+        if (params != null && params.length > 0) {
+            for (String p : params) {
+                if (StringUtils.isNotBlank(p)
+                        && MAVEN_DISALLOWED_PATTERN.matcher(p).find()) {
+                    throw new MojoFailureException("The '" + p
+                            + "' value doesn't match allowed pattern.");
+                }
+            }
         }
     }
 
@@ -824,6 +836,19 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         getLog().info("Cleaning and installing the project.");
 
         executeMvnCommand("clean", "install");
+    }
+
+    /**
+     * Executes Maven goals.
+     * 
+     * @param goals
+     *            The goals to execute.
+     * @throws Exception
+     */
+    protected void mvnRun(final String goals) throws Exception {
+        getLog().info("Running Maven goals: " + goals);
+
+        executeMvnCommand(CommandLineUtils.translateCommandline(goals));
     }
 
     /**

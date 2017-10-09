@@ -26,10 +26,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
  * The git flow hotfix finish mojo.
@@ -62,10 +60,27 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "pushRemote", defaultValue = "true")
     private boolean pushRemote;
 
+    /**
+     * Maven goals to execute in the hotfix branch before merging into the
+     * production or support branch.
+     * 
+     * @since 1.8.0
+     */
+    @Parameter(property = "preHotfixGoals")
+    private String preHotfixGoals;
+
+    /**
+     * Maven goals to execute in the release or support branch after the hotfix.
+     * 
+     * @since 1.8.0
+     */
+    @Parameter(property = "postHotfixGoals")
+    private String postHotfixGoals;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        validateConfiguration();
+        validateConfiguration(preHotfixGoals, postHotfixGoals);
 
         try {
             // check uncommitted changes
@@ -148,6 +163,13 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 mvnCleanTest();
             }
 
+            // maven goals before merge
+            if (StringUtils.isNotBlank(preHotfixGoals)) {
+                gitCheckout(hotfixBranchName);
+
+                mvnRun(preHotfixGoals);
+            }
+
             if (supportBranchName != null) {
                 gitCheckout(supportBranchName);
             } else {
@@ -169,6 +191,11 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
                         commitMessages.getTagHotfixMessage());
+            }
+
+            // maven goals after merge
+            if (StringUtils.isNotBlank(postHotfixGoals)) {
+                mvnRun(postHotfixGoals);
             }
 
             // check whether release branch exists
@@ -258,9 +285,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     gitPushDelete(hotfixBranchName);
                 }
             }
-        } catch (CommandLineException e) {
-            getLog().error(e);
-        } catch (VersionParseException e) {
+        } catch (Exception e) {
             getLog().error(e);
         }
     }
