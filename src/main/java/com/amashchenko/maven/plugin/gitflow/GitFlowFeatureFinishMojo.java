@@ -170,7 +170,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 }
             }
         } catch (CommandLineException e) {
-            getLog().error(e);
+            throw new MojoFailureException("feature-finish", e);
         }
     }
 
@@ -200,7 +200,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 featureNumber = prompter.prompt(str.toString(), numberedList);
             }
         } catch (PrompterException e) {
-            getLog().error(e);
+            throw new MojoFailureException("feature-finish", e);
         }
 
         String featureBranchName = null;

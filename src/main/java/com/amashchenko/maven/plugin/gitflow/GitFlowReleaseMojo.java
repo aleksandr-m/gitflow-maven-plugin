@@ -223,7 +223,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                         }
                     }
                 } catch (PrompterException e) {
-                    getLog().error(e);
+                    throw new MojoFailureException("release", e);
                 }
             } else {
                 version = releaseVersion;
@@ -320,7 +320,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 }
             }
         } catch (Exception e) {
-            getLog().error(e);
+            throw new MojoFailureException("release", e);
         }
     }
 }

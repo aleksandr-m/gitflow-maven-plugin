@@ -97,7 +97,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                                     numberedList);
                         }
                     } catch (PrompterException e) {
-                        getLog().error(e);
+                        throw new MojoFailureException("hotfix-start", e);
                     }
 
                     if (branchNumber != null) {
@@ -148,7 +148,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                         }
                     }
                 } catch (PrompterException e) {
-                    getLog().error(e);
+                    throw new MojoFailureException("hotfix-start", e);
                 }
             } else {
                 if (StringUtils.isNotBlank(hotfixVersion)
@@ -208,9 +208,9 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                 gitPush(hotfixBranchName, false);
             }
         } catch (CommandLineException e) {
-            getLog().error(e);
+            throw new MojoFailureException("hotfix-start", e);
         } catch (VersionParseException e) {
-            getLog().error(e);
+            throw new MojoFailureException("hotfix-start", e);
         }
     }
 }

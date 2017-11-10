@@ -99,7 +99,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                         }
                     }
                 } catch (PrompterException e) {
-                    getLog().error(e);
+                    throw new MojoFailureException("feature-start", e);
                 }
             } else if (validateBranchName(featureName, featureNamePattern)) {
                 featureBranchName = featureName;
@@ -157,9 +157,9 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                         + featureBranchName, false);
             }
         } catch (CommandLineException e) {
-            getLog().error(e);
+            throw new MojoFailureException("feature-start", e);
         } catch (VersionParseException e) {
-            getLog().error(e);
+            throw new MojoFailureException("feature-start", e);
         }
     }
 

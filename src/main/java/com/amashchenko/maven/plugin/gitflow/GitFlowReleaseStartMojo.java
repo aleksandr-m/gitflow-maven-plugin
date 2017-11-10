@@ -220,9 +220,9 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 gitPush(branchName, false);
             }
         } catch (CommandLineException e) {
-            getLog().error(e);
+            throw new MojoFailureException("release-start", e);
         } catch (VersionParseException e) {
-            getLog().error(e);
+            throw new MojoFailureException("release-start", e);
         }
     }
 
@@ -282,7 +282,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                     }
                 }
             } catch (PrompterException e) {
-                getLog().error(e);
+                throw new MojoFailureException("release-start", e);
             }
         } else {
             version = releaseVersion;

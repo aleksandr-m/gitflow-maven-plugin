@@ -274,7 +274,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 }
             }
         } catch (Exception e) {
-            getLog().error(e);
+            throw new MojoFailureException("hotfix-finish", e);
         }
     }
 
@@ -304,7 +304,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 hotfixNumber = prompter.prompt(str.toString(), numberedList);
             }
         } catch (PrompterException e) {
-            getLog().error(e);
+            throw new MojoFailureException("hotfix-finish", e);
         }
 
         String hotfixBranchName = null;

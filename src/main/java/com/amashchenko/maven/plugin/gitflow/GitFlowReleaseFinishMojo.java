@@ -298,7 +298,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 }
             }
         } catch (Exception e) {
-            getLog().error(e);
+            throw new MojoFailureException("release-finish", e);
         }
     }
 }
