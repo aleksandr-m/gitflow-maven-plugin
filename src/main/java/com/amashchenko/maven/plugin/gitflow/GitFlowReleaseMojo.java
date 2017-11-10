@@ -230,6 +230,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             }
 
             if (StringUtils.isBlank(version)) {
+                getLog().info("Version is blank. Using default version.");
                 version = defaultVersion;
             }
 
