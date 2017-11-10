@@ -28,6 +28,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
+import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
  * The git flow hotfix finish mojo.
@@ -77,6 +78,13 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "postHotfixGoals")
     private String postHotfixGoals;
 
+    /**
+     * Hotfix version to use in non interactive mode.
+     * 
+     */
+    @Parameter(property = "hotfixVersion")
+    private String hotfixVersion;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -86,39 +94,18 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             // check uncommitted changes
             checkUncommittedChanges();
 
-            // git for-each-ref --format='%(refname:short)' refs/heads/hotfix/*
-            final String hotfixBranches = gitFindBranches(
-                    gitFlowConfig.getHotfixBranchPrefix(), false);
-
-            if (StringUtils.isBlank(hotfixBranches)) {
-                throw new MojoFailureException("There are no hotfix branches.");
-            }
-
-            String[] branches = hotfixBranches.split("\\r?\\n");
-
-            List<String> numberedList = new ArrayList<String>();
-            StringBuilder str = new StringBuilder("Hotfix branches:")
-                    .append(LS);
-            for (int i = 0; i < branches.length; i++) {
-                str.append((i + 1) + ". " + branches[i] + LS);
-                numberedList.add(String.valueOf(i + 1));
-            }
-            str.append("Choose hotfix branch to finish");
-
-            String hotfixNumber = null;
-            try {
-                while (StringUtils.isBlank(hotfixNumber)) {
-                    hotfixNumber = prompter
-                            .prompt(str.toString(), numberedList);
-                }
-            } catch (PrompterException e) {
-                getLog().error(e);
-            }
-
             String hotfixBranchName = null;
-            if (hotfixNumber != null) {
-                int num = Integer.parseInt(hotfixNumber);
-                hotfixBranchName = branches[num - 1];
+            if (settings.isInteractiveMode()) {
+                hotfixBranchName = promptBranchName();
+            } else if (StringUtils.isNotBlank(hotfixVersion)) {
+                final String branch = gitFlowConfig.getHotfixBranchPrefix()
+                        + hotfixVersion;
+                if (!gitCheckBranchExists(branch)) {
+                    throw new MojoFailureException(
+                            "Hotfix branch with name '" + branch
+                                    + "' doesn't exist. Cannot finish hotfix.");
+                }
+                hotfixBranchName = branch;
             }
 
             if (StringUtils.isBlank(hotfixBranchName)) {
@@ -128,13 +115,13 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
             // support branch hotfix
             String supportBranchName = null;
-            boolean supportHotfix = hotfixBranchName.startsWith(gitFlowConfig
-                    .getHotfixBranchPrefix()
-                    + gitFlowConfig.getSupportBranchPrefix());
+            boolean supportHotfix = hotfixBranchName
+                    .startsWith(gitFlowConfig.getHotfixBranchPrefix()
+                            + gitFlowConfig.getSupportBranchPrefix());
             // get support branch name w/o version part
             if (supportHotfix) {
-                supportBranchName = hotfixBranchName.substring(gitFlowConfig
-                        .getHotfixBranchPrefix().length());
+                supportBranchName = hotfixBranchName.substring(
+                        gitFlowConfig.getHotfixBranchPrefix().length());
                 supportBranchName = supportBranchName.substring(0,
                         supportBranchName.lastIndexOf('/'));
             }
@@ -147,11 +134,11 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     gitFetchRemoteAndCompare(supportBranchName);
                 } else {
                     if (notSameProdDevName()) {
-                        gitFetchRemoteAndCompare(gitFlowConfig
-                                .getDevelopmentBranch());
+                        gitFetchRemoteAndCompare(
+                                gitFlowConfig.getDevelopmentBranch());
                     }
-                    gitFetchRemoteAndCompare(gitFlowConfig
-                            .getProductionBranch());
+                    gitFetchRemoteAndCompare(
+                            gitFlowConfig.getProductionBranch());
                 }
             }
 
@@ -180,12 +167,12 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             // git merge --no-ff hotfix/...
             gitMergeNoff(hotfixBranchName);
 
-            final String hotfixVersion = getCurrentProjectVersion();
+            final String currentVersion = getCurrentProjectVersion();
             if (!skipTag) {
-                String tagVersion = hotfixVersion;
+                String tagVersion = currentVersion;
                 if (tychoBuild && ArtifactUtils.isSnapshot(tagVersion)) {
-                    tagVersion = tagVersion.replace("-"
-                            + Artifact.SNAPSHOT_VERSION, "");
+                    tagVersion = tagVersion
+                            .replace("-" + Artifact.SNAPSHOT_VERSION, "");
                 }
 
                 // git tag -a ...
@@ -213,7 +200,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     gitMergeNoff(hotfixBranchName);
                 } else {
                     GitFlowVersionInfo developVersionInfo = new GitFlowVersionInfo(
-                            hotfixVersion);
+                            currentVersion);
                     if (notSameProdDevName()) {
                         // git checkout develop
                         gitCheckout(gitFlowConfig.getDevelopmentBranch());
@@ -222,7 +209,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                                 getCurrentProjectVersion());
 
                         // set version to avoid merge conflict
-                        mvnSetVersions(hotfixVersion);
+                        mvnSetVersions(currentVersion);
                         gitCommit("update to hotfix version");
 
                         // git merge --no-ff hotfix/...
@@ -230,8 +217,9 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
                         // which version to increment
                         GitFlowVersionInfo hotfixVersionInfo = new GitFlowVersionInfo(
-                                hotfixVersion);
-                        if (developVersionInfo.compareTo(hotfixVersionInfo) < 0) {
+                                currentVersion);
+                        if (developVersionInfo
+                                .compareTo(hotfixVersionInfo) < 0) {
                             developVersionInfo = hotfixVersionInfo;
                         }
                     }
@@ -288,5 +276,43 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
         } catch (Exception e) {
             getLog().error(e);
         }
+    }
+
+    private String promptBranchName()
+            throws MojoFailureException, CommandLineException {
+        // git for-each-ref --format='%(refname:short)' refs/heads/hotfix/*
+        final String hotfixBranches = gitFindBranches(
+                gitFlowConfig.getHotfixBranchPrefix(), false);
+
+        if (StringUtils.isBlank(hotfixBranches)) {
+            throw new MojoFailureException("There are no hotfix branches.");
+        }
+
+        String[] branches = hotfixBranches.split("\\r?\\n");
+
+        List<String> numberedList = new ArrayList<String>();
+        StringBuilder str = new StringBuilder("Hotfix branches:").append(LS);
+        for (int i = 0; i < branches.length; i++) {
+            str.append((i + 1) + ". " + branches[i] + LS);
+            numberedList.add(String.valueOf(i + 1));
+        }
+        str.append("Choose hotfix branch to finish");
+
+        String hotfixNumber = null;
+        try {
+            while (StringUtils.isBlank(hotfixNumber)) {
+                hotfixNumber = prompter.prompt(str.toString(), numberedList);
+            }
+        } catch (PrompterException e) {
+            getLog().error(e);
+        }
+
+        String hotfixBranchName = null;
+        if (hotfixNumber != null) {
+            int num = Integer.parseInt(hotfixNumber);
+            hotfixBranchName = branches[num - 1];
+        }
+
+        return hotfixBranchName;
     }
 }

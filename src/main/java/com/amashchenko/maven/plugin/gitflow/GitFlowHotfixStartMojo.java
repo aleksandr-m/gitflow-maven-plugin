@@ -44,6 +44,13 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "pushRemote", defaultValue = "false")
     private boolean pushRemote;
 
+    /**
+     * Hotfix version to use in non interactive mode.
+     * 
+     */
+    @Parameter(property = "hotfixVersion")
+    private String hotfixVersion;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -58,48 +65,51 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
             String branchName = gitFlowConfig.getProductionBranch();
 
-            final String supportBranches = gitFindBranches(
-                    gitFlowConfig.getSupportBranchPrefix(), false);
+            if (settings.isInteractiveMode()) {
+                final String supportBranches = gitFindBranches(
+                        gitFlowConfig.getSupportBranchPrefix(), false);
 
-            if (StringUtils.isNotBlank(supportBranches)) {
-                final String[] tmpBranches = supportBranches.split("\\r?\\n");
+                if (StringUtils.isNotBlank(supportBranches)) {
+                    final String[] tmpBranches = supportBranches
+                            .split("\\r?\\n");
 
-                String[] branches = new String[tmpBranches.length + 1];
-                for (int i = 0; i < tmpBranches.length; i++) {
-                    branches[i] = tmpBranches[i];
-                }
-                // add production branch to the list
-                branches[tmpBranches.length] = gitFlowConfig
-                        .getProductionBranch();
-
-                List<String> numberedList = new ArrayList<String>();
-                StringBuilder str = new StringBuilder("Branches:").append(LS);
-                for (int i = 0; i < branches.length; i++) {
-                    str.append((i + 1) + ". " + branches[i] + LS);
-                    numberedList.add(String.valueOf(i + 1));
-                }
-                str.append("Choose branch to hotfix");
-
-                String branchNumber = null;
-                try {
-                    while (StringUtils.isBlank(branchNumber)) {
-                        branchNumber = prompter.prompt(str.toString(),
-                                numberedList);
+                    String[] branches = new String[tmpBranches.length + 1];
+                    for (int i = 0; i < tmpBranches.length; i++) {
+                        branches[i] = tmpBranches[i];
                     }
-                } catch (PrompterException e) {
-                    getLog().error(e);
-                }
+                    // add production branch to the list
+                    branches[tmpBranches.length] = gitFlowConfig
+                            .getProductionBranch();
 
-                if (branchNumber != null) {
-                    int num = Integer.parseInt(branchNumber);
-                    branchName = branches[num - 1];
-                }
+                    List<String> numberedList = new ArrayList<String>();
+                    StringBuilder str = new StringBuilder("Branches:")
+                            .append(LS);
+                    for (int i = 0; i < branches.length; i++) {
+                        str.append((i + 1) + ". " + branches[i] + LS);
+                        numberedList.add(String.valueOf(i + 1));
+                    }
+                    str.append("Choose branch to hotfix");
 
-                if (StringUtils.isBlank(branchName)) {
-                    throw new MojoFailureException("Branch name is blank.");
+                    String branchNumber = null;
+                    try {
+                        while (StringUtils.isBlank(branchNumber)) {
+                            branchNumber = prompter.prompt(str.toString(),
+                                    numberedList);
+                        }
+                    } catch (PrompterException e) {
+                        getLog().error(e);
+                    }
+
+                    if (branchNumber != null) {
+                        int num = Integer.parseInt(branchNumber);
+                        branchName = branches[num - 1];
+                    }
+
+                    if (StringUtils.isBlank(branchName)) {
+                        throw new MojoFailureException("Branch name is blank.");
+                    }
                 }
             }
-            //
 
             // need to be in master to get correct project version
             // git checkout master
@@ -123,19 +133,32 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             }
 
             String version = null;
-            try {
-                while (version == null) {
-                    version = prompter.prompt("What is the hotfix version? ["
-                            + defaultVersion + "]");
+            if (settings.isInteractiveMode()) {
+                try {
+                    while (version == null) {
+                        version = prompter
+                                .prompt("What is the hotfix version? ["
+                                        + defaultVersion + "]");
 
-                    if (!"".equals(version)
-                            && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
-                        getLog().info("The version is not valid.");
-                        version = null;
+                        if (!"".equals(version)
+                                && (!GitFlowVersionInfo.isValidVersion(version)
+                                        || !validBranchName(version))) {
+                            getLog().info("The version is not valid.");
+                            version = null;
+                        }
                     }
+                } catch (PrompterException e) {
+                    getLog().error(e);
                 }
-            } catch (PrompterException e) {
-                getLog().error(e);
+            } else {
+                if (StringUtils.isNotBlank(hotfixVersion)
+                        && (!GitFlowVersionInfo.isValidVersion(hotfixVersion)
+                                || !validBranchName(hotfixVersion))) {
+                    throw new MojoFailureException("The hotfix version '"
+                            + hotfixVersion + "' is not valid.");
+                } else {
+                    version = hotfixVersion;
+                }
             }
 
             if (StringUtils.isBlank(version)) {
@@ -153,7 +176,8 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             }
 
             // git for-each-ref refs/heads/hotfix/...
-            final boolean hotfixBranchExists = gitCheckBranchExists(hotfixBranchName);
+            final boolean hotfixBranchExists = gitCheckBranchExists(
+                    hotfixBranchName);
 
             if (hotfixBranchExists) {
                 throw new MojoFailureException(
