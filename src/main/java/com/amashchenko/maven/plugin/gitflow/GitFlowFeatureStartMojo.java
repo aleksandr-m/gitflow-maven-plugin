@@ -60,9 +60,18 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "pushRemote", defaultValue = "false")
     private boolean pushRemote;
 
+    /**
+     * Feature name to use in non interactive mode.
+     * 
+     */
+    @Parameter(property = "featureName")
+    private String featureName;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        validateConfiguration();
+
         try {
             // set git flow configuration
             initGitFlowConfig();
@@ -75,35 +84,36 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                 gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
             }
 
-            String featureName = null;
-            try {
-                while (StringUtils.isBlank(featureName)) {
-                    featureName = prompter
-                            .prompt("What is a name of feature branch? "
-                                    + gitFlowConfig.getFeatureBranchPrefix());
+            String featureBranchName = null;
+            if (settings.isInteractiveMode()) {
+                try {
+                    while (StringUtils.isBlank(featureBranchName)) {
+                        featureBranchName = prompter
+                                .prompt("What is a name of feature branch? "
+                                        + gitFlowConfig
+                                                .getFeatureBranchPrefix());
 
-                    if (validBranchName(featureName)) {
-                        if (StringUtils.isNotBlank(featureNamePattern)
-                                && !featureName.matches(featureNamePattern)) {
-                            getLog().info(
-                                    "The name of the branch doesn't match '"
-                                            + featureNamePattern + "'.");
-                            featureName = null;
+                        if (!validateBranchName(featureBranchName,
+                                featureNamePattern)) {
+                            featureBranchName = null;
                         }
-                    } else {
-                        getLog().info("The name of the branch is not valid.");
-                        featureName = null;
                     }
+                } catch (PrompterException e) {
+                    throw new MojoFailureException("feature-start", e);
                 }
-            } catch (PrompterException e) {
-                getLog().error(e);
+            } else if (validateBranchName(featureName, featureNamePattern)) {
+                featureBranchName = featureName;
             }
 
-            featureName = StringUtils.deleteWhitespace(featureName);
+            if (StringUtils.isBlank(featureBranchName)) {
+                throw new MojoFailureException("Feature name is blank.");
+            }
+
+            featureBranchName = StringUtils.deleteWhitespace(featureBranchName);
 
             // git for-each-ref refs/heads/feature/...
-            final boolean featureBranchExists = gitCheckBranchExists(gitFlowConfig
-                    .getFeatureBranchPrefix() + featureName);
+            final boolean featureBranchExists = gitCheckBranchExists(
+                    gitFlowConfig.getFeatureBranchPrefix() + featureBranchName);
 
             if (featureBranchExists) {
                 throw new MojoFailureException(
@@ -111,15 +121,16 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout -b ... develop
-            gitCreateAndCheckout(gitFlowConfig.getFeatureBranchPrefix()
-                    + featureName, gitFlowConfig.getDevelopmentBranch());
+            gitCreateAndCheckout(
+                    gitFlowConfig.getFeatureBranchPrefix() + featureBranchName,
+                    gitFlowConfig.getDevelopmentBranch());
 
             if (!skipFeatureVersion && !tychoBuild) {
                 // get current project version from pom
                 final String currentVersion = getCurrentProjectVersion();
 
                 final String version = new GitFlowVersionInfo(currentVersion)
-                        .featureVersion(featureName);
+                        .featureVersion(featureBranchName);
 
                 if (StringUtils.isNotBlank(version)) {
                     // mvn versions:set -DnewVersion=...
@@ -128,7 +139,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
 
                     Map<String, String> properties = new HashMap<String, String>();
                     properties.put("version", version);
-                    properties.put("featureName", featureName);
+                    properties.put("featureName", featureBranchName);
 
                     // git commit -a -m updating versions for feature branch
                     gitCommit(commitMessages.getFeatureStartMessage(),
@@ -142,13 +153,29 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             }
 
             if (pushRemote) {
-                gitPush(gitFlowConfig.getFeatureBranchPrefix() + featureName,
-                        false);
+                gitPush(gitFlowConfig.getFeatureBranchPrefix()
+                        + featureBranchName, false);
             }
         } catch (CommandLineException e) {
-            getLog().error(e);
+            throw new MojoFailureException("feature-start", e);
         } catch (VersionParseException e) {
-            getLog().error(e);
+            throw new MojoFailureException("feature-start", e);
         }
+    }
+
+    private boolean validateBranchName(String name, String pattern)
+            throws MojoFailureException, CommandLineException {
+        boolean valid = true;
+        if (StringUtils.isNotBlank(name) && validBranchName(name)) {
+            if (StringUtils.isNotBlank(pattern) && !name.matches(pattern)) {
+                getLog().warn("The name of the branch doesn't match '" + pattern
+                        + "'.");
+                valid = false;
+            }
+        } else {
+            getLog().warn("The name of the branch is not valid.");
+            valid = false;
+        }
+        return valid;
     }
 }

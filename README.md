@@ -22,7 +22,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.7.0</version>
+                <version>1.8.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -136,6 +136,11 @@ Note that although `${project.version}` can be used, any changes to version intr
 
 `@{featureName}` will be replaced in `feature-` goals with the name of the current feature.
 
+## Maven arguments
+
+The `argLine` parameter can be used to pass command line arguments to the underlying Maven commands. For example, `-DcreateChecksum` in `mvn gitflow:release-start -DargLine=-DcreateChecksum` 
+will be passed to all underlying Maven commands.
+
 ## Additional goal parameters
 
 The `gitflow:release-finish`, `gitflow:release` and `gitflow:hotfix-finish` goals have `skipTag` parameter. This parameter controls whether the release/hotfix will be tagged in Git.
@@ -196,6 +201,16 @@ The `releaseMergeNoFF` parameter has no effect when `releaseRebase` parameter is
 Release branch can be merged with `--ff-only` option by setting `releaseMergeFFOnly` parameter to `true`. The default value is `false` (i.e. The `--ff-only` option won't be used).
 
 Feature branch can be squashed before merging by setting `featureSquash` parameter to `true`. The default value is `false` (i.e. merge w/o squash will be performed).
+
+### Running custom Maven goals
+
+The `preReleaseGoals` parameter can be used in `gitflow:release-finish` and `gitflow:release` goals to run defined Maven goals before the release.
+E.g. `mvn gitflow:release-finish -DpreReleaseGoals=test` will run `mvn test` goal in the release branch before merging into the production branch.
+
+The `postReleaseGoals` parameter can be used in `gitflow:release-finish` and `gitflow:release` goals to run defined Maven goals after the release.
+E.g. `mvn gitflow:release-finish -DpostReleaseGoals=deploy` will run `mvn deploy` goal in the production branch after the release.
+
+The `gitflow:hotfix-finish` goal have `preHotfixGoals` and `postHotfixGoals` parameters which can be used to run defined Maven goals before and after the hotfix respectively.
 
 # Non-interactive Release
 

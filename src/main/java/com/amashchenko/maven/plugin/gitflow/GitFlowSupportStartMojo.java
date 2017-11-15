@@ -44,6 +44,8 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        validateConfiguration();
+
         try {
             // set git flow configuration
             initGitFlowConfig();
@@ -63,7 +65,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
                 tagName = prompter.prompt("Choose tag to start support branch",
                         Arrays.asList(tagsStr.split("\\r?\\n")));
             } catch (PrompterException e) {
-                getLog().error(e);
+                throw new MojoFailureException("support-start", e);
             }
 
             // git for-each-ref refs/heads/support/...
@@ -88,7 +90,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
                 gitPush(gitFlowConfig.getSupportBranchPrefix() + tagName, false);
             }
         } catch (CommandLineException e) {
-            getLog().error(e);
+            throw new MojoFailureException("support-start", e);
         }
     }
 }
