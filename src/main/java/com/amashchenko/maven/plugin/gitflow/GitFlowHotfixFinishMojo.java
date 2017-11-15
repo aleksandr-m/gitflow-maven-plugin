@@ -278,11 +278,15 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
         }
     }
 
-    private String promptBranchName()
-            throws MojoFailureException, CommandLineException {
+    private String promptBranchName() throws MojoFailureException, CommandLineException {
         // git for-each-ref --format='%(refname:short)' refs/heads/hotfix/*
-        final String hotfixBranches = gitFindBranches(
-                gitFlowConfig.getHotfixBranchPrefix(), false);
+        String hotfixBranches = gitFindBranches(gitFlowConfig.getHotfixBranchPrefix(), false);
+
+        // find hotfix support branches
+        if (!gitFlowConfig.getHotfixBranchPrefix().endsWith("/")) {
+            String supportHotfixBranches = gitFindBranches(gitFlowConfig.getHotfixBranchPrefix() + "*/*", false);
+            hotfixBranches = hotfixBranches + supportHotfixBranches;
+        }
 
         if (StringUtils.isBlank(hotfixBranches)) {
             throw new MojoFailureException("There are no hotfix branches.");
