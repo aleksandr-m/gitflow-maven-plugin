@@ -410,37 +410,59 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         // on *nix systems return values from git for-each-ref are wrapped in
         // quotes
         // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
-        if (branches != null && !branches.isEmpty()) {
-            branches = branches.replaceAll("\"", "");
-        }
+        branches = removeQuotes(branches);
 
         return branches;
     }
 
     /**
      * Executes git for-each-ref to get all tags.
-     * 
+     *
      * @return Git tags.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected String gitFindTags() throws MojoFailureException,
-            CommandLineException {
-        String tags = executeGitCommandReturn("for-each-ref",
-                "--sort=*authordate", "--format=\"%(refname:short)\"",
+    protected String gitFindTags() throws MojoFailureException, CommandLineException {
+        String tags = executeGitCommandReturn("for-each-ref", "--sort=*authordate", "--format=\"%(refname:short)\"",
                 "refs/tags/");
-
         // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
-        if (tags != null && !tags.isEmpty()) {
-            tags = tags.replaceAll("\"", "");
-        }
-
+        tags = removeQuotes(tags);
         return tags;
     }
 
     /**
-     * Checks if local branch with given name exists.
+     * Executes git for-each-ref to get the last tag.
+     *
+     * @return Last tag.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected String gitFindLastTag() throws MojoFailureException, CommandLineException {
+        String tag = executeGitCommandReturn("for-each-ref", "--sort=-*authordate", "--count=1",
+                "--format=\"%(refname:short)\"", "refs/tags/");
+        // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
+        tag = removeQuotes(tag);
+        tag = tag.replaceAll("\\r?\\n", "");
+        return tag;
+    }
+
+    /**
+     * Removes double quotes from the string.
      * 
+     * @param str
+     *            String to remove quotes from.
+     * @return String without quotes.
+     */
+    private String removeQuotes(String str) {
+        if (str != null && !str.isEmpty()) {
+            str = str.replaceAll("\"", "");
+        }
+        return str;
+    }
+
+    /**
+     * Checks if local branch with given name exists.
+     *
      * @param branchName
      *            Name of the branch to check.
      * @return <code>true</code> if local branch exists, <code>false</code>
@@ -456,8 +478,23 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Checks if local tag with given name exists.
+     *
+     * @param tagName
+     *            Name of the tag to check.
+     * @return <code>true</code> if local tag exists, <code>false</code> otherwise.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected boolean gitCheckTagExists(final String tagName) throws MojoFailureException, CommandLineException {
+        CommandResult commandResult = executeGitCommandExitCode("show-ref", "--verify", "--quiet",
+                "refs/tags/" + tagName);
+        return commandResult.getExitCode() == SUCCESS_EXIT_CODE;
+    }
+
+    /**
      * Executes git checkout.
-     * 
+     *
      * @param branchName
      *            Branch name to checkout.
      * @throws MojoFailureException
