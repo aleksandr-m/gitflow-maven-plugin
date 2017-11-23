@@ -139,6 +139,13 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     @Parameter(property = "postReleaseGoals")
     private String postReleaseGoals;
 
+    /**
+     * Whether to make a GPG-signed tag.
+     * 
+     */
+    @Parameter(property = "gpgSignTag", defaultValue = "false")
+    private boolean gpgSignTag = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -267,7 +274,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + version,
-                        commitMessages.getTagReleaseMessage());
+                        commitMessages.getTagReleaseMessage(), gpgSignTag);
             }
 
             // maven goals after release

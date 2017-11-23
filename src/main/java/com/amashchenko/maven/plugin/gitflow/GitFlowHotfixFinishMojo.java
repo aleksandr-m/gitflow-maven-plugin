@@ -85,6 +85,13 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "hotfixVersion")
     private String hotfixVersion;
 
+    /**
+     * Whether to make a GPG-signed tag.
+     * 
+     */
+    @Parameter(property = "gpgSignTag", defaultValue = "false")
+    private boolean gpgSignTag = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -177,7 +184,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
-                        commitMessages.getTagHotfixMessage());
+                        commitMessages.getTagHotfixMessage(), gpgSignTag);
             }
 
             // maven goals after merge

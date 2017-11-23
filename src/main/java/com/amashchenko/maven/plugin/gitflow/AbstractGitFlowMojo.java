@@ -647,20 +647,28 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
-     * Executes git tag -a -m.
+     * Executes git tag -a [-s] -m.
      * 
      * @param tagName
      *            Name of the tag.
      * @param message
      *            Tag message.
+     * @param gpgSignTag
+     *            Make a GPG-signed tag.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitTag(final String tagName, final String message)
+    protected void gitTag(final String tagName, final String message, boolean gpgSignTag)
             throws MojoFailureException, CommandLineException {
-        getLog().info("Creating '" + tagName + "' tag.");
+        if (gpgSignTag) {
+            getLog().info("Creating GPG-signed '" + tagName + "' tag.");
 
-        executeGitCommand("tag", "-a", tagName, "-m", message);
+            executeGitCommand("tag", "-a", "-s", tagName, "-m", message);
+        } else {
+            getLog().info("Creating '" + tagName + "' tag.");
+
+            executeGitCommand("tag", "-a", tagName, "-m", message);
+        }
     }
 
     /**
