@@ -117,6 +117,13 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private String argLine;
 
     /**
+     * Whether to make a GPG-signed commit.
+     * 
+     */
+    @Parameter(property = "gpgSignCommit", defaultValue = "false")
+    private boolean gpgSignCommit = false;
+
+    /**
      * The path to the Maven executable. Defaults to "mvn".
      */
     @Parameter(property = "mvnExecutable")
@@ -556,9 +563,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitCommit(final String message) throws MojoFailureException,
             CommandLineException {
-        getLog().info("Committing changes.");
-
-        executeGitCommand("commit", "-a", "-m", message);
+        gitCommit(message, null);
     }
 
     /**
@@ -575,8 +580,6 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitCommit(String message, Map<String, String> map)
             throws MojoFailureException, CommandLineException {
-        getLog().info("Committing changes.");
-
         if (map != null) {
             for (Entry<String, String> entr : map.entrySet()) {
                 message = StringUtils.replace(message, "@{" + entr.getKey()
@@ -584,7 +587,15 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             }
         }
 
-        executeGitCommand("commit", "-a", "-m", message);
+        if (gpgSignCommit) {
+            getLog().info("Committing changes. GPG-signed.");
+
+            executeGitCommand("commit", "-a", "-S", "-m", message);
+        } else {
+            getLog().info("Committing changes.");
+
+            executeGitCommand("commit", "-a", "-m", message);
+        }
     }
 
     /**
