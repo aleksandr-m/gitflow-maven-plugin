@@ -233,7 +233,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
                     // get next snapshot version
                     final String nextSnapshotVersion = developVersionInfo
-                            .nextSnapshotVersion();
+                            .getSnapshotVersionString();
 
                     if (StringUtils.isBlank(nextSnapshotVersion)) {
                         throw new MojoFailureException(
@@ -325,5 +325,16 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
         }
 
         return hotfixBranchName;
+    }
+
+    private String getIndexNumberByBranchName(final String[] branches, final String branchName) {
+        for (int i = 0; i < branches.length; i++) {
+            if (branchName.equals(branches[i])) {
+                return String.valueOf(i + 1);
+            }
+            i++;
+        }
+        // If branchName is not one of the valid branches, then return blank and prompter will be used
+        return "";
     }
 }
