@@ -599,7 +599,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
-     * Executes git rebase or git merge --no-ff or git merge.
+     * Executes git rebase or git merge --ff-only or git merge --no-ff or git merge.
      * 
      * @param branchName
      *            Branch name to merge.
@@ -612,21 +612,24 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitMerge(final String branchName, boolean rebase,
-            boolean noff, boolean ffonly) throws MojoFailureException,
-            CommandLineException {
+    protected void gitMerge(final String branchName, boolean rebase, boolean noff, boolean ffonly)
+            throws MojoFailureException, CommandLineException {
+        String sign = "";
+        if (gpgSignCommit) {
+            sign = "-S";
+        }
         if (rebase) {
             getLog().info("Rebasing '" + branchName + "' branch.");
-            executeGitCommand("rebase", branchName);
+            executeGitCommand("rebase", sign, branchName);
         } else if (ffonly) {
             getLog().info("Merging (--ff-only) '" + branchName + "' branch.");
-            executeGitCommand("merge", "--ff-only", branchName);
+            executeGitCommand("merge", "--ff-only", sign, branchName);
         } else if (noff) {
             getLog().info("Merging (--no-ff) '" + branchName + "' branch.");
-            executeGitCommand("merge", "--no-ff", branchName);
+            executeGitCommand("merge", "--no-ff", sign, branchName);
         } else {
             getLog().info("Merging '" + branchName + "' branch.");
-            executeGitCommand("merge", branchName);
+            executeGitCommand("merge", sign, branchName);
         }
     }
 
