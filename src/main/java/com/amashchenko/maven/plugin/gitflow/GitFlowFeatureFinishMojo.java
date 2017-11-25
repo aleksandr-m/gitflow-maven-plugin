@@ -66,10 +66,16 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Feature name to use in non interactive mode.
-     * 
      */
     @Parameter(property = "featureName")
     private String featureName;
+
+    /**
+     * Commit message to use in non interactive mode for feature-finish with featureSquash
+     */
+    @Parameter(property = "commitMessage")
+    private String featureCommitMessage;
+
 
     /** {@inheritDoc} */
     @Override
@@ -81,6 +87,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             checkUncommittedChanges();
 
             String featureBranchName = null;
+
             if (settings.isInteractiveMode()) {
                 featureBranchName = promptBranchName();
             } else if (StringUtils.isNotBlank(featureName)) {
@@ -119,8 +126,8 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
             if (featureSquash) {
                 // git merge --squash feature/...
+                setCommitMessage();
                 gitMergeSquash(featureBranchName);
-                gitCommit(featureBranchName);
             } else {
                 // git merge --no-ff feature/...
                 gitMergeNoff(featureBranchName);
@@ -210,5 +217,22 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
         }
 
         return featureBranchName;
+    }
+
+    private void setCommitMessage() throws MojoFailureException, CommandLineException {
+
+        if (settings.isInteractiveMode()) {
+            try {
+                while (StringUtils.isBlank(featureCommitMessage)) {
+                    featureCommitMessage = prompter.prompt("Enter a short merge commit message for '" + featureName + "'.", featureName);
+                }
+            } catch (PrompterException e) {
+                throw new MojoFailureException("feature-finish", e);
+            }
+        } else if (featureCommitMessage == null) {
+            featureCommitMessage = featureName;
+        }
+
+        commitMessages.setFeatureFinishMessage(featureCommitMessage);
     }
 }

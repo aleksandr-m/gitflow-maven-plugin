@@ -519,7 +519,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitCommit(final String message) throws MojoFailureException,
             CommandLineException {
-        getLog().info("Committing changes.");
+        getLog().info("Committing changes with message: " + message);
 
         executeGitCommand("commit", "-a", "-m", message);
     }
@@ -538,7 +538,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitCommit(String message, Map<String, String> map)
             throws MojoFailureException, CommandLineException {
-        getLog().info("Committing changes.");
+        getLog().info("Committing changes with message: " + message);
 
         if (map != null) {
             for (Entry<String, String> entr : map.entrySet()) {
