@@ -126,8 +126,9 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
             if (featureSquash) {
                 // git merge --squash feature/...
-                setCommitMessage();
+                setMergeSquashCommitMessage(featureBranchName);
                 gitMergeSquash(featureBranchName);
+                gitCommit(featureCommitMessage);
             } else {
                 // git merge --no-ff feature/...
                 gitMergeNoff(featureBranchName);
@@ -219,20 +220,22 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
         return featureBranchName;
     }
 
-    private void setCommitMessage() throws MojoFailureException, CommandLineException {
+    private void setMergeSquashCommitMessage(String branchName) throws MojoFailureException, CommandLineException {
 
         if (settings.isInteractiveMode()) {
             try {
                 while (StringUtils.isBlank(featureCommitMessage)) {
-                    featureCommitMessage = prompter.prompt("Enter a short merge commit message for '" + featureName + "'.", featureName);
+                    featureCommitMessage = prompter.prompt("Enter a short merge commit message for '" + branchName + "'.");
                 }
             } catch (PrompterException e) {
                 throw new MojoFailureException("feature-finish", e);
             }
         } else if (featureCommitMessage == null) {
-            featureCommitMessage = featureName;
+            featureCommitMessage = branchName;
         }
 
-        commitMessages.setFeatureFinishMessage(featureCommitMessage);
+        if (!featureCommitMessage.startsWith(branchName)) {
+            featureCommitMessage = branchName.concat(": ").concat(featureCommitMessage);
+        }
     }
 }
