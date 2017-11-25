@@ -128,7 +128,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 // git merge --squash feature/...
                 setMergeSquashCommitMessage(featureBranchName);
                 gitMergeSquash(featureBranchName);
-                gitCommit(featureCommitMessage);
+                gitCommitAmend(featureCommitMessage);
             } else {
                 // git merge --no-ff feature/...
                 gitMergeNoff(featureBranchName);

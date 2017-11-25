@@ -117,6 +117,13 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private String argLine;
 
     /**
+     * Whether to make a GPG-signed commit.
+     * 
+     */
+    @Parameter(property = "gpgSignCommit", defaultValue = "false")
+    private boolean gpgSignCommit = false;
+
+    /**
      * The path to the Maven executable. Defaults to "mvn".
      */
     @Parameter(property = "mvnExecutable")
@@ -410,37 +417,59 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         // on *nix systems return values from git for-each-ref are wrapped in
         // quotes
         // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
-        if (branches != null && !branches.isEmpty()) {
-            branches = branches.replaceAll("\"", "");
-        }
+        branches = removeQuotes(branches);
 
         return branches;
     }
 
     /**
      * Executes git for-each-ref to get all tags.
-     * 
+     *
      * @return Git tags.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected String gitFindTags() throws MojoFailureException,
-            CommandLineException {
-        String tags = executeGitCommandReturn("for-each-ref",
-                "--sort=*authordate", "--format=\"%(refname:short)\"",
+    protected String gitFindTags() throws MojoFailureException, CommandLineException {
+        String tags = executeGitCommandReturn("for-each-ref", "--sort=*authordate", "--format=\"%(refname:short)\"",
                 "refs/tags/");
-
         // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
-        if (tags != null && !tags.isEmpty()) {
-            tags = tags.replaceAll("\"", "");
-        }
-
+        tags = removeQuotes(tags);
         return tags;
     }
 
     /**
-     * Checks if local branch with given name exists.
+     * Executes git for-each-ref to get the last tag.
+     *
+     * @return Last tag.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected String gitFindLastTag() throws MojoFailureException, CommandLineException {
+        String tag = executeGitCommandReturn("for-each-ref", "--sort=-*authordate", "--count=1",
+                "--format=\"%(refname:short)\"", "refs/tags/");
+        // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
+        tag = removeQuotes(tag);
+        tag = tag.replaceAll("\\r?\\n", "");
+        return tag;
+    }
+
+    /**
+     * Removes double quotes from the string.
      * 
+     * @param str
+     *            String to remove quotes from.
+     * @return String without quotes.
+     */
+    private String removeQuotes(String str) {
+        if (str != null && !str.isEmpty()) {
+            str = str.replaceAll("\"", "");
+        }
+        return str;
+    }
+
+    /**
+     * Checks if local branch with given name exists.
+     *
      * @param branchName
      *            Name of the branch to check.
      * @return <code>true</code> if local branch exists, <code>false</code>
@@ -456,8 +485,23 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Checks if local tag with given name exists.
+     *
+     * @param tagName
+     *            Name of the tag to check.
+     * @return <code>true</code> if local tag exists, <code>false</code> otherwise.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected boolean gitCheckTagExists(final String tagName) throws MojoFailureException, CommandLineException {
+        CommandResult commandResult = executeGitCommandExitCode("show-ref", "--verify", "--quiet",
+                "refs/tags/" + tagName);
+        return commandResult.getExitCode() == SUCCESS_EXIT_CODE;
+    }
+
+    /**
      * Executes git checkout.
-     * 
+     *
      * @param branchName
      *            Branch name to checkout.
      * @throws MojoFailureException
@@ -519,9 +563,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitCommit(final String message) throws MojoFailureException,
             CommandLineException {
-        getLog().info("Committing changes with message: " + message);
-
-        executeGitCommand("commit", "-a", "-m", message);
+        gitCommit(message, null);
     }
 
     /**
@@ -538,7 +580,6 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitCommit(String message, Map<String, String> map)
             throws MojoFailureException, CommandLineException {
-        getLog().info("Committing changes with message: " + message);
 
         if (map != null) {
             for (Entry<String, String> entr : map.entrySet()) {
@@ -547,11 +588,39 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             }
         }
 
-        executeGitCommand("commit", "-a", "-m", message);
+        if (gpgSignCommit) {
+            getLog().info("Committing changes with message: " + message + ". GPG-signed.");
+
+            executeGitCommand("commit", "-a", "-S", "-m", message);
+        } else {
+            getLog().info("Committing changes with message: " + message);
+
+            executeGitCommand("commit", "-a", "-m", message);
+        }
     }
 
     /**
-     * Executes git rebase or git merge --no-ff or git merge.
+     * Executes git commit --amend -m for use after git merge --squash
+     *
+     * @param message
+     *            new commit message to replace last one. Use with care
+     *
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitCommitAmend(String message) throws MojoFailureException, CommandLineException {
+        if (gpgSignCommit) {
+            getLog().info("Amending last commit message to: " + message + ". GPG-signed.");
+            executeGitCommand("commit", "--amend", "-S", "-m", message);
+        } else {
+            getLog().info("Amending last commit message to: " + message);
+            executeGitCommand("commit", "--amend", "-m", message);
+        }
+    }
+
+
+    /**
+     * Executes git rebase or git merge --ff-only or git merge --no-ff or git merge.
      * 
      * @param branchName
      *            Branch name to merge.
@@ -564,21 +633,24 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitMerge(final String branchName, boolean rebase,
-            boolean noff, boolean ffonly) throws MojoFailureException,
-            CommandLineException {
+    protected void gitMerge(final String branchName, boolean rebase, boolean noff, boolean ffonly)
+            throws MojoFailureException, CommandLineException {
+        String sign = "";
+        if (gpgSignCommit) {
+            sign = "-S";
+        }
         if (rebase) {
             getLog().info("Rebasing '" + branchName + "' branch.");
-            executeGitCommand("rebase", branchName);
+            executeGitCommand("rebase", sign, branchName);
         } else if (ffonly) {
             getLog().info("Merging (--ff-only) '" + branchName + "' branch.");
-            executeGitCommand("merge", "--ff-only", branchName);
+            executeGitCommand("merge", "--ff-only", sign, branchName);
         } else if (noff) {
             getLog().info("Merging (--no-ff) '" + branchName + "' branch.");
-            executeGitCommand("merge", "--no-ff", branchName);
+            executeGitCommand("merge", "--no-ff", sign, branchName);
         } else {
             getLog().info("Merging '" + branchName + "' branch.");
-            executeGitCommand("merge", branchName);
+            executeGitCommand("merge", sign, branchName);
         }
     }
 
@@ -610,20 +682,28 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
-     * Executes git tag -a -m.
+     * Executes git tag -a [-s] -m.
      * 
      * @param tagName
      *            Name of the tag.
      * @param message
      *            Tag message.
+     * @param gpgSignTag
+     *            Make a GPG-signed tag.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitTag(final String tagName, final String message)
+    protected void gitTag(final String tagName, final String message, boolean gpgSignTag)
             throws MojoFailureException, CommandLineException {
-        getLog().info("Creating '" + tagName + "' tag.");
+        if (gpgSignTag) {
+            getLog().info("Creating GPG-signed '" + tagName + "' tag.");
 
-        executeGitCommand("tag", "-a", tagName, "-m", message);
+            executeGitCommand("tag", "-a", "-s", tagName, "-m", message);
+        } else {
+            getLog().info("Creating '" + tagName + "' tag.");
+
+            executeGitCommand("tag", "-a", tagName, "-m", message);
+        }
     }
 
     /**

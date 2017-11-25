@@ -13,6 +13,9 @@ try {
     String actual = FileUtils.fileRead(file, "UTF-8");
     String expected = FileUtils.fileRead(expectedFile, "UTF-8");
 
+    actual = actual.replaceAll("\\r?\\n", "");
+    expected = expected.replaceAll("\\r?\\n", "");
+
     if (!expected.equals(actual)) {
         System.out.println("feature-finish expected: " + expected + " actual was:" + actual);
         return false;
@@ -20,8 +23,8 @@ try {
 
     File logFile = new File(basedir, "build.log");
     String log = FileUtils.fileRead(logFile, "UTF-8");
-    if (!log.contains("Committing changes with message: custom commit message")) {
-        System.out.println("feature-finish build.log does not contain expected commit message: 'custom commit message'");
+    if (!log.contains("feature/test: custom commit message")) {
+        System.out.println("feature-finish build.log does not contain expected commit message: 'feature/test: custom commit message'");
         return false;
     }
 

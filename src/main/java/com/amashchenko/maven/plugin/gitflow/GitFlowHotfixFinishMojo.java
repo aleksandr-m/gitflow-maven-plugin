@@ -85,6 +85,13 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "hotfixVersion")
     private String hotfixVersion;
 
+    /**
+     * Whether to make a GPG-signed tag.
+     * 
+     */
+    @Parameter(property = "gpgSignTag", defaultValue = "false")
+    private boolean gpgSignTag = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -177,7 +184,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
-                        commitMessages.getTagHotfixMessage());
+                        commitMessages.getTagHotfixMessage(), gpgSignTag);
             }
 
             // maven goals after merge
@@ -278,11 +285,15 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
         }
     }
 
-    private String promptBranchName()
-            throws MojoFailureException, CommandLineException {
+    private String promptBranchName() throws MojoFailureException, CommandLineException {
         // git for-each-ref --format='%(refname:short)' refs/heads/hotfix/*
-        final String hotfixBranches = gitFindBranches(
-                gitFlowConfig.getHotfixBranchPrefix(), false);
+        String hotfixBranches = gitFindBranches(gitFlowConfig.getHotfixBranchPrefix(), false);
+
+        // find hotfix support branches
+        if (!gitFlowConfig.getHotfixBranchPrefix().endsWith("/")) {
+            String supportHotfixBranches = gitFindBranches(gitFlowConfig.getHotfixBranchPrefix() + "*/*", false);
+            hotfixBranches = hotfixBranches + supportHotfixBranches;
+        }
 
         if (StringUtils.isBlank(hotfixBranches)) {
             throw new MojoFailureException("There are no hotfix branches.");

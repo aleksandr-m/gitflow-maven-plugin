@@ -1,3 +1,5 @@
+import org.codehaus.plexus.util.FileUtils;
+
 try {
     new File(basedir, "gitignorefile").renameTo(new File(basedir, ".gitignore"));
 
@@ -10,10 +12,19 @@ try {
     p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " commit -m init");
     p.waitFor();
 
-    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " branch feature/test");
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " tag -a 0.0.3 -m 0.0.3");
     p.waitFor();
 
-    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " commit -a --allow-empty -m dummy");
+    File file = new File(basedir, "test.txt");
+    FileUtils.fileAppend(file.getPath(), "next commit");
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " add .");
+    p.waitFor();
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " commit -m next");
+    p.waitFor();
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " tag -a 0.0.4 -m 0.0.4");
     p.waitFor();
 
     p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " checkout -b develop");
