@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.8.0
+
+* Added ability to run custom Maven goals before and after release and hotfix - [#13](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/13), [#29](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/29), [#54](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/54)
+* Added ability to allow to pass arguments to the underlying Maven commands - [#53](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/53)
+
 ## v1.7.0
 
 * Fixed [#19](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/19) - Avoid merge conflict in `hotfix-finish`

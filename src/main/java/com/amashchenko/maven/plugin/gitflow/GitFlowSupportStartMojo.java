@@ -41,9 +41,18 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "pushRemote", defaultValue = "true")
     private boolean pushRemote;
 
+    /**
+     * Tag name to use in non-interactive mode.
+     *
+     */
+    @Parameter(property = "tagName")
+    private String tagName;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        validateConfiguration();
+
         try {
             // set git flow configuration
             initGitFlowConfig();
@@ -51,24 +60,39 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
             // check uncommitted changes
             checkUncommittedChanges();
 
-            // get tags
-            String tagsStr = gitFindTags();
+            String tag = null;
+            if (settings.isInteractiveMode()) {
+                // get tags
+                String tagsStr = gitFindTags();
 
-            if (StringUtils.isBlank(tagsStr)) {
-                throw new MojoFailureException("There are no tags.");
+                if (StringUtils.isBlank(tagsStr)) {
+                    throw new MojoFailureException("There are no tags.");
+                }
+
+                try {
+                    tag = prompter.prompt("Choose tag to start support branch",
+                            Arrays.asList(tagsStr.split("\\r?\\n")));
+                } catch (PrompterException e) {
+                    throw new MojoFailureException("support-start", e);
+                }
+            } else if (StringUtils.isNotBlank(tagName)) {
+                if (gitCheckTagExists(tagName)) {
+                    tag = tagName;
+                } else {
+                    throw new MojoFailureException("The tag '" + tagName + "' doesn't exist.");
+                }
+            } else {
+                getLog().info("The tagName is blank. Using the last tag.");
+                tag = gitFindLastTag();
             }
 
-            String tagName = null;
-            try {
-                tagName = prompter.prompt("Choose tag to start support branch",
-                        Arrays.asList(tagsStr.split("\\r?\\n")));
-            } catch (PrompterException e) {
-                getLog().error(e);
+            if (StringUtils.isBlank(tag)) {
+                throw new MojoFailureException("Tag is blank.");
             }
 
             // git for-each-ref refs/heads/support/...
             final boolean supportBranchExists = gitCheckBranchExists(gitFlowConfig
-                    .getSupportBranchPrefix() + tagName);
+                    .getSupportBranchPrefix() + tag);
 
             if (supportBranchExists) {
                 throw new MojoFailureException(
@@ -76,8 +100,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout -b ... tag
-            gitCreateAndCheckout(gitFlowConfig.getSupportBranchPrefix()
-                    + tagName, tagName);
+            gitCreateAndCheckout(gitFlowConfig.getSupportBranchPrefix() + tag, tag);
 
             if (installProject) {
                 // mvn clean install
@@ -85,10 +108,10 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
             }
 
             if (pushRemote) {
-                gitPush(gitFlowConfig.getSupportBranchPrefix() + tagName, false);
+                gitPush(gitFlowConfig.getSupportBranchPrefix() + tag, false);
             }
         } catch (CommandLineException e) {
-            getLog().error(e);
+            throw new MojoFailureException("support-start", e);
         }
     }
 }

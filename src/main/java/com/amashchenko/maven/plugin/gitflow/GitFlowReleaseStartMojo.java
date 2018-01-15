@@ -121,6 +121,8 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        validateConfiguration();
+
         try {
             // set git flow configuration
             initGitFlowConfig();
@@ -218,9 +220,9 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 gitPush(branchName, false);
             }
         } catch (CommandLineException e) {
-            getLog().error(e);
+            throw new MojoFailureException("release-start", e);
         } catch (VersionParseException e) {
-            getLog().error(e);
+            throw new MojoFailureException("release-start", e);
         }
     }
 
@@ -280,13 +282,14 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                     }
                 }
             } catch (PrompterException e) {
-                getLog().error(e);
+                throw new MojoFailureException("release-start", e);
             }
         } else {
             version = releaseVersion;
         }
 
         if (StringUtils.isBlank(version)) {
+            getLog().info("Version is blank. Using default version.");
             version = defaultVersion;
         }
 
