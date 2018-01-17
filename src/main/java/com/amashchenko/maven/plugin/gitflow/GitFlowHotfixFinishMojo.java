@@ -141,11 +141,11 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     gitFetchRemoteAndCompare(supportBranchName);
                 } else {
                     if (notSameProdDevName()) {
-                        gitFetchRemoteAndCompare(
-                                gitFlowConfig.getDevelopmentBranch());
+                        gitFetchRemoteAndCreate(gitFlowConfig.getDevelopmentBranch());
+                        gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
                     }
-                    gitFetchRemoteAndCompare(
-                            gitFlowConfig.getProductionBranch());
+                    gitFetchRemoteAndCreate(gitFlowConfig.getProductionBranch());
+                    gitFetchRemoteAndCompare(gitFlowConfig.getProductionBranch());
                 }
             }
 
@@ -232,8 +232,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     }
 
                     // get next snapshot version
-                    final String nextSnapshotVersion = developVersionInfo
-                            .nextSnapshotVersion();
+                    final String nextSnapshotVersion = developVersionInfo.getSnapshotVersionString();
 
                     if (StringUtils.isBlank(nextSnapshotVersion)) {
                         throw new MojoFailureException(
