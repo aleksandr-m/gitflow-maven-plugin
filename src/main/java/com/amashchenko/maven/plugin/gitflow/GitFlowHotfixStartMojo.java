@@ -45,7 +45,15 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
     private boolean pushRemote;
 
     /**
-     * Hotfix version to use in non interactive mode.
+     * Branch to start hotfix in non-interactive mode. Production branch or one of
+     * the support branches.
+     * 
+     */
+    @Parameter(property = "fromBranch")
+    private String fromBranch;
+
+    /**
+     * Hotfix version to use in non-interactive mode.
      * 
      */
     @Parameter(property = "hotfixVersion")
@@ -65,20 +73,19 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
             String branchName = gitFlowConfig.getProductionBranch();
 
+            // find support branches
+            final String supportBranchesStr = gitFindBranches(gitFlowConfig.getSupportBranchPrefix(), false);
+
+            final String[] supportBranches = supportBranchesStr.split("\\r?\\n");
+
             if (settings.isInteractiveMode()) {
-                final String supportBranches = gitFindBranches(
-                        gitFlowConfig.getSupportBranchPrefix(), false);
-
-                if (StringUtils.isNotBlank(supportBranches)) {
-                    final String[] tmpBranches = supportBranches
-                            .split("\\r?\\n");
-
-                    String[] branches = new String[tmpBranches.length + 1];
-                    for (int i = 0; i < tmpBranches.length; i++) {
-                        branches[i] = tmpBranches[i];
+                if (supportBranches != null && supportBranches.length > 0) {
+                    String[] branches = new String[supportBranches.length + 1];
+                    for (int i = 0; i < supportBranches.length; i++) {
+                        branches[i] = supportBranches[i];
                     }
                     // add production branch to the list
-                    branches[tmpBranches.length] = gitFlowConfig
+                    branches[supportBranches.length] = gitFlowConfig
                             .getProductionBranch();
 
                     List<String> numberedList = new ArrayList<String>();
@@ -108,6 +115,12 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                     if (StringUtils.isBlank(branchName)) {
                         throw new MojoFailureException("Branch name is blank.");
                     }
+                }
+            } else if (StringUtils.isNotBlank(fromBranch)) {
+                if (fromBranch.equals(gitFlowConfig.getProductionBranch()) || contains(supportBranches, fromBranch)) {
+                    branchName = fromBranch;
+                } else {
+                    throw new MojoFailureException("The fromBranch is not production or support branch.");
                 }
             }
 
@@ -213,5 +226,16 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
         } catch (VersionParseException e) {
             throw new MojoFailureException("hotfix-start", e);
         }
+    }
+
+    private boolean contains(String[] arr, String str) {
+        if (arr != null && str != null) {
+            for (String a : arr) {
+                if (str.equals(a)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
