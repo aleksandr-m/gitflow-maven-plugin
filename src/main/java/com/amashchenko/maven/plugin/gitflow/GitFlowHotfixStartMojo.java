@@ -76,7 +76,12 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             // find support branches
             final String supportBranchesStr = gitFindBranches(gitFlowConfig.getSupportBranchPrefix(), false);
 
-            final String[] supportBranches = supportBranchesStr.split("\\r?\\n");
+            final String[] supportBranches;
+            if (StringUtils.isNotBlank(supportBranchesStr)) {
+                supportBranches = supportBranchesStr.split("\\r?\\n");
+            } else {
+                supportBranches = null;
+            }
 
             if (settings.isInteractiveMode()) {
                 if (supportBranches != null && supportBranches.length > 0) {
