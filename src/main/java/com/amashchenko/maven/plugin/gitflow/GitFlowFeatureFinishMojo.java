@@ -65,8 +65,9 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     private boolean pushRemote;
 
     /**
-     * Feature name to use in non interactive mode.
+     * Feature name to use in non-interactive mode.
      * 
+     * @since 1.9.0
      */
     @Parameter(property = "featureName")
     private String featureName;

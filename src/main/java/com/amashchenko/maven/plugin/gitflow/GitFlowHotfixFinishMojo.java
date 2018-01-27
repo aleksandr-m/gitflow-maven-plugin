@@ -79,8 +79,9 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     private String postHotfixGoals;
 
     /**
-     * Hotfix version to use in non interactive mode.
+     * Hotfix version to use in non-interactive mode.
      * 
+     * @since 1.9.0
      */
     @Parameter(property = "hotfixVersion")
     private String hotfixVersion;
@@ -88,6 +89,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     /**
      * Whether to make a GPG-signed tag.
      * 
+     * @since 1.9.0
      */
     @Parameter(property = "gpgSignTag", defaultValue = "false")
     private boolean gpgSignTag = false;
@@ -212,8 +214,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                         // git checkout develop
                         gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
-                        developVersionInfo = new GitFlowVersionInfo(
-                                getCurrentProjectVersion());
+                        developVersionInfo = new GitFlowVersionInfo(getCurrentProjectVersion());
 
                         // set version to avoid merge conflict
                         mvnSetVersions(currentVersion);

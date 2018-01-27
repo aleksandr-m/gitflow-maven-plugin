@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.9.0
+
+* Fixed not failing the whole build on goals errors
+* Added ability to make a GPG-signed tags and commits - [#73](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/73)
+* Added ability to execute `support-start` goal in non-interactive mode - [#75](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/75)
+* Added ability to execute feature and hotfix goals in non-interactive mode - [#71](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/71)
+* Added ability to start hotfix from support branch in non-interactive mode - [#88](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/88)
+* Added ability to fetch and checkout from the remote if local branch doesn't exist in `hotfix-finish` goal - [#87](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/87)
+* Improved finding of hotfix support branches in `hotfix-finish` goal - [#68](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/68)
+
 ## v1.8.0
 
 * Added ability to run custom Maven goals before and after release and hotfix - [#13](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/13), [#29](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/29), [#54](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/54)

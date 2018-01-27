@@ -22,7 +22,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.8.0</version>
+                <version>1.9.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -73,6 +73,31 @@ The [`tycho-versions-plugin`](https://eclipse.org/tycho/sitedocs/tycho-release/t
 Feature name will not be appended to project version on `gitflow:feature-start` goal even if the `skipFeatureVersion` is set to `false`.
 
 If version has qualifier then it will not be removed in the release or hotfix goals.
+
+
+# Signing Your Work
+
+To sign tags and/or commits you need to configure GPG and install personal key. Read more [Git Tools - Signing Your Work](https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work).
+
+Next you need to configure Git to use your personal key.
+
+```
+git config --global user.signingkey GPG_key_id
+```
+
+Sometimes you need to tell Git where the GPG program is. Use `gpg.program` option for that.
+
+```
+git config --global gpg.program "path_to_gpg"
+```
+
+### Signing Tags
+
+The `gitflow:release`, `gitflow:release-finish` and `gitflow:hotfix-finish` goals have `gpgSignTag` parameter. Set it to `true` to sign tags with configured personal key. The default value is `false`.
+
+### Signing Commits
+
+All goals have `gpgSignCommit` parameter. Set it to `true` to sign commits with configured personal key. The default value is `false`.
 
 
 # Plugin Common Parameters
@@ -164,8 +189,6 @@ The `gitflow:release-finish` and `gitflow:release` goals have `digitsOnlyDevVers
 For example, if the release version is `1.0.0-Final` then development version will be `1.0.1-SNAPSHOT`.
 The default value is `false` (i.e. qualifiers will be preserved in next development version).
 
-The `gitflow:release-finish` and `gitflow:release` goals have `developmentVersion` parameter which can be used to set the next development version in non-interactive mode.
-
 The `gitflow:release-finish` and `gitflow:release` goals have `versionDigitToIncrement` parameter which controls which digit to increment in the next development version. Starts from zero.
 For example, if the release version is `1.2.3.4` and `versionDigitToIncrement` is set to `1` then the next development version will be `1.3.0.0-SNAPSHOT`.
 If not set or set to not valid value defaults to increment last digit in the version.
@@ -212,12 +235,15 @@ E.g. `mvn gitflow:release-finish -DpostReleaseGoals=deploy` will run `mvn deploy
 
 The `gitflow:hotfix-finish` goal have `preHotfixGoals` and `postHotfixGoals` parameters which can be used to run defined Maven goals before and after the hotfix respectively.
 
-# Non-interactive Release
+# Non-interactive Mode
+
+Maven can be run in non-interactive (batch) mode. By using non-interactive mode goals can be run in continuous integration environment.
+To put Maven in the batch mode use `-B` or `--batch-mode` option.
+
+## Non-interactive Release
 
 Releases could be performed without prompting for the release version during `gitflow:release-start` or `gitflow:release` goals by telling Maven to run in non-interactive (batch) mode.
 The `releaseVersion` parameter can be used to set the release version in non-interactive mode. If `releaseVersion` parameter is not set then the default release version will be used.
-
-To put Maven in the batch mode use `-B` or `--batch-mode` option.
 
     mvn -B gitflow:release-start gitflow:release-finish
     
@@ -226,3 +252,22 @@ To release w/o creating separate release branch use `gitflow:release` goal.
     mvn -B gitflow:release
 
 This gives the ability to perform releases in non-interactive mode (e.g. in CI server).
+
+The `gitflow:release-finish` and `gitflow:release` goals have `developmentVersion` parameter which can be used to set the next development version in non-interactive mode.
+
+## Non-interactive Feature
+
+The `gitflow:feature-start` and `gitflow:feature-finish` goals have `featureName` parameter which can be used to set a name of the feature in non-interactive mode.
+
+## Non-interactive Hotfix
+
+The `gitflow:hotfix-start` goal has `fromBranch` parameter which can be used to set starting branch of the hotfix. It can be set to production branch or one of the support branches.
+If it is left blank then hotfix will be started from the production branch.
+
+The `gitflow:hotfix-start` and `gitflow:hotfix-finish` goals have `hotfixVersion` parameter which can be used to set version of the hotfix.
+If it is left blank in `gitflow:hotfix-start` goal then the default version will be used.
+
+## Non-interactive Support
+
+The `gitflow:support-start` goal can be run in non-interactive mode. Use `tagName` parameter to set tag from which supporting branch will be started.
+If `tagName` is not set but the goal is running in non-interactive mode then the last tag will be used.

@@ -119,6 +119,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /**
      * Whether to make a GPG-signed commit.
      * 
+     * @since 1.9.0
      */
     @Parameter(property = "gpgSignCommit", defaultValue = "false")
     private boolean gpgSignCommit = false;

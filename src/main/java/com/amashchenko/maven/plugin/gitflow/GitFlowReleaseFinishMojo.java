@@ -146,6 +146,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     /**
      * Whether to make a GPG-signed tag.
      * 
+     * @since 1.9.0
      */
     @Parameter(property = "gpgSignTag", defaultValue = "false")
     private boolean gpgSignTag = false;

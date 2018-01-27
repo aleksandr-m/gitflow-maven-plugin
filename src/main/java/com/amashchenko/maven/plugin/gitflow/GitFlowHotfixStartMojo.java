@@ -48,6 +48,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
      * Branch to start hotfix in non-interactive mode. Production branch or one of
      * the support branches.
      * 
+     * @since 1.9.0
      */
     @Parameter(property = "fromBranch")
     private String fromBranch;
@@ -55,6 +56,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
     /**
      * Hotfix version to use in non-interactive mode.
      * 
+     * @since 1.9.0
      */
     @Parameter(property = "hotfixVersion")
     private String hotfixVersion;

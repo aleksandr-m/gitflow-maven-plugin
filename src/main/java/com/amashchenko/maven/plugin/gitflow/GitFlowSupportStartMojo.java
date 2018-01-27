@@ -44,6 +44,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
     /**
      * Tag name to use in non-interactive mode.
      *
+     * @since 1.9.0
      */
     @Parameter(property = "tagName")
     private String tagName;
