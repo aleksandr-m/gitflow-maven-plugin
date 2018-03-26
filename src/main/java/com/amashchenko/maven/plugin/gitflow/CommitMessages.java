@@ -32,6 +32,8 @@ public class CommitMessages {
     private String tagHotfixMessage;
     private String tagReleaseMessage;
 
+    private String mergeMessage;
+
     public CommitMessages() {
         featureStartMessage = "update versions for feature branch";
         featureFinishMessage = "update versions for development branch";
@@ -165,4 +167,15 @@ public class CommitMessages {
     public void setTagReleaseMessage(String tagReleaseMessage) {
         this.tagReleaseMessage = tagReleaseMessage;
     }
+
+    /**
+     * @return the mergeMessage
+     */
+    public String getMergeMessage() { return mergeMessage; }
+
+    /**
+     * @param mergeMessage
+     *            the mergeMessage to set
+     */
+    public void setMergeMessage(String mergeMessage) { this.mergeMessage = mergeMessage; }
 }
