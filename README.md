@@ -142,6 +142,8 @@ Since `1.2.1` commit messages can be changed in plugin's configuration section i
             <hotfixStartMessage>update versions for hotfix</hotfixStartMessage>
             <hotfixFinishMessage>update for next development version</hotfixFinishMessage>
             
+            <mergeMessage>merge branch</mergeMessage>
+            
             <releaseStartMessage>update versions for release</releaseStartMessage>
             <releaseFinishMessage>update for next development version</releaseFinishMessage>
             
