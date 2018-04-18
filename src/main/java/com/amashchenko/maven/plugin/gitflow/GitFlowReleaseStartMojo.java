@@ -18,6 +18,7 @@ package com.amashchenko.maven.plugin.gitflow;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -179,10 +180,14 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             }
 
             if (commitDevelopmentVersionAtStart) {
+                String projectVersion = releaseVersion;
+                if (useSnapshotInRelease && !ArtifactUtils.isSnapshot(projectVersion)) {
+                    projectVersion = projectVersion + "-SNAPSHOT";
+                }
                 // mvn versions:set ...
                 // git commit -a -m ...
-                commitProjectVersion(releaseVersion,
-                        commitMessages.getReleaseStartMessage());
+                commitProjectVersion(projectVersion,
+                        commitMessages.getReleaseStartMessage()); 
 
                 // git branch release/... develop
                 gitCreateBranch(branchName, startPoint);
