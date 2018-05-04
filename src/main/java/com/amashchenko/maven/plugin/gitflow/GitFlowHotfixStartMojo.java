@@ -62,6 +62,14 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "hotfixVersion")
     private String hotfixVersion;
 
+    /**
+     * Whether this is use snapshot in hotfix.
+     * 
+     * @since 1.9.1
+     */
+    @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
+    protected boolean useSnapshotInHotfix;
+    
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {

@@ -18,6 +18,7 @@ package com.amashchenko.maven.plugin.gitflow;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -119,6 +120,14 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "fromCommit")
     private String fromCommit;
 
+    /**
+     * Whether this is use snapshot in release.
+     * 
+     * @since 1.9.1
+     */
+    @Parameter(property = "useSnapshotInRelease", defaultValue = "false")
+    protected boolean useSnapshotInRelease;
+    
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -179,11 +188,11 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 branchName += releaseVersion;
             }
 
+            String projectVersion = releaseVersion;
+            if (useSnapshotInRelease && !ArtifactUtils.isSnapshot(projectVersion)) {
+                projectVersion = projectVersion + "-" + Artifact.SNAPSHOT_VERSION;
+            }
             if (commitDevelopmentVersionAtStart) {
-                String projectVersion = releaseVersion;
-                if (useSnapshotInRelease && !ArtifactUtils.isSnapshot(projectVersion)) {
-                    projectVersion = projectVersion + "-SNAPSHOT";
-                }
                 // mvn versions:set ...
                 // git commit -a -m ...
                 commitProjectVersion(projectVersion,
@@ -208,7 +217,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
                 // mvn versions:set ...
                 // git commit -a -m ...
-                commitProjectVersion(releaseVersion,
+                commitProjectVersion(projectVersion,
                         commitMessages.getReleaseStartMessage());
             }
 

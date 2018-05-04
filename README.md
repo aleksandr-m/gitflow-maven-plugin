@@ -205,7 +205,6 @@ The `gitflow:release-start` goal have `fromCommit` parameter which allows to sta
 
 The `gitflow:release-start` and `gitflow:release-finish` goals have `useSnapshotInRelease` parameter which allows to start the release with SNAPSHOT version and finish it without this value in project version. By default the value is `false`.
 For example, if the release version  is `1.0.2` and `useSnapshotInRelease` is set to `true` and using `gitflow:release-start` goal then the release version will be `1.0.2-SNAPSHOT` and when finishing the release with `gitflow:release-finish` goal, the release version will be `1.0.2`
-This parameter need that `commitDevelopmentVersionAtStart` parameter is set to `true`.
 
 The `gitflow:hotfix-start` and `gitflow:hotfix-finish` goals have `useSnapshotInHotfix` parameter which allows to start the hotfix with SNAPSHOT version and finish it without this value in the version. By default the value is `false`.
 For example, if the hotfix version  is `1.0.2.1` and `useSnapshotInHotfix` is set to `true` and using `gitflow:hotfix-start` goal then the hotfix version will be `1.0.2.1-SNAPSHOT` and when finishing the release with `gitflow:hotfix-finish` goal, the release version will be `1.0.2.1`

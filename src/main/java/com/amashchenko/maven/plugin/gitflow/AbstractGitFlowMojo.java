@@ -83,22 +83,6 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "false")
     protected boolean tychoBuild;
-
-    /**
-     * Whether this is use snapshot in hotfix.
-     * 
-     * @since 1.9.1
-     */
-    @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
-    protected boolean useSnapshotInHotfix;
-
-    /**
-     * Whether this is use snapshot in release.
-     * 
-     * @since 1.9.1
-     */
-    @Parameter(property = "useSnapshotInRelease", defaultValue = "false")
-    protected boolean useSnapshotInRelease;
     
     /**
      * Whether to call Maven install goal during the mojo execution.
