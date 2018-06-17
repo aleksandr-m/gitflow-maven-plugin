@@ -151,6 +151,14 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "gpgSignTag", defaultValue = "false")
     private boolean gpgSignTag = false;
 
+    /**
+     * Whether this is use snapshot in release.
+     * 
+     * @since 1.9.1
+     */
+    @Parameter(property = "useSnapshotInRelease", defaultValue = "false")
+    protected boolean useSnapshotInRelease;
+    
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -223,9 +231,23 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
 
+            if (useSnapshotInRelease && ArtifactUtils.isSnapshot(currentVersion)) {
+                String commitVersion = currentVersion.replace("-"
+                        + Artifact.SNAPSHOT_VERSION, "");
+
+                // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
+                mvnSetVersions(commitVersion);
+
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("version", commitVersion);
+
+                // git commit -a -m updating version for release
+                gitCommit(commitMessages.getReleaseFinishMessage(), properties);
+            }
+        
             if (!skipTag) {
                 String tagVersion = currentVersion;
-                if (tychoBuild && ArtifactUtils.isSnapshot(currentVersion)) {
+                if ((tychoBuild || useSnapshotInRelease) && ArtifactUtils.isSnapshot(currentVersion)) {
                     tagVersion = currentVersion.replace("-"
                             + Artifact.SNAPSHOT_VERSION, "");
                 }

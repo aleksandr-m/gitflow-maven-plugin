@@ -83,7 +83,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "false")
     protected boolean tychoBuild;
-
+    
     /**
      * Whether to call Maven install goal during the mojo execution.
      * 

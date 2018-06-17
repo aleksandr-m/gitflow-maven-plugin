@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -61,6 +62,14 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "hotfixVersion")
     private String hotfixVersion;
 
+    /**
+     * Whether this is use snapshot in hotfix.
+     * 
+     * @since 1.9.1
+     */
+    @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
+    protected boolean useSnapshotInHotfix;
+    
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -210,11 +219,16 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
             // execute if version changed
             if (!version.equals(currentVersion)) {
+                String projectVersion = version;
+                if (useSnapshotInHotfix && !ArtifactUtils.isSnapshot(version)) {
+                    projectVersion = version + "-SNAPSHOT";
+                }
+                
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-                mvnSetVersions(version);
+                mvnSetVersions(projectVersion);
 
                 Map<String, String> properties = new HashMap<String, String>();
-                properties.put("version", version);
+                properties.put("version", projectVersion);
 
                 // git commit -a -m updating versions for hotfix
                 gitCommit(commitMessages.getHotfixStartMessage(), properties);
