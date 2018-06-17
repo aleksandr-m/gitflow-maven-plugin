@@ -65,9 +65,9 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
     /**
      * Whether this is use snapshot in hotfix.
      * 
-     * @since 1.9.1
+     * 
      */
-    @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
+    @Parameter(defaultValue = "false")
     protected boolean useSnapshotInHotfix;
     
     /** {@inheritDoc} */

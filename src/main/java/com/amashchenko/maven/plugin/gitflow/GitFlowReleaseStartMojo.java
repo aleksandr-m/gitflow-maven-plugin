@@ -123,9 +123,9 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     /**
      * Whether this is use snapshot in release.
      * 
-     * @since 1.9.1
+     * 
      */
-    @Parameter(property = "useSnapshotInRelease", defaultValue = "false")
+    @Parameter(defaultValue = "false")
     protected boolean useSnapshotInRelease;
     
     /** {@inheritDoc} */

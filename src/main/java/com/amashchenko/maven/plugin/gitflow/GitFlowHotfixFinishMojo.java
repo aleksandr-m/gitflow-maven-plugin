@@ -97,9 +97,9 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     /**
      * Whether this is use snapshot in hotfix.
      * 
-     * @since 1.9.1
+     * 
      */
-    @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
+    @Parameter(defaultValue = "false")
     protected boolean useSnapshotInHotfix;
     
     /** {@inheritDoc} */
@@ -174,6 +174,18 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 mvnRun(preHotfixGoals);
             }
 
+            String currentHotfixVersion = getCurrentProjectVersion();
+            if (useSnapshotInHotfix && ArtifactUtils.isSnapshot(currentHotfixVersion)) {
+                String commitVersion = currentHotfixVersion.replace("-" + Artifact.SNAPSHOT_VERSION, "");
+
+                mvnSetVersions(commitVersion);
+
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("version", commitVersion);
+
+                gitCommit(commitMessages.getHotfixStartMessage(), properties);
+            }
+
             if (supportBranchName != null) {
                 gitCheckout(supportBranchName);
             } else {
@@ -185,20 +197,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             gitMergeNoff(hotfixBranchName);
 
             final String currentVersion = getCurrentProjectVersion();
-            if (useSnapshotInHotfix && ArtifactUtils.isSnapshot(currentVersion)) {
-                String commitVersion = currentVersion.replace("-"
-                        + Artifact.SNAPSHOT_VERSION, "");
 
-                // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
-                mvnSetVersions(commitVersion);
-
-                Map<String, String> properties = new HashMap<String, String>();
-                properties.put("version", commitVersion);
-
-                // git commit -a -m updating version for release
-                gitCommit(commitMessages.getHotfixStartMessage(), properties);
-            }
-            
             if (!skipTag) {
                 String tagVersion = currentVersion;
                 if ((tychoBuild || useSnapshotInHotfix) && ArtifactUtils.isSnapshot(tagVersion)) {

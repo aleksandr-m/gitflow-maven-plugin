@@ -154,9 +154,9 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     /**
      * Whether this is use snapshot in release.
      * 
-     * @since 1.9.1
+     * 
      */
-    @Parameter(property = "useSnapshotInRelease", defaultValue = "false")
+    @Parameter(defaultValue = "false")
     protected boolean useSnapshotInRelease;
     
     /** {@inheritDoc} */
@@ -222,29 +222,26 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 mvnRun(preReleaseGoals);
             }
 
-            // git checkout master
-            gitCheckout(gitFlowConfig.getProductionBranch());
+            String currentReleaseVersion = getCurrentProjectVersion();
+            if (useSnapshotInRelease && ArtifactUtils.isSnapshot(currentReleaseVersion)) {
+                String commitVersion = currentReleaseVersion.replace("-" + Artifact.SNAPSHOT_VERSION, "");
 
-            gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF,
-                    releaseMergeFFOnly);
-
-            // get current project version from pom
-            final String currentVersion = getCurrentProjectVersion();
-
-            if (useSnapshotInRelease && ArtifactUtils.isSnapshot(currentVersion)) {
-                String commitVersion = currentVersion.replace("-"
-                        + Artifact.SNAPSHOT_VERSION, "");
-
-                // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(commitVersion);
 
                 Map<String, String> properties = new HashMap<String, String>();
                 properties.put("version", commitVersion);
 
-                // git commit -a -m updating version for release
                 gitCommit(commitMessages.getReleaseFinishMessage(), properties);
             }
-        
+
+            // git checkout master
+            gitCheckout(gitFlowConfig.getProductionBranch());
+
+            gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, releaseMergeFFOnly);
+
+            // get current project version from pom
+            final String currentVersion = getCurrentProjectVersion();
+
             if (!skipTag) {
                 String tagVersion = currentVersion;
                 if ((tychoBuild || useSnapshotInRelease) && ArtifactUtils.isSnapshot(currentVersion)) {
