@@ -249,9 +249,12 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                             + Artifact.SNAPSHOT_VERSION, "");
                 }
 
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("version", tagVersion);
+
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
-                        commitMessages.getTagReleaseMessage(), gpgSignTag);
+                        commitMessages.getTagReleaseMessage(), gpgSignTag, properties);
             }
 
             // maven goals after merge

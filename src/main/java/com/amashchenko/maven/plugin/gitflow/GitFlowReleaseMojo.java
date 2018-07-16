@@ -273,9 +273,12 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                             "");
                 }
 
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("version", version);
+
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + version,
-                        commitMessages.getTagReleaseMessage(), gpgSignTag);
+                        commitMessages.getTagReleaseMessage(), gpgSignTag, properties);
             }
 
             // maven goals after release

@@ -205,9 +205,12 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                             .replace("-" + Artifact.SNAPSHOT_VERSION, "");
                 }
 
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("version", tagVersion);
+
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
-                        commitMessages.getTagHotfixMessage(), gpgSignTag);
+                        commitMessages.getTagHotfixMessage(), gpgSignTag, properties);
             }
 
             // maven goals after merge

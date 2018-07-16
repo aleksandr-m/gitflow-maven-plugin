@@ -678,11 +678,20 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *            Tag message.
      * @param gpgSignTag
      *            Make a GPG-signed tag.
+     * @param map
+     *            Key is a string to replace wrapped in <code>@{...}</code>. Value
+     *            is a string to replace with.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitTag(final String tagName, final String message, boolean gpgSignTag)
+    protected void gitTag(final String tagName, String message, boolean gpgSignTag, Map<String, String> map)
             throws MojoFailureException, CommandLineException {
+        if (map != null) {
+            for (Entry<String, String> entr : map.entrySet()) {
+                message = StringUtils.replace(message, "@{" + entr.getKey() + "}", entr.getValue());
+            }
+        }
+
         if (gpgSignTag) {
             getLog().info("Creating GPG-signed '" + tagName + "' tag.");
 
