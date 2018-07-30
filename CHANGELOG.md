@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.9.1
+## v1.9.1 (unreleased)
 
 * Use the versions-maven-plugin version as specified by the pom in which this module is used instead of always 2.1
 
