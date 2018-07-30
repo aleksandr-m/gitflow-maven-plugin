@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.9.1
+
+* Use the versions-maven-plugin version as specified by the pom in which this module is used instead of always 2.1
+
 ## v1.9.0
 
 * Fixed not failing the whole build on goals errors
