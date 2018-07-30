@@ -45,7 +45,7 @@ import org.codehaus.plexus.util.cli.Commandline;
  */
 public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** A full name of the versions-maven-plugin set goal. */
-    private static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:2.1:set";
+    private static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:set";
     /** Name of the tycho-versions-plugin set-version goal. */
     private static final String TYCHO_VERSIONS_PLUGIN_SET_GOAL = "org.eclipse.tycho:tycho-versions-plugin:set-version";
 
