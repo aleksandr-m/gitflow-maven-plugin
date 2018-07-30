@@ -282,11 +282,6 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 mvnCleanInstall();
             }
 
-            if (!keepBranch) {
-                // git branch -d hotfix/...
-                gitBranchDelete(hotfixBranchName);
-            }
-
             if (pushRemote) {
                 if (supportBranchName != null) {
                     gitPush(supportBranchName, !skipTag);
@@ -303,6 +298,11 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 if (!keepBranch) {
                     gitPushDelete(hotfixBranchName);
                 }
+            }
+
+            if (!keepBranch) {
+                // git branch -d hotfix/...
+                gitBranchDelete(hotfixBranchName);
             }
         } catch (Exception e) {
             throw new MojoFailureException("hotfix-finish", e);

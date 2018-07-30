@@ -153,6 +153,14 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 mvnCleanInstall();
             }
 
+            if (pushRemote) {
+                gitPush(gitFlowConfig.getDevelopmentBranch(), false);
+
+                if (!keepBranch) {
+                    gitPushDelete(featureBranchName);
+                }
+            }
+
             if (!keepBranch) {
                 if (featureSquash) {
                     // git branch -D feature/...
@@ -160,14 +168,6 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 } else {
                     // git branch -d feature/...
                     gitBranchDelete(featureBranchName);
-                }
-            }
-
-            if (pushRemote) {
-                gitPush(gitFlowConfig.getDevelopmentBranch(), false);
-
-                if (!keepBranch) {
-                    gitPushDelete(featureBranchName);
                 }
             }
         } catch (CommandLineException e) {

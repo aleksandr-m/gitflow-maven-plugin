@@ -312,11 +312,6 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 mvnCleanInstall();
             }
 
-            if (!keepBranch) {
-                // git branch -d release/...
-                gitBranchDelete(releaseBranch);
-            }
-
             if (pushRemote) {
                 gitPush(gitFlowConfig.getProductionBranch(), !skipTag);
                 if (notSameProdDevName()) {
@@ -326,6 +321,11 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 if (!keepBranch) {
                     gitPushDelete(releaseBranch);
                 }
+            }
+
+            if (!keepBranch) {
+                // git branch -d release/...
+                gitBranchDelete(releaseBranch);
             }
         } catch (Exception e) {
             throw new MojoFailureException("release-finish", e);
