@@ -1,8 +1,13 @@
 # Changelog
 
-## v1.9.1 (unreleased)
+## v1.10.0
 
-* Use the versions-maven-plugin version as specified by the pom in which this module is used instead of always 2.1
+* Improved branch removing. Deleting remote first then local branch to avoid failing a build - [#114](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/114)
+* Added ability to use different versions-maven-plugin version - [#116](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/116)  
+* Added ability to replace `@{version}` with updated version in tag messages - [#113](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/113)
+* Added ability to force update versions of modules with different groupId / artifactId - [#48](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/48)
+* Added ability to use SNAPSHOT versions in release - [#98](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/98)
+* Added ability to use SNAPSHOT versions in hotfix - [#81](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/81)
 
 ## v1.9.0
 

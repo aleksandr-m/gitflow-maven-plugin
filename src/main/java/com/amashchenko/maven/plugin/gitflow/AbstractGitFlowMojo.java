@@ -128,6 +128,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * Whether to set -DgroupId='*' -DartifactId='*' when calling
      * versions-maven-plugin.
      * 
+     * @since 1.10.0
      */
     @Parameter(property = "versionsForceUpdate", defaultValue = "false")
     private boolean versionsForceUpdate = false;
