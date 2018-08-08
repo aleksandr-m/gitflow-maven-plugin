@@ -156,7 +156,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
      * 
      * @since 1.10.0
      */
-    @Parameter(defaultValue = "false")
+    @Parameter(property = "useSnapshotInRelease", defaultValue = "false")
     protected boolean useSnapshotInRelease;
     
     /** {@inheritDoc} */
