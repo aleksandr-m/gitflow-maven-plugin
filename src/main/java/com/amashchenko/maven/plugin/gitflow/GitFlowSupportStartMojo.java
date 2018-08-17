@@ -56,7 +56,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
      *
      * @since 1.10.1
      */
-    @Parameter(property = "supportBranchName")
+    @Parameter(property = "supportBranchName", defaultValue = "")
     private String supportBranchName;
 
     /**
@@ -65,7 +65,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
      * @since 1.10.1
      */
     @Parameter(property = "supportVersion", defaultValue = "")
-    private String supportVersion = "";
+    private String supportVersion;
 
     /** {@inheritDoc} */
     @Override
