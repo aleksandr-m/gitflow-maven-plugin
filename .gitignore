@@ -4,7 +4,7 @@
 /target
 
 .DS_Store
-
+.git-credentials
 .idea/
 *.iml
 *.iws
