@@ -17,7 +17,7 @@ package com.amashchenko.maven.plugin.gitflow;
 
 /**
  * Git commit messages.
- * 
+ *
  */
 public class CommitMessages {
     private String featureStartMessage;
@@ -32,6 +32,8 @@ public class CommitMessages {
     private String tagHotfixMessage;
     private String tagReleaseMessage;
 
+    private String suportStartMessage;
+
     public CommitMessages() {
         featureStartMessage = "update versions for feature branch";
         featureFinishMessage = "update versions for development branch";
@@ -44,6 +46,25 @@ public class CommitMessages {
 
         tagHotfixMessage = "tag hotfix";
         tagReleaseMessage = "tag release";
+
+        suportStartMessage = "update versions for support";
+    }
+
+    /**
+     * @return the suportStartMessage
+     */
+    public String getSuportStartMessage() {
+
+        return suportStartMessage;
+    }
+
+    /**
+     * @param suportStartMessage
+     *            the suportStartMessage to set
+     */
+    public void setSuportStartMessage(String suportStartMessage) {
+
+        this.suportStartMessage = suportStartMessage;
     }
 
     /**

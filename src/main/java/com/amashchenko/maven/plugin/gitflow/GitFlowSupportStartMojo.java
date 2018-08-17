@@ -138,7 +138,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
                 properties.put("version", projectVersion);
 
                 // git commit -a -m updating versions for new support version
-                gitCommit(commitMessages.getSuportStartMessageMessage(), properties);
+                gitCommit(commitMessages.getSuportStartMessage(), properties);
             }
 
             if (installProject) {
