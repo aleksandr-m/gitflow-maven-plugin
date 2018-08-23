@@ -150,8 +150,8 @@ Since `1.2.1` commit messages can be changed in plugin's configuration section i
         </commitMessages>
     </configuration>
 
-Maven properties can be used in commit messages. For example `<featureStartMessage>updating ${artifactId} project for feature branch</featureStartMessage>` will produce message where 
-`${artifactId}` will be substituted for projects `<artifactId>`.
+Maven properties can be used in commit messages. For example `<featureStartMessage>updating ${project.artifactId} project for feature branch</featureStartMessage>` will produce message where 
+`${project.artifactId}` will be substituted for projects `<artifactId>`.
 
 Note that although `${project.version}` can be used, any changes to version introduced by this goal won't be reflected in a commit message for this goal (see Custom properties).
 
