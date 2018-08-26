@@ -206,8 +206,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
                 // mvn versions:set ...
                 // git commit -a -m ...
-                commitProjectVersion(nextSnapshotVersion,
-                        commitMessages.getReleaseFinishMessage());
+                commitProjectVersion(nextSnapshotVersion, commitMessages.getReleaseVersionUpdateMessage());
 
                 // git checkout release/...
                 gitCheckout(branchName);

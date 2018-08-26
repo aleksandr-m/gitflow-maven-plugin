@@ -31,6 +31,8 @@ public class CommitMessages {
     private String releaseStartMessage;
     private String releaseFinishMessage;
 
+    private String releaseVersionUpdateMessage;
+
     private String tagHotfixMessage;
     private String tagReleaseMessage;
 
@@ -45,6 +47,8 @@ public class CommitMessages {
 
         releaseStartMessage = "update versions for release";
         releaseFinishMessage = "update for next development version";
+
+        releaseVersionUpdateMessage = "update for next development version";
 
         tagHotfixMessage = "tag hotfix";
         tagReleaseMessage = "tag release";
@@ -146,6 +150,14 @@ public class CommitMessages {
      */
     public void setReleaseFinishMessage(String releaseFinishMessage) {
         this.releaseFinishMessage = releaseFinishMessage;
+    }
+
+    public String getReleaseVersionUpdateMessage() {
+        return releaseVersionUpdateMessage;
+    }
+
+    public void setReleaseVersionUpdateMessage(String releaseVersionUpdateMessage) {
+        this.releaseVersionUpdateMessage = releaseVersionUpdateMessage;
     }
 
     /**
