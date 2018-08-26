@@ -26,6 +26,8 @@ public class CommitMessages {
     private String hotfixStartMessage;
     private String hotfixFinishMessage;
 
+    private String hotfixVersionUpdateMessage;
+
     private String releaseStartMessage;
     private String releaseFinishMessage;
 
@@ -38,6 +40,8 @@ public class CommitMessages {
 
         hotfixStartMessage = "update versions for hotfix";
         hotfixFinishMessage = "update for next development version";
+
+        hotfixVersionUpdateMessage = "update to hotfix version";
 
         releaseStartMessage = "update versions for release";
         releaseFinishMessage = "update for next development version";
@@ -104,6 +108,14 @@ public class CommitMessages {
      */
     public void setHotfixFinishMessage(String hotfixFinishMessage) {
         this.hotfixFinishMessage = hotfixFinishMessage;
+    }
+
+    public String getHotfixVersionUpdateMessage() {
+        return hotfixVersionUpdateMessage;
+    }
+
+    public void setHotfixVersionUpdateMessage(String hotfixVersionUpdateMessage) {
+        this.hotfixVersionUpdateMessage = hotfixVersionUpdateMessage;
     }
 
     /**
