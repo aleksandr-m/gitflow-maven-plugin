@@ -38,7 +38,7 @@ public class CommitMessages {
 
     public CommitMessages() {
         featureStartMessage = "Update versions for feature branch";
-        featureFinishMessage = "update versions for development branch";
+        featureFinishMessage = "Update versions for development branch";
 
         hotfixStartMessage = "Update versions for hotfix";
         hotfixFinishMessage = "Update for next development version";
