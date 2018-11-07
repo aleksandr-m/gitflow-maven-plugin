@@ -54,6 +54,15 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     private boolean skipTestProject = false;
 
     /**
+     * Whether to rebase branch or merge. If <code>true</code> then rebase will
+     * be performed.
+     *
+     * @since 1.10.1
+     */
+    @Parameter(property = "hotfixRebase", defaultValue = "false")
+    private boolean hotfixRebase = false;
+
+    /**
      * Whether to push to the remote.
      * 
      * @since 1.3.0
@@ -99,8 +108,8 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
      * 
      * @since 1.10.0
      */
-    @Parameter(defaultValue = "false")
-    protected boolean useSnapshotInHotfix;
+    @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
+    private boolean useSnapshotInHotfix;
     
     /** {@inheritDoc} */
     @Override
@@ -194,7 +203,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             }
 
             // git merge --no-ff hotfix/...
-            gitMergeNoff(hotfixBranchName);
+            gitMerge(hotfixBranchName, hotfixRebase, true, false);
 
             final String currentVersion = getCurrentProjectVersion();
 
