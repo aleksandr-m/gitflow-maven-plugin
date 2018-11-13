@@ -17,7 +17,7 @@ package com.amashchenko.maven.plugin.gitflow;
 
 /**
  * Git commit messages.
- * 
+ *
  */
 public class CommitMessages {
     private String featureStartMessage;
@@ -36,6 +36,9 @@ public class CommitMessages {
     private String tagHotfixMessage;
     private String tagReleaseMessage;
 
+    private String updateDevToAvoidConflitsMessage;
+    private String updateDevBackPreMergeStateMessage;
+
     public CommitMessages() {
         featureStartMessage = "Update versions for feature branch";
         featureFinishMessage = "Update versions for development branch";
@@ -49,9 +52,46 @@ public class CommitMessages {
         releaseFinishMessage = "Update for next development version";
 
         releaseVersionUpdateMessage = "Update for next development version";
-
+      
         tagHotfixMessage = "Tag hotfix";
         tagReleaseMessage = "Tag release";
+
+        updateDevToAvoidConflitsMessage = "Updating develop poms to master version to avoid merge conflits";
+        updateDevBackPreMergeStateMessage = "Updating develop poms version back to pre-merge state";
+    }
+
+    /**
+     * @return the updateDevToAvoidConflitsMessage
+     */
+    public String getUpdateDevToAvoidConflitsMessage() {
+
+        return updateDevToAvoidConflitsMessage;
+    }
+
+    /**
+     * @param updateDevToAvoidConflitsMessage
+     *            the updateDevToAvoidConflitsMessage to set
+     */
+    public void setUpdateDevToAvoidConflitsMessage(String updateDevToAvoidConflitsMessage) {
+
+        this.updateDevToAvoidConflitsMessage = updateDevToAvoidConflitsMessage;
+    }
+
+    /**
+     * @return the updateDevBackPreMergeStateMessage
+     */
+    public String getUpdateDevBackPreMergeStateMessage() {
+
+        return updateDevBackPreMergeStateMessage;
+    }
+
+    /**
+     * @param updateDevBackPreMergeStateMessage
+     *            the updateDevBackPreMergeStateMessage to set
+     */
+    public void setUpdateDevBackPreMergeStateMessage(String updateDevBackPreMergeStateMessage) {
+
+        this.updateDevBackPreMergeStateMessage = updateDevBackPreMergeStateMessage;
     }
 
     /**
