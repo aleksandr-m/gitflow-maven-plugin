@@ -121,13 +121,13 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     private String fromCommit;
 
     /**
-     * Whether this is use snapshot in release.
+     * Whether to use snapshot in release.
      * 
      * @since 1.10.0
      */
-    @Parameter(defaultValue = "false")
-    protected boolean useSnapshotInRelease;
-    
+    @Parameter(property = "useSnapshotInRelease", defaultValue = "false")
+    private boolean useSnapshotInRelease;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -192,6 +192,13 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             if (useSnapshotInRelease && !ArtifactUtils.isSnapshot(projectVersion)) {
                 projectVersion = projectVersion + "-" + Artifact.SNAPSHOT_VERSION;
             }
+
+            if (useSnapshotInRelease && mavenSession.getUserProperties().get("useSnapshotInRelease") != null) {
+                getLog().warn(
+                        "The useSnapshotInRelease parameter is set from the command line. Don't forget to use it in the finish goal as well."
+                                + " It is better to define it in the project's pom file.");
+            }
+
             if (commitDevelopmentVersionAtStart) {
                 // mvn versions:set ...
                 // git commit -a -m ...

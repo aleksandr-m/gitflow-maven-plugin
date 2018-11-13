@@ -95,13 +95,13 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     private boolean gpgSignTag = false;
 
     /**
-     * Whether this is use snapshot in hotfix.
+     * Whether to use snapshot in hotfix.
      * 
      * @since 1.10.0
      */
-    @Parameter(defaultValue = "false")
-    protected boolean useSnapshotInHotfix;
-    
+    @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
+    private boolean useSnapshotInHotfix;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {

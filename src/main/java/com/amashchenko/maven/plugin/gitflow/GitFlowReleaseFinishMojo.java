@@ -152,12 +152,12 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     private boolean gpgSignTag = false;
 
     /**
-     * Whether this is use snapshot in release.
+     * Whether to use snapshot in release.
      *
      * @since 1.10.0
      */
-    @Parameter(defaultValue = "false")
-    protected boolean useSnapshotInRelease;
+    @Parameter(property = "useSnapshotInRelease", defaultValue = "false")
+    private boolean useSnapshotInRelease;
 
     /** {@inheritDoc} */
     @Override

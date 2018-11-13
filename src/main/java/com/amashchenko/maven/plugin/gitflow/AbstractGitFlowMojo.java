@@ -146,7 +146,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /** Maven session. */
     @Parameter(defaultValue = "${session}", readonly = true)
-    private MavenSession mavenSession;
+    protected MavenSession mavenSession;
     /** Default prompter. */
     @Component
     protected Prompter prompter;
