@@ -52,46 +52,12 @@ public class CommitMessages {
         releaseFinishMessage = "Update for next development version";
 
         releaseVersionUpdateMessage = "Update for next development version";
-      
+
         tagHotfixMessage = "Tag hotfix";
         tagReleaseMessage = "Tag release";
 
-        updateDevToAvoidConflitsMessage = "Updating develop poms to master version to avoid merge conflits";
-        updateDevBackPreMergeStateMessage = "Updating develop poms version back to pre-merge state";
-    }
-
-    /**
-     * @return the updateDevToAvoidConflitsMessage
-     */
-    public String getUpdateDevToAvoidConflitsMessage() {
-
-        return updateDevToAvoidConflitsMessage;
-    }
-
-    /**
-     * @param updateDevToAvoidConflitsMessage
-     *            the updateDevToAvoidConflitsMessage to set
-     */
-    public void setUpdateDevToAvoidConflitsMessage(String updateDevToAvoidConflitsMessage) {
-
-        this.updateDevToAvoidConflitsMessage = updateDevToAvoidConflitsMessage;
-    }
-
-    /**
-     * @return the updateDevBackPreMergeStateMessage
-     */
-    public String getUpdateDevBackPreMergeStateMessage() {
-
-        return updateDevBackPreMergeStateMessage;
-    }
-
-    /**
-     * @param updateDevBackPreMergeStateMessage
-     *            the updateDevBackPreMergeStateMessage to set
-     */
-    public void setUpdateDevBackPreMergeStateMessage(String updateDevBackPreMergeStateMessage) {
-
-        this.updateDevBackPreMergeStateMessage = updateDevBackPreMergeStateMessage;
+        updateDevToAvoidConflitsMessage = "Update develop to master version to avoid merge conflicts";
+        updateDevBackPreMergeStateMessage = "Update develop version back to pre-merge state";
     }
 
     /**
@@ -228,5 +194,35 @@ public class CommitMessages {
      */
     public void setTagReleaseMessage(String tagReleaseMessage) {
         this.tagReleaseMessage = tagReleaseMessage;
+    }
+
+    /**
+     * @return the updateDevToAvoidConflitsMessage
+     */
+    public String getUpdateDevToAvoidConflitsMessage() {
+        return updateDevToAvoidConflitsMessage;
+    }
+
+    /**
+     * @param updateDevToAvoidConflitsMessage
+     *            the updateDevToAvoidConflitsMessage to set
+     */
+    public void setUpdateDevToAvoidConflitsMessage(String updateDevToAvoidConflitsMessage) {
+        this.updateDevToAvoidConflitsMessage = updateDevToAvoidConflitsMessage;
+    }
+
+    /**
+     * @return the updateDevBackPreMergeStateMessage
+     */
+    public String getUpdateDevBackPreMergeStateMessage() {
+        return updateDevBackPreMergeStateMessage;
+    }
+
+    /**
+     * @param updateDevBackPreMergeStateMessage
+     *            the updateDevBackPreMergeStateMessage to set
+     */
+    public void setUpdateDevBackPreMergeStateMessage(String updateDevBackPreMergeStateMessage) {
+        this.updateDevBackPreMergeStateMessage = updateDevBackPreMergeStateMessage;
     }
 }

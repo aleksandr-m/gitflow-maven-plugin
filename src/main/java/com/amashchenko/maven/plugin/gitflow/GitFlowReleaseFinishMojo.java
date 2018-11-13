@@ -263,28 +263,29 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (notSameProdDevName()) {
-
                 // git checkout develop
                 gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
                 // get develop version
-                String developReleaseVersion = getCurrentProjectVersion();
+                final String developReleaseVersion = getCurrentProjectVersion();
+                if (commitDevelopmentVersionAtStart && useSnapshotInRelease) {
+                    // updating develop poms to master version to avoid merge conflicts
+                    mvnSetVersions(currentVersion);
 
-                // updating develop poms to master version to avoid merge
-                // conflits
-                mvnSetVersions(currentVersion);
-
-                // commit the changes
-                gitCommit(commitMessages.getUpdateDevToAvoidConflitsMessage());
+                    // commit the changes
+                    gitCommit(commitMessages.getUpdateDevToAvoidConflitsMessage());
+                }
 
                 // merge branch master into develop
                 gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, false);
 
-                // updating develop poms version back to pre merge state
-                mvnSetVersions(developReleaseVersion);
+                if (commitDevelopmentVersionAtStart && useSnapshotInRelease) {
+                    // updating develop poms version back to pre merge state
+                    mvnSetVersions(developReleaseVersion);
 
-                // commit the changes
-                gitCommit(commitMessages.getUpdateDevBackPreMergeStateMessage());
+                    // commit the changes
+                    gitCommit(commitMessages.getUpdateDevBackPreMergeStateMessage());
+                }
             }
 
             if (commitDevelopmentVersionAtStart && !notSameProdDevName()) {
