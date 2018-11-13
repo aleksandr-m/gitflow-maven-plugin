@@ -242,7 +242,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
                         // set version to avoid merge conflict
                         mvnSetVersions(currentVersion);
-                        gitCommit("update to hotfix version");
+                        gitCommit(commitMessages.getHotfixVersionUpdateMessage());
 
                         // git merge --no-ff hotfix/...
                         gitMergeNoff(hotfixBranchName);

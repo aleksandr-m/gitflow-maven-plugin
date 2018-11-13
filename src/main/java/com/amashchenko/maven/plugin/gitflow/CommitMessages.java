@@ -26,8 +26,12 @@ public class CommitMessages {
     private String hotfixStartMessage;
     private String hotfixFinishMessage;
 
+    private String hotfixVersionUpdateMessage;
+
     private String releaseStartMessage;
     private String releaseFinishMessage;
+
+    private String releaseVersionUpdateMessage;
 
     private String tagHotfixMessage;
     private String tagReleaseMessage;
@@ -35,17 +39,21 @@ public class CommitMessages {
     private String suportStartMessage;
 
     public CommitMessages() {
-        featureStartMessage = "update versions for feature branch";
-        featureFinishMessage = "update versions for development branch";
+        featureStartMessage = "Update versions for feature branch";
+        featureFinishMessage = "Update versions for development branch";
 
-        hotfixStartMessage = "update versions for hotfix";
-        hotfixFinishMessage = "update for next development version";
+        hotfixStartMessage = "Update versions for hotfix";
+        hotfixFinishMessage = "Update for next development version";
 
-        releaseStartMessage = "update versions for release";
-        releaseFinishMessage = "update for next development version";
+        hotfixVersionUpdateMessage = "Update to hotfix version";
 
-        tagHotfixMessage = "tag hotfix";
-        tagReleaseMessage = "tag release";
+        releaseStartMessage = "Update versions for release";
+        releaseFinishMessage = "Update for next development version";
+
+        releaseVersionUpdateMessage = "Update for next development version";
+
+        tagHotfixMessage = "Tag hotfix";
+        tagReleaseMessage = "Tag release";
 
         suportStartMessage = "update versions for support";
     }
@@ -127,6 +135,14 @@ public class CommitMessages {
         this.hotfixFinishMessage = hotfixFinishMessage;
     }
 
+    public String getHotfixVersionUpdateMessage() {
+        return hotfixVersionUpdateMessage;
+    }
+
+    public void setHotfixVersionUpdateMessage(String hotfixVersionUpdateMessage) {
+        this.hotfixVersionUpdateMessage = hotfixVersionUpdateMessage;
+    }
+
     /**
      * @return the releaseStartMessage
      */
@@ -155,6 +171,14 @@ public class CommitMessages {
      */
     public void setReleaseFinishMessage(String releaseFinishMessage) {
         this.releaseFinishMessage = releaseFinishMessage;
+    }
+
+    public String getReleaseVersionUpdateMessage() {
+        return releaseVersionUpdateMessage;
+    }
+
+    public void setReleaseVersionUpdateMessage(String releaseVersionUpdateMessage) {
+        this.releaseVersionUpdateMessage = releaseVersionUpdateMessage;
     }
 
     /**
