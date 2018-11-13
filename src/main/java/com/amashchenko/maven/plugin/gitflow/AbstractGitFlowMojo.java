@@ -881,8 +881,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         String g = "";
         String a = "";
         if (versionsForceUpdate) {
-            g = "-DgroupId='*'";
-            a = "-DartifactId='*'";
+            g = "-DgroupId=";
+            a = "-DartifactId=";
         }
 
         if (tychoBuild) {
