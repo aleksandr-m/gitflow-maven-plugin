@@ -264,7 +264,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 gitCheckout(gitFlowConfig.getProductionBranch());
 
                 gitMerge(gitFlowConfig.getDevelopmentBranch(), releaseRebase,
-                        releaseMergeNoFF, releaseMergeFFOnly);
+                        releaseMergeNoFF, releaseMergeFFOnly, commitMessages.getReleaseFinishMergeMessage());
             }
 
             if (!skipTag) {

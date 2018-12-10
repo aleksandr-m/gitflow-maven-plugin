@@ -237,7 +237,8 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             // git checkout master
             gitCheckout(gitFlowConfig.getProductionBranch());
 
-            gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, releaseMergeFFOnly);
+            gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, releaseMergeFFOnly,
+                    commitMessages.getReleaseFinishMergeMessage());
 
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
@@ -277,7 +278,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 }
 
                 // merge branch master into develop
-                gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, false);
+                gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, false, null);
 
                 if (commitDevelopmentVersionAtStart && useSnapshotInRelease) {
                     // updating develop poms version back to pre merge state

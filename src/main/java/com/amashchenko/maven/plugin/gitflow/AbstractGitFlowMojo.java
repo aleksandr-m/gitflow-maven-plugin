@@ -619,14 +619,22 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *            Merge with --no-ff.
      * @param ffonly
      *            Merge with --ff-only.
+     * @param message
+     *            Merge commit message.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitMerge(final String branchName, boolean rebase, boolean noff, boolean ffonly)
+    protected void gitMerge(final String branchName, boolean rebase, boolean noff, boolean ffonly, String message)
             throws MojoFailureException, CommandLineException {
         String sign = "";
         if (gpgSignCommit) {
             sign = "-S";
+        }
+        String msgParam = "";
+        String msg = "";
+        if (StringUtils.isNotBlank(message)) {
+            msgParam = "-m";
+            msg = message;
         }
         if (rebase) {
             getLog().info("Rebasing '" + branchName + "' branch.");
@@ -636,10 +644,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             executeGitCommand("merge", "--ff-only", sign, branchName);
         } else if (noff) {
             getLog().info("Merging (--no-ff) '" + branchName + "' branch.");
-            executeGitCommand("merge", "--no-ff", sign, branchName);
+            executeGitCommand("merge", "--no-ff", sign, branchName, msgParam, msg);
         } else {
             getLog().info("Merging '" + branchName + "' branch.");
-            executeGitCommand("merge", sign, branchName);
+            executeGitCommand("merge", sign, branchName, msgParam, msg);
         }
     }
 
@@ -653,7 +661,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitMergeNoff(final String branchName)
             throws MojoFailureException, CommandLineException {
-        gitMerge(branchName, false, true, false);
+        gitMerge(branchName, false, true, false, null);
     }
 
     /**
