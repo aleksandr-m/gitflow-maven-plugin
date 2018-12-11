@@ -1,9 +1,20 @@
 # Changelog
 
+## v1.11.0
+
+* Fixed `versionsForceUpdate` parameter doesn't work on windows - [#134](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/134)
+* Fixed merge pom's conflict on release finish using `useSnapshotInRelease` - [#123](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/123)
+* Fixed merge conflict during release finish when using `commitDevelopmentVersionAtStart` and `useSnapshotInRelease` - [#122](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/122)
+* Added ability to change release finish merge commit message - [#135](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/135)
+* Capitalized default messages - [#131](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/131)
+* Added configurable commit message for hotfix version update - [#128](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/128)
+* Added configurable commit message for release start with `commitDevelopmentVersionAtStart` - [#120](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/120)
+* Added ability to use `useSnapshotInHotfix` and `useSnapshotInRelease` from the command line with a warning message in logs
+
 ## v1.10.0
 
 * Improved branch removing. Deleting remote first then local branch to avoid failing a build - [#114](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/114)
-* Added ability to use different versions-maven-plugin version - [#116](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/116)  
+* Added ability to use different versions-maven-plugin version - [#116](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/116)
 * Added ability to replace `@{version}` with updated version in tag messages - [#113](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/113)
 * Added ability to force update versions of modules with different groupId / artifactId - [#48](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/48)
 * Added ability to use SNAPSHOT versions in release - [#98](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/98)

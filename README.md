@@ -22,7 +22,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.10.0</version>
+                <version>1.11.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -136,17 +136,27 @@ Since `1.2.1` commit messages can be changed in plugin's configuration section i
 
     <configuration>
         <commitMessages>
-            <featureStartMessage>update versions for feature branch</featureStartMessage>
-            <featureFinishMessage>update versions for development branch</featureFinishMessage>
-            
-            <hotfixStartMessage>update versions for hotfix</hotfixStartMessage>
-            <hotfixFinishMessage>update for next development version</hotfixFinishMessage>
-            
-            <releaseStartMessage>update versions for release</releaseStartMessage>
-            <releaseFinishMessage>update for next development version</releaseFinishMessage>
-            
-            <tagHotfixMessage>tag hotfix</tagHotfixMessage>
-            <tagReleaseMessage>tag release</tagReleaseMessage>
+            <featureStartMessage>Update versions for feature branch</featureStartMessage>
+            <featureFinishMessage>Update versions for development branch</featureFinishMessage>
+
+            <hotfixStartMessage>Update versions for hotfix</hotfixStartMessage>
+            <hotfixFinishMessage>Update for next development version</hotfixFinishMessage>
+
+            <hotfixVersionUpdateMessage>Update to hotfix version</hotfixVersionUpdateMessage>
+
+            <releaseStartMessage>Update versions for release</releaseStartMessage>
+            <releaseFinishMessage>Update for next development version</releaseFinishMessage>
+
+            <releaseVersionUpdateMessage>Update for next development version</releaseVersionUpdateMessage>
+
+            <!-- Default git merge commit message will be used if left empty or undefined. -->
+            <releaseFinishMergeMessage></releaseFinishMergeMessage>
+
+            <tagHotfixMessage>Tag hotfix</tagHotfixMessage>
+            <tagReleaseMessage>Tag release</tagReleaseMessage>
+
+            <updateDevToAvoidConflitsMessage>Update develop to master version to avoid merge conflicts</updateDevToAvoidConflitsMessage>
+            <updateDevBackPreMergeStateMessage>Update develop version back to pre-merge state</updateDevBackPreMergeStateMessage>
         </commitMessages>
     </configuration>
 
