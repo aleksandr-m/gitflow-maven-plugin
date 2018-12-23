@@ -155,7 +155,7 @@ Since `1.2.1` commit messages can be changed in plugin's configuration section i
             <tagHotfixMessage>Tag hotfix</tagHotfixMessage>
             <tagReleaseMessage>Tag release</tagReleaseMessage>
 
-            <updateDevToAvoidConflitsMessage>Update develop to master version to avoid merge conflicts</updateDevToAvoidConflitsMessage>
+            <updateDevToAvoidConflictsMessage>Update develop to master version to avoid merge conflicts</updateDevToAvoidConflictsMessage>
             <updateDevBackPreMergeStateMessage>Update develop version back to pre-merge state</updateDevBackPreMergeStateMessage>
         </commitMessages>
     </configuration>

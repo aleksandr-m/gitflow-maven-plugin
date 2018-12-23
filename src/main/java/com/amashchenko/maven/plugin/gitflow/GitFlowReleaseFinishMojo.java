@@ -274,7 +274,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                     mvnSetVersions(currentVersion);
 
                     // commit the changes
-                    gitCommit(commitMessages.getUpdateDevToAvoidConflitsMessage());
+                    gitCommit(commitMessages.getUpdateDevToAvoidConflictsMessage());
                 }
 
                 // merge branch master into develop
