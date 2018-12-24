@@ -38,7 +38,7 @@ public class CommitMessages {
     private String tagHotfixMessage;
     private String tagReleaseMessage;
 
-    private String updateDevToAvoidConflitsMessage;
+    private String updateDevToAvoidConflictsMessage;
     private String updateDevBackPreMergeStateMessage;
 
     public CommitMessages() {
@@ -60,7 +60,7 @@ public class CommitMessages {
         tagHotfixMessage = "Tag hotfix";
         tagReleaseMessage = "Tag release";
 
-        updateDevToAvoidConflitsMessage = "Update develop to master version to avoid merge conflicts";
+        updateDevToAvoidConflictsMessage = "Update develop to master version to avoid merge conflicts";
         updateDevBackPreMergeStateMessage = "Update develop version back to pre-merge state";
     }
 
@@ -216,18 +216,28 @@ public class CommitMessages {
     }
 
     /**
-     * @return the updateDevToAvoidConflitsMessage
+     * @return the updateDevToAvoidConflictsMessage
      */
-    public String getUpdateDevToAvoidConflitsMessage() {
-        return updateDevToAvoidConflitsMessage;
+    public String getUpdateDevToAvoidConflictsMessage() {
+        return updateDevToAvoidConflictsMessage;
+    }
+
+    /**
+     * @param updateDevToAvoidConflictsMessage
+     *            the updateDevToAvoidConflictsMessage to set
+     */
+    public void setUpdateDevToAvoidConflictsMessage(String updateDevToAvoidConflictsMessage) {
+        this.updateDevToAvoidConflictsMessage = updateDevToAvoidConflictsMessage;
     }
 
     /**
      * @param updateDevToAvoidConflitsMessage
      *            the updateDevToAvoidConflitsMessage to set
+     * @deprecated Use the correctly spelt updateDevToAvoidConflictsMessage instead
      */
+    @Deprecated
     public void setUpdateDevToAvoidConflitsMessage(String updateDevToAvoidConflitsMessage) {
-        this.updateDevToAvoidConflitsMessage = updateDevToAvoidConflitsMessage;
+        this.updateDevToAvoidConflictsMessage = updateDevToAvoidConflitsMessage;
     }
 
     /**
