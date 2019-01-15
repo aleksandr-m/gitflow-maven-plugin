@@ -68,6 +68,12 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "featureName")
     private String featureName;
 
+    /**
+     * Whether to tag the start of new branch. Default is <code>false</code>
+     */
+    @Parameter(property = "startFeatureWithTag", defaultValue = "false")
+    private boolean startFeatureWithTag = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -86,6 +92,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             }
 
             String featureBranchName = null;
+            String featureTagName = null;
             if (settings.isInteractiveMode()) {
                 try {
                     while (StringUtils.isBlank(featureBranchName)) {
@@ -104,6 +111,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                 }
             } else if (validateBranchName(featureName, featureNamePattern)) {
                 featureBranchName = featureName;
+                featureTagName = featureName;
             }
 
             if (StringUtils.isBlank(featureBranchName)) {
@@ -111,6 +119,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             }
 
             featureBranchName = StringUtils.deleteWhitespace(featureBranchName);
+            featureTagName = StringUtils.deleteWhitespace(featureTagName)+"_start";
 
             // git for-each-ref refs/heads/feature/...
             final boolean featureBranchExists = gitCheckBranchExists(
@@ -119,6 +128,14 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             if (featureBranchExists) {
                 throw new MojoFailureException(
                         "Feature branch with that name already exists. Cannot start feature.");
+            }
+
+            final boolean featureTagExists = gitCheckTagExists(
+                    featureBranchName);
+
+            if (featureTagExists) {
+                throw new MojoFailureException(
+                        "Feature tag with that name already exists. Cannot start feature.");
             }
 
             // git checkout -b ... develop
@@ -153,9 +170,18 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                 mvnCleanInstall();
             }
 
+            boolean pushTags = false;
+            if(startFeatureWithTag){
+
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("featureName", featureBranchName);
+                gitTag(featureTagName, "feature start tag", false, properties);
+                pushTags = true;
+            }
+
             if (pushRemote) {
                 gitPush(gitFlowConfig.getFeatureBranchPrefix()
-                        + featureBranchName, false);
+                        + featureBranchName, pushTags);
             }
         } catch (CommandLineException e) {
             throw new MojoFailureException("feature-start", e);
