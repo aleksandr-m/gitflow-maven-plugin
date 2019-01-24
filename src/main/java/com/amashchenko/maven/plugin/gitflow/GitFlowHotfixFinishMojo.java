@@ -183,7 +183,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 Map<String, String> properties = new HashMap<String, String>();
                 properties.put("version", commitVersion);
 
-                gitCommit(commitMessages.getHotfixStartMessage(), properties);
+                gitCommit(commitMessages.getHotfixFinishMessage(), properties);
             }
 
             if (supportBranchName != null) {
