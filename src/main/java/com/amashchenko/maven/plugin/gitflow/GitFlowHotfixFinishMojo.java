@@ -102,8 +102,12 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
     private boolean useSnapshotInHotfix;
 
-    @Parameter(property = "skipUpdateDevBranch", defaultValue = "false")
-    private boolean skipUpdateDevBranch = false;
+    /**
+     * Whether to skip merging into the development branch.
+     * 
+     */
+    @Parameter(property = "skipMergeDevBranch", defaultValue = "false")
+    private boolean skipMergeDevBranch = false;
 
     /** {@inheritDoc} */
     @Override
@@ -234,7 +238,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     gitCheckout(releaseBranch);
                     // git merge --no-ff hotfix/...
                     gitMergeNoff(hotfixBranchName);
-                } else if(!skipUpdateDevBranch) {
+                } else if (!skipMergeDevBranch) {
                     GitFlowVersionInfo developVersionInfo = new GitFlowVersionInfo(
                             currentVersion);
                     if (notSameProdDevName()) {
