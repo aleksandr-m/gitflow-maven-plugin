@@ -220,6 +220,8 @@ For example, if the release version  is `1.0.2` and `useSnapshotInRelease` is se
 The `gitflow:hotfix-start` and `gitflow:hotfix-finish` goals have `useSnapshotInHotfix` parameter which allows to start the hotfix with SNAPSHOT version and finish it without this value in the version. By default the value is `false`.
 For example, if the hotfix version  is `1.0.2.1` and `useSnapshotInHotfix` is set to `true` and using `gitflow:hotfix-start` goal then the hotfix version will be `1.0.2.1-SNAPSHOT` and when finishing the release with `gitflow:hotfix-finish` goal, the release version will be `1.0.2.1`
 
+The `gitflow:hotfix-finish` goal also supports the parameter `skipUpdateDevBranch` which prevents merging the hotfix-branch into the development-branch and the update of the version of the development-branch. 
+
 Version update of all modules ignoring groupId and artifactId can be forced by setting `versionsForceUpdate` parameter to `true`. The default value is `false`.
 
 ### Remote interaction
