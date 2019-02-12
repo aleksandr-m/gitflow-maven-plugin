@@ -154,6 +154,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(defaultValue = "${settings}", readonly = true)
     protected Settings settings;
 
+    @Parameter(property = "additionalMergeOptions")
+    protected String additionalMergeOptions;
+
     /**
      * Initializes command line executables.
      * 
@@ -638,16 +641,16 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
         if (rebase) {
             getLog().info("Rebasing '" + branchName + "' branch.");
-            executeGitCommand("rebase", sign, branchName);
+            executeGitCommand("rebase", additionalMergeOptions, sign, branchName);
         } else if (ffonly) {
             getLog().info("Merging (--ff-only) '" + branchName + "' branch.");
-            executeGitCommand("merge", "--ff-only", sign, branchName);
+            executeGitCommand("merge", additionalMergeOptions, "--ff-only", sign, branchName);
         } else if (noff) {
             getLog().info("Merging (--no-ff) '" + branchName + "' branch.");
-            executeGitCommand("merge", "--no-ff", sign, branchName, msgParam, msg);
+            executeGitCommand("merge", additionalMergeOptions, "--no-ff", sign, branchName, msgParam, msg);
         } else {
             getLog().info("Merging '" + branchName + "' branch.");
-            executeGitCommand("merge", sign, branchName, msgParam, msg);
+            executeGitCommand("merge", additionalMergeOptions, sign, branchName, msgParam, msg);
         }
     }
 
