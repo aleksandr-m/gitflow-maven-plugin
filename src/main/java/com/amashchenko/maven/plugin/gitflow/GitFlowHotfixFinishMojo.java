@@ -181,6 +181,16 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 mvnRun(preHotfixGoals);
             }
 
+            if (supportBranchName != null) {
+                gitCheckout(supportBranchName);
+            } else {
+                // git checkout master
+                gitCheckout(gitFlowConfig.getProductionBranch());
+            }
+
+            // git merge --no-ff hotfix/...
+            gitMergeNoff(hotfixBranchName);
+
             String currentHotfixVersion = getCurrentProjectVersion();
             if (useSnapshotInHotfix && ArtifactUtils.isSnapshot(currentHotfixVersion)) {
                 String commitVersion = currentHotfixVersion.replace("-" + Artifact.SNAPSHOT_VERSION, "");
@@ -192,16 +202,6 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
                 gitCommit(commitMessages.getHotfixFinishMessage(), properties);
             }
-
-            if (supportBranchName != null) {
-                gitCheckout(supportBranchName);
-            } else {
-                // git checkout master
-                gitCheckout(gitFlowConfig.getProductionBranch());
-            }
-
-            // git merge --no-ff hotfix/...
-            gitMergeNoff(hotfixBranchName);
 
             final String currentVersion = getCurrentProjectVersion();
 
