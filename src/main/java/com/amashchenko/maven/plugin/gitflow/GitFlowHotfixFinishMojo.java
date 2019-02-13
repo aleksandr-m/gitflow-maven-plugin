@@ -166,10 +166,10 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 }
             }
 
-            if (!skipTestProject) {
-                // git checkout hotfix/...
-                gitCheckout(hotfixBranchName);
+            // git checkout hotfix/...
+            gitCheckout(hotfixBranchName);
 
+            if (!skipTestProject) {
                 // mvn clean test
                 mvnCleanTest();
             }
