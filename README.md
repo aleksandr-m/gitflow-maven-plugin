@@ -246,6 +246,8 @@ Release branch can be merged with `--ff-only` option by setting `releaseMergeFFO
 
 Feature branch can be squashed before merging by setting `featureSquash` parameter to `true`. The default value is `false` (i.e. merge w/o squash will be performed).
 
+You can also specify the optional parameter `additionalMergeOptions` for goals with merge-operations. It takes an arbitrary string, that will be appended to the merge-command. This is useful when in need for advanced options like `-Xtheirs`.
+
 ### Running custom Maven goals
 
 The `preReleaseGoals` parameter can be used in `gitflow:release-finish` and `gitflow:release` goals to run defined Maven goals before the release.
