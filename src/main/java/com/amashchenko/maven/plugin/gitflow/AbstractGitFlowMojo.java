@@ -613,7 +613,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git rebase or git merge --ff-only or git merge --no-ff or git merge.
-     * 
+     *
      * @param branchName
      *            Branch name to merge.
      * @param rebase
@@ -628,6 +628,31 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws CommandLineException
      */
     protected void gitMerge(final String branchName, boolean rebase, boolean noff, boolean ffonly, String message)
+            throws MojoFailureException, CommandLineException {
+        gitMerge(branchName, rebase, noff, ffonly, message, additionalMergeOptions);
+    }
+
+    /**
+     * Executes git rebase or git merge --ff-only or git merge --no-ff or git merge.
+     * 
+     * @param branchName
+     *            Branch name to merge.
+     * @param rebase
+     *            Do rebase.
+     * @param noff
+     *            Merge with --no-ff.
+     * @param ffonly
+     *            Merge with --ff-only.
+     * @param message
+     *            Merge commit message.
+     * @param additionalMergeOptions
+     *            additional commandline options for the merge e.g. "-Xtheirs"
+     *
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitMerge(final String branchName, boolean rebase, boolean noff, boolean ffonly,
+                            final String message, final String additionalMergeOptions)
             throws MojoFailureException, CommandLineException {
         String sign = "";
         if (gpgSignCommit) {
