@@ -217,8 +217,6 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
             // maven goals before merge
             if (StringUtils.isNotBlank(preReleaseGoals)) {
-                gitCheckout(releaseBranch);
-
                 mvnRun(preReleaseGoals);
             }
 

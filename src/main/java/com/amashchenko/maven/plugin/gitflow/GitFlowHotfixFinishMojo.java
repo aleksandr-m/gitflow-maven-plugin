@@ -176,8 +176,6 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
             // maven goals before merge
             if (StringUtils.isNotBlank(preHotfixGoals)) {
-                gitCheckout(hotfixBranchName);
-
                 mvnRun(preHotfixGoals);
             }
 
