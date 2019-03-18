@@ -234,8 +234,21 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 if (StringUtils.isNotBlank(releaseBranch)) {
                     // git checkout release
                     gitCheckout(releaseBranch);
+                    String releaseBranchVersion = getCurrentProjectVersion();
+
+                    if (!currentVersion.equals(releaseBranchVersion)) {
+                        // set version to avoid merge conflict
+                        mvnSetVersions(currentVersion);
+                        gitCommit(commitMessages.getUpdateReleaseToAvoidConflictsMessage());
+                    }
+
                     // git merge --no-ff hotfix/...
                     gitMergeNoff(hotfixBranchName);
+
+                    if (!currentVersion.equals(releaseBranchVersion)) {
+                        mvnSetVersions(releaseBranchVersion);
+                        gitCommit(commitMessages.getUpdateReleaseBackPreMergeStateMessage());
+                    }
                 } else if (!skipMergeDevBranch) {
                     GitFlowVersionInfo developVersionInfo = new GitFlowVersionInfo(
                             currentVersion);

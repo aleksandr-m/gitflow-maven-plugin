@@ -41,6 +41,9 @@ public class CommitMessages {
     private String updateDevToAvoidConflictsMessage;
     private String updateDevBackPreMergeStateMessage;
 
+    private String updateReleaseToAvoidConflictsMessage;
+    private String updateReleaseBackPreMergeStateMessage;
+
     public CommitMessages() {
         featureStartMessage = "Update versions for feature branch";
         featureFinishMessage = "Update versions for development branch";
@@ -62,6 +65,9 @@ public class CommitMessages {
 
         updateDevToAvoidConflictsMessage = "Update develop to master version to avoid merge conflicts";
         updateDevBackPreMergeStateMessage = "Update develop version back to pre-merge state";
+
+        updateReleaseToAvoidConflictsMessage = "Update release to hotfix version to avoid merge conflicts";
+        updateReleaseBackPreMergeStateMessage = "Update release version back to pre-merge state";
     }
 
     /**
@@ -253,5 +259,33 @@ public class CommitMessages {
      */
     public void setUpdateDevBackPreMergeStateMessage(String updateDevBackPreMergeStateMessage) {
         this.updateDevBackPreMergeStateMessage = updateDevBackPreMergeStateMessage;
+    }
+
+    /**
+     * @return the updateReleaseToAvoidConflictsMessage
+     */
+    public String getUpdateReleaseToAvoidConflictsMessage() {
+        return updateReleaseToAvoidConflictsMessage;
+    }
+
+    /**
+     * @param updateReleaseToAvoidConflictsMessage the updateReleaseToAvoidConflictsMessage to set
+     */
+    public void setUpdateReleaseToAvoidConflictsMessage(String updateReleaseToAvoidConflictsMessage) {
+        this.updateReleaseToAvoidConflictsMessage = updateReleaseToAvoidConflictsMessage;
+    }
+
+    /**
+     * @return the updateReleaseBackPreMergeStateMessage
+     */
+    public String getUpdateReleaseBackPreMergeStateMessage() {
+        return updateReleaseBackPreMergeStateMessage;
+    }
+
+    /**
+     * @param updateReleaseBackPreMergeStateMessage the updateReleaseBackPreMergeStateMessage to set
+     */
+    public void setUpdateReleaseBackPreMergeStateMessage(String updateReleaseBackPreMergeStateMessage) {
+        this.updateReleaseBackPreMergeStateMessage = updateReleaseBackPreMergeStateMessage;
     }
 }
