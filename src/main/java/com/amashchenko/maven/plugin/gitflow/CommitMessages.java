@@ -63,7 +63,7 @@ public class CommitMessages {
         tagHotfixMessage = "Tag hotfix";
         tagReleaseMessage = "Tag release";
 
-        updateDevToAvoidConflictsMessage = "Update develop to master version to avoid merge conflicts";
+        updateDevToAvoidConflictsMessage = "Update develop to production version to avoid merge conflicts";
         updateDevBackPreMergeStateMessage = "Update develop version back to pre-merge state";
 
         updateReleaseToAvoidConflictsMessage = "Update release to hotfix version to avoid merge conflicts";
