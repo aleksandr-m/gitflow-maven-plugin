@@ -221,22 +221,25 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             }
 
             String currentReleaseVersion = getCurrentProjectVersion();
+
+            Map<String, String> messageProperties = new HashMap<String, String>();
+            messageProperties.put("version", currentReleaseVersion);
+
             if (useSnapshotInRelease && ArtifactUtils.isSnapshot(currentReleaseVersion)) {
                 String commitVersion = currentReleaseVersion.replace("-" + Artifact.SNAPSHOT_VERSION, "");
 
                 mvnSetVersions(commitVersion);
 
-                Map<String, String> properties = new HashMap<String, String>();
-                properties.put("version", commitVersion);
+                messageProperties.put("version", commitVersion);
 
-                gitCommit(commitMessages.getReleaseFinishMessage(), properties);
+                gitCommit(commitMessages.getReleaseFinishMessage(), messageProperties);
             }
 
             // git checkout master
             gitCheckout(gitFlowConfig.getProductionBranch());
 
             gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, releaseMergeFFOnly,
-                    commitMessages.getReleaseFinishMergeMessage());
+                    commitMessages.getReleaseFinishMergeMessage(), messageProperties);
 
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
@@ -248,12 +251,11 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                             + Artifact.SNAPSHOT_VERSION, "");
                 }
 
-                Map<String, String> properties = new HashMap<String, String>();
-                properties.put("version", tagVersion);
+                messageProperties.put("version", tagVersion);
 
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
-                        commitMessages.getTagReleaseMessage(), gpgSignTag, properties);
+                        commitMessages.getTagReleaseMessage(), gpgSignTag, messageProperties);
             }
 
             // maven goals after merge
@@ -276,7 +278,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 }
 
                 // merge branch master into develop
-                gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, false, null);
+                gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, false, null, null);
 
                 if (commitDevelopmentVersionAtStart && useSnapshotInRelease) {
                     // updating develop poms version back to pre merge state
@@ -318,11 +320,10 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(nextSnapshotVersion);
 
-                Map<String, String> properties = new HashMap<String, String>();
-                properties.put("version", nextSnapshotVersion);
+                messageProperties.put("version", nextSnapshotVersion);
 
                 // git commit -a -m updating for next development version
-                gitCommit(commitMessages.getReleaseFinishMessage(), properties);
+                gitCommit(commitMessages.getReleaseFinishMessage(), messageProperties);
             }
 
             if (installProject) {

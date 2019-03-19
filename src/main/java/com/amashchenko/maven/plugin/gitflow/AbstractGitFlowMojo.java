@@ -564,6 +564,24 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Replaces properties in message.
+     * 
+     * @param message
+     * @param map
+     *            Key is a string to replace wrapped in <code>@{...}</code>. Value
+     *            is a string to replace with.
+     * @return
+     */
+    private String replaceProperties(String message, Map<String, String> map) {
+        if (map != null) {
+            for (Entry<String, String> entr : map.entrySet()) {
+                message = StringUtils.replace(message, "@{" + entr.getKey() + "}", entr.getValue());
+            }
+        }
+        return message;
+    }
+
+    /**
      * Executes git commit -a -m.
      * 
      * @param message
@@ -582,20 +600,14 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * 
      * @param message
      *            Commit message.
-     * @param map
-     *            Key is a string to replace wrapped in <code>@{...}</code>.
-     *            Value is a string to replace with.
+     * @param messageProperties
+     *            Properties to replace in message.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitCommit(String message, Map<String, String> map)
+    protected void gitCommit(String message, Map<String, String> messageProperties)
             throws MojoFailureException, CommandLineException {
-        if (map != null) {
-            for (Entry<String, String> entr : map.entrySet()) {
-                message = StringUtils.replace(message, "@{" + entr.getKey()
-                        + "}", entr.getValue());
-            }
-        }
+        message = replaceProperties(message, messageProperties);
 
         if (gpgSignCommit) {
             getLog().info("Committing changes. GPG-signed.");
@@ -621,10 +633,13 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *            Merge with --ff-only.
      * @param message
      *            Merge commit message.
+     * @param messageProperties
+     *            Properties to replace in message.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitMerge(final String branchName, boolean rebase, boolean noff, boolean ffonly, String message)
+    protected void gitMerge(final String branchName, boolean rebase, boolean noff, boolean ffonly, String message,
+            Map<String, String> messageProperties)
             throws MojoFailureException, CommandLineException {
         String sign = "";
         if (gpgSignCommit) {
@@ -634,7 +649,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         String msg = "";
         if (StringUtils.isNotBlank(message)) {
             msgParam = "-m";
-            msg = message;
+            msg = replaceProperties(message, messageProperties);
         }
         if (rebase) {
             getLog().info("Rebasing '" + branchName + "' branch.");
@@ -661,7 +676,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitMergeNoff(final String branchName)
             throws MojoFailureException, CommandLineException {
-        gitMerge(branchName, false, true, false, null);
+        gitMerge(branchName, false, true, false, null, null);
     }
 
     /**
@@ -687,19 +702,14 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *            Tag message.
      * @param gpgSignTag
      *            Make a GPG-signed tag.
-     * @param map
-     *            Key is a string to replace wrapped in <code>@{...}</code>. Value
-     *            is a string to replace with.
+     * @param messageProperties
+     *            Properties to replace in message.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitTag(final String tagName, String message, boolean gpgSignTag, Map<String, String> map)
+    protected void gitTag(final String tagName, String message, boolean gpgSignTag, Map<String, String> messageProperties)
             throws MojoFailureException, CommandLineException {
-        if (map != null) {
-            for (Entry<String, String> entr : map.entrySet()) {
-                message = StringUtils.replace(message, "@{" + entr.getKey() + "}", entr.getValue());
-            }
-        }
+        message = replaceProperties(message, messageProperties);
 
         if (gpgSignTag) {
             getLog().info("Creating GPG-signed '" + tagName + "' tag.");
