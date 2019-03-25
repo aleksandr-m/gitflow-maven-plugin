@@ -154,6 +154,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(defaultValue = "${settings}", readonly = true)
     protected Settings settings;
 
+    @Parameter(property = "additionalMergeOptions")
+    protected String additionalMergeOptions;
+
     /**
      * Initializes command line executables.
      * 
@@ -622,7 +625,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /**
      * Executes git rebase or git merge --ff-only or git merge --no-ff or git merge.
-     * 
+     *
      * @param branchName
      *            Branch name to merge.
      * @param rebase
@@ -641,6 +644,31 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected void gitMerge(final String branchName, boolean rebase, boolean noff, boolean ffonly, String message,
             Map<String, String> messageProperties)
             throws MojoFailureException, CommandLineException {
+        gitMerge(branchName, rebase, noff, ffonly, message, messageProperties, additionalMergeOptions);
+    }
+
+    /**
+     * Executes git rebase or git merge --ff-only or git merge --no-ff or git merge.
+     * 
+     * @param branchName
+     *            Branch name to merge.
+     * @param rebase
+     *            Do rebase.
+     * @param noff
+     *            Merge with --no-ff.
+     * @param ffonly
+     *            Merge with --ff-only.
+     * @param message
+     *            Merge commit message.
+     * @param additionalMergeOptions
+     *            additional commandline options for the merge e.g. "-Xtheirs"
+     *
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitMerge(final String branchName, boolean rebase, boolean noff, boolean ffonly,
+                            final String message, Map<String, String> messageProperties, final String additionalMergeOptions)
+            throws MojoFailureException, CommandLineException {
         String sign = "";
         if (gpgSignCommit) {
             sign = "-S";
@@ -653,16 +681,16 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
         if (rebase) {
             getLog().info("Rebasing '" + branchName + "' branch.");
-            executeGitCommand("rebase", sign, branchName);
+            executeGitCommand("rebase", additionalMergeOptions, sign, branchName);
         } else if (ffonly) {
             getLog().info("Merging (--ff-only) '" + branchName + "' branch.");
-            executeGitCommand("merge", "--ff-only", sign, branchName);
+            executeGitCommand("merge", additionalMergeOptions, "--ff-only", sign, branchName);
         } else if (noff) {
             getLog().info("Merging (--no-ff) '" + branchName + "' branch.");
-            executeGitCommand("merge", "--no-ff", sign, branchName, msgParam, msg);
+            executeGitCommand("merge", additionalMergeOptions, "--no-ff", sign, branchName, msgParam, msg);
         } else {
             getLog().info("Merging '" + branchName + "' branch.");
-            executeGitCommand("merge", sign, branchName, msgParam, msg);
+            executeGitCommand("merge", additionalMergeOptions, sign, branchName, msgParam, msg);
         }
     }
 
@@ -676,7 +704,24 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitMergeNoff(final String branchName)
             throws MojoFailureException, CommandLineException {
-        gitMerge(branchName, false, true, false, null, null);
+        gitMergeNoff(branchName, additionalMergeOptions);
+    }
+
+    /**
+     * Executes git merge --no-ff.
+     *
+     * @param branchName
+     *            Branch name to merge.
+     *
+     * @param additionalMergeOptions
+     *            additional commandline options for the merge e.g. "-Xtheirs"
+     *
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitMergeNoff(final String branchName, final String additionalMergeOptions)
+            throws MojoFailureException, CommandLineException {
+        gitMerge(branchName, false, true, false, null, null, additionalMergeOptions);
     }
 
     /**

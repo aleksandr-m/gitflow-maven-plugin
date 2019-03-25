@@ -109,6 +109,12 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipMergeDevBranch", defaultValue = "false")
     private boolean skipMergeDevBranch = false;
 
+    @Parameter(property = "productionBranchMergeOptions")
+    private String productionBranchMergeOptions;
+
+    @Parameter(property = "devBranchMergeOptions")
+    private String devBranchMergeOptions;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -199,7 +205,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             }
 
             // git merge --no-ff hotfix/...
-            gitMergeNoff(hotfixBranchName);
+            gitMergeNoff(hotfixBranchName, productionBranchMergeOptions);
 
             final String currentVersion = getCurrentProjectVersion();
 
@@ -243,7 +249,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     }
 
                     // git merge --no-ff hotfix/...
-                    gitMergeNoff(hotfixBranchName);
+                    gitMergeNoff(hotfixBranchName, devBranchMergeOptions);
 
                     if (!currentVersion.equals(releaseBranchVersion)) {
                         mvnSetVersions(releaseBranchVersion);
@@ -263,7 +269,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                         gitCommit(commitMessages.getHotfixVersionUpdateMessage());
 
                         // git merge --no-ff hotfix/...
-                        gitMergeNoff(hotfixBranchName);
+                        gitMergeNoff(hotfixBranchName, devBranchMergeOptions);
 
                         // which version to increment
                         GitFlowVersionInfo hotfixVersionInfo = new GitFlowVersionInfo(

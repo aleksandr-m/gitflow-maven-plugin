@@ -159,6 +159,12 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "useSnapshotInRelease", defaultValue = "false")
     private boolean useSnapshotInRelease;
 
+    @Parameter(property = "productionBranchMergeOptions")
+    private String productionBranchMergeOptions;
+
+    @Parameter(property = "devBranchMergeOptions")
+    private String devBranchMergeOptions;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -239,7 +245,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             gitCheckout(gitFlowConfig.getProductionBranch());
 
             gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, releaseMergeFFOnly,
-                    commitMessages.getReleaseFinishMergeMessage(), messageProperties);
+                    commitMessages.getReleaseFinishMergeMessage(), messageProperties, productionBranchMergeOptions);
 
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
@@ -278,7 +284,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 }
 
                 // merge branch master into develop
-                gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, false, null, null);
+                gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, false, null, null, devBranchMergeOptions);
 
                 if (commitDevelopmentVersionAtStart && useSnapshotInRelease) {
                     // updating develop poms version back to pre merge state
