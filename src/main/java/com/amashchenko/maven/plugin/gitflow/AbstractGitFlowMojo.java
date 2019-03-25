@@ -704,7 +704,24 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitMergeNoff(final String branchName)
             throws MojoFailureException, CommandLineException {
-        gitMerge(branchName, false, true, false, null, null);
+        gitMergeNoff(branchName, additionalMergeOptions);
+    }
+
+    /**
+     * Executes git merge --no-ff.
+     *
+     * @param branchName
+     *            Branch name to merge.
+     *
+     * @param additionalMergeOptions
+     *            additional commandline options for the merge e.g. "-Xtheirs"
+     *
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitMergeNoff(final String branchName, final String additionalMergeOptions)
+            throws MojoFailureException, CommandLineException {
+        gitMerge(branchName, false, true, false, null, null, additionalMergeOptions);
     }
 
     /**
