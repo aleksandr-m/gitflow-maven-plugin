@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 Aleksandr Mashchenko.
+ * Copyright 2014-2019 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -247,16 +247,16 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 mvnRun(preReleaseGoals);
             }
 
+            Map<String, String> messageProperties = new HashMap<String, String>();
+            messageProperties.put("version", version);
+
             // execute if version changed
             if (!version.equals(currentVersion)) {
                 // mvn set version
                 mvnSetVersions(version);
 
-                Map<String, String> properties = new HashMap<String, String>();
-                properties.put("version", version);
-
                 // git commit -a -m updating versions for release
-                gitCommit(commitMessages.getReleaseStartMessage(), properties);
+                gitCommit(commitMessages.getReleaseStartMessage(), messageProperties);
             }
 
             if (notSameProdDevName()) {
@@ -264,21 +264,20 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 gitCheckout(gitFlowConfig.getProductionBranch());
 
                 gitMerge(gitFlowConfig.getDevelopmentBranch(), releaseRebase,
-                        releaseMergeNoFF, releaseMergeFFOnly, commitMessages.getReleaseFinishMergeMessage());
+                        releaseMergeNoFF, releaseMergeFFOnly, commitMessages.getReleaseFinishMergeMessage(),
+                        messageProperties);
             }
 
             if (!skipTag) {
                 if (tychoBuild && ArtifactUtils.isSnapshot(version)) {
-                    version = version.replace("-" + Artifact.SNAPSHOT_VERSION,
-                            "");
+                    version = version.replace("-" + Artifact.SNAPSHOT_VERSION, "");
                 }
 
-                Map<String, String> properties = new HashMap<String, String>();
-                properties.put("version", version);
+                messageProperties.put("version", version);
 
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + version,
-                        commitMessages.getTagReleaseMessage(), gpgSignTag, properties);
+                        commitMessages.getTagReleaseMessage(), gpgSignTag, messageProperties);
             }
 
             // maven goals after release
@@ -314,11 +313,10 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             // mvn set version
             mvnSetVersions(nextSnapshotVersion);
 
-            Map<String, String> properties = new HashMap<String, String>();
-            properties.put("version", nextSnapshotVersion);
+            messageProperties.put("version", nextSnapshotVersion);
 
             // git commit -a -m updating for next development version
-            gitCommit(commitMessages.getReleaseFinishMessage(), properties);
+            gitCommit(commitMessages.getReleaseFinishMessage(), messageProperties);
 
             if (installProject) {
                 // mvn clean install

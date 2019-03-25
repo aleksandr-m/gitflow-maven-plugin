@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 Aleksandr Mashchenko.
+ * Copyright 2014-2019 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -176,8 +176,6 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
             // maven goals before merge
             if (StringUtils.isNotBlank(preHotfixGoals)) {
-                gitCheckout(hotfixBranchName);
-
                 mvnRun(preHotfixGoals);
             }
 
@@ -236,8 +234,21 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 if (StringUtils.isNotBlank(releaseBranch)) {
                     // git checkout release
                     gitCheckout(releaseBranch);
+                    String releaseBranchVersion = getCurrentProjectVersion();
+
+                    if (!currentVersion.equals(releaseBranchVersion)) {
+                        // set version to avoid merge conflict
+                        mvnSetVersions(currentVersion);
+                        gitCommit(commitMessages.getUpdateReleaseToAvoidConflictsMessage());
+                    }
+
                     // git merge --no-ff hotfix/...
                     gitMergeNoff(hotfixBranchName);
+
+                    if (!currentVersion.equals(releaseBranchVersion)) {
+                        mvnSetVersions(releaseBranchVersion);
+                        gitCommit(commitMessages.getUpdateReleaseBackPreMergeStateMessage());
+                    }
                 } else if (!skipMergeDevBranch) {
                     GitFlowVersionInfo developVersionInfo = new GitFlowVersionInfo(
                             currentVersion);
