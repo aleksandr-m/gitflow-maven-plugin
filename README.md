@@ -251,6 +251,9 @@ Feature branch can be squashed before merging by setting `featureSquash` paramet
 
 You can also specify the optional parameter `additionalMergeOptions` for goals with merge-operations. It takes an arbitrary string, that will be appended to the merge-command. This is useful when in need for advanced options like `-Xtheirs`.
 
+For the `gitflow:hotfix-finish` and `gitflow:release-finish` goals it is also possible to specify different merge-options for merging into master and development-branch:
+`productionBranchMergeOptions` and `devBranchMergeOptions`.
+
 ### Running custom Maven goals
 
 The `preReleaseGoals` parameter can be used in `gitflow:release-finish` and `gitflow:release` goals to run defined Maven goals before the release.
