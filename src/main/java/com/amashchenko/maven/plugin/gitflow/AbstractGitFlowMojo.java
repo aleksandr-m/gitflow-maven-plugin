@@ -207,25 +207,36 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws MojoFailureException
      */
     protected String getCurrentProjectVersion() throws MojoFailureException {
+        final Model model = readModel(mavenSession.getCurrentProject());
+        if (model.getVersion() == null) {
+            throw new MojoFailureException(
+                    "Cannot get current project version. This plugin should be executed from the parent project.");
+        }
+        return model.getVersion();
+    }
+
+    /**
+     * Reads model from Maven project pom.xml.
+     * 
+     * @param project
+     *            Maven project
+     * @return Maven model
+     * @throws MojoFailureException
+     */
+    private Model readModel(MavenProject project) throws MojoFailureException {
         try {
             // read pom.xml
-            final MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-            final FileReader fileReader = new FileReader(mavenSession
-                    .getCurrentProject().getFile().getAbsoluteFile());
+            Model model;
+            FileReader fileReader = new FileReader(project.getFile().getAbsoluteFile());
+            MavenXpp3Reader mavenReader = new MavenXpp3Reader();
             try {
-                final Model model = mavenReader.read(fileReader);
-
-                if (model.getVersion() == null) {
-                    throw new MojoFailureException(
-                            "Cannot get current project version. This plugin should be executed from the parent project.");
-                }
-
-                return model.getVersion();
+                model = mavenReader.read(fileReader);
             } finally {
                 if (fileReader != null) {
                     fileReader.close();
                 }
             }
+            return model;
         } catch (Exception e) {
             throw new MojoFailureException("", e);
         }
@@ -265,16 +276,15 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
         List<MavenProject> projects = mavenSession.getProjects();
         for (MavenProject project : projects) {
-            builtArtifacts.add(project.getGroupId() + ":"
-                    + project.getArtifactId() + ":" + project.getVersion());
+            final Model model = readModel(project);
 
-            List<Dependency> dependencies = project.getDependencies();
+            builtArtifacts.add(model.getGroupId() + ":" + model.getArtifactId() + ":" + model.getVersion());
+
+            List<Dependency> dependencies = model.getDependencies();
             for (Dependency d : dependencies) {
-                String id = d.getGroupId() + ":" + d.getArtifactId() + ":"
-                        + d.getVersion();
-                if (!builtArtifacts.contains(id)
-                        && ArtifactUtils.isSnapshot(d.getVersion())) {
-                    snapshots.add(project + " -> " + d);
+                String id = d.getGroupId() + ":" + d.getArtifactId() + ":" + d.getVersion();
+                if (!builtArtifacts.contains(id) && ArtifactUtils.isSnapshot(d.getVersion())) {
+                    snapshots.add(model + " -> " + d);
                 }
             }
         }
