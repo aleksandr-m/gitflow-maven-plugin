@@ -225,6 +225,8 @@ For example, if the hotfix version  is `1.0.2.1` and `useSnapshotInHotfix` is se
 
 The `gitflow:hotfix-finish` goal also supports the parameter `skipMergeDevBranch` which prevents merging hotfix branch into the development branch. 
 
+The `gitflow:hotfix-finish` goal also supports the parameter `skipMergeProdBranch` which prevents merging the hotfix-branch into the master-branch and deletes the hotfix branch leaving only the tagged commit. Useful, along with `skipMergeDevBranch`, to allow hotfixes to very old code that are not applicable to current development.
+
 Version update of all modules ignoring groupId and artifactId can be forced by setting `versionsForceUpdate` parameter to `true`. The default value is `false`.
 
 ### Remote interaction

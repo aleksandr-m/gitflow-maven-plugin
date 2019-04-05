@@ -32,7 +32,7 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
  * The git flow hotfix finish mojo.
- * 
+ *
  */
 @Mojo(name = "hotfix-finish", aggregator = true)
 public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
@@ -47,7 +47,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to skip calling Maven test goal before merging the branch.
-     * 
+     *
      * @since 1.0.5
      */
     @Parameter(property = "skipTestProject", defaultValue = "false")
@@ -55,7 +55,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to push to the remote.
-     * 
+     *
      * @since 1.3.0
      */
     @Parameter(property = "pushRemote", defaultValue = "true")
@@ -64,7 +64,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     /**
      * Maven goals to execute in the hotfix branch before merging into the
      * production or support branch.
-     * 
+     *
      * @since 1.8.0
      */
     @Parameter(property = "preHotfixGoals")
@@ -72,7 +72,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Maven goals to execute in the release or support branch after the hotfix.
-     * 
+     *
      * @since 1.8.0
      */
     @Parameter(property = "postHotfixGoals")
@@ -80,7 +80,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Hotfix version to use in non-interactive mode.
-     * 
+     *
      * @since 1.9.0
      */
     @Parameter(property = "hotfixVersion")
@@ -88,7 +88,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to make a GPG-signed tag.
-     * 
+     *
      * @since 1.9.0
      */
     @Parameter(property = "gpgSignTag", defaultValue = "false")
@@ -96,15 +96,22 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to use snapshot in hotfix.
-     * 
+     *
      * @since 1.10.0
      */
     @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
     private boolean useSnapshotInHotfix;
 
     /**
+     * Whether to merge hotfix into master.
+     *
+     */
+    @Parameter(property = "skipMergeProdBranch", defaultValue = "false")
+    private boolean skipMergeProdBranch = false;
+
+    /**
      * Whether to skip merging into the development branch.
-     * 
+     *
      */
     @Parameter(property = "skipMergeDevBranch", defaultValue = "false")
     private boolean skipMergeDevBranch = false;
@@ -193,14 +200,16 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
             if (supportBranchName != null) {
                 gitCheckout(supportBranchName);
+                // git merge --no-ff hotfix/...
+                gitMergeNoff(hotfixBranchName);
             } else {
-                // git checkout master
-                gitCheckout(gitFlowConfig.getProductionBranch());
+                if (!skipMergeProdBranch) {
+                    // git checkout master
+                    gitCheckout(gitFlowConfig.getProductionBranch());
+                    // git merge --no-ff hotfix/...
+                    gitMergeNoff(hotfixBranchName);
+                }
             }
-
-            // git merge --no-ff hotfix/...
-            gitMergeNoff(hotfixBranchName);
-
             final String currentVersion = getCurrentProjectVersion();
 
             if (!skipTag) {
@@ -216,6 +225,11 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
                         commitMessages.getTagHotfixMessage(), gpgSignTag, properties);
+            }
+
+            if (skipMergeProdBranch && (supportBranchName == null)) {
+                // switch to prod branch so hotfix branch can be deleted
+                gitCheckout(gitFlowConfig.getProductionBranch());
             }
 
             // maven goals after merge
@@ -320,8 +334,13 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (!keepBranch) {
-                // git branch -d hotfix/...
-                gitBranchDelete(hotfixBranchName);
+                if (skipMergeProdBranch){
+                    //force delete as upstream merge is skipped
+                    gitBranchDeleteForce(hotfixBranchName);
+                } else {
+                    // git branch -d hotfix/...
+                    gitBranchDelete(hotfixBranchName);
+                }
             }
         } catch (Exception e) {
             throw new MojoFailureException("hotfix-finish", e);
