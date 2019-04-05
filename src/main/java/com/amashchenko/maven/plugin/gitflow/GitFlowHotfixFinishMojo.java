@@ -103,7 +103,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     private boolean useSnapshotInHotfix;
 
     /**
-     * Whether to merge hotfix into master.
+     * Whether to skip merging into the production branch.
      *
      */
     @Parameter(property = "skipMergeProdBranch", defaultValue = "false")
@@ -202,14 +202,13 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 gitCheckout(supportBranchName);
                 // git merge --no-ff hotfix/...
                 gitMergeNoff(hotfixBranchName);
-            } else {
-                if (!skipMergeProdBranch) {
-                    // git checkout master
-                    gitCheckout(gitFlowConfig.getProductionBranch());
-                    // git merge --no-ff hotfix/...
-                    gitMergeNoff(hotfixBranchName);
-                }
+            } else if (!skipMergeProdBranch) {
+                // git checkout master
+                gitCheckout(gitFlowConfig.getProductionBranch());
+                // git merge --no-ff hotfix/...
+                gitMergeNoff(hotfixBranchName);
             }
+
             final String currentVersion = getCurrentProjectVersion();
 
             if (!skipTag) {
@@ -228,7 +227,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (skipMergeProdBranch && (supportBranchName == null)) {
-                // switch to prod branch so hotfix branch can be deleted
+                // switch to production branch so hotfix branch can be deleted
                 gitCheckout(gitFlowConfig.getProductionBranch());
             }
 
