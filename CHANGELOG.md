@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.12.0
+
+* Fixed wrong versions in production branch when using `useSnapshotInHotfix` parameter
+* Fixed wrong versions in production branch when using `useSnapshotInRelease` parameter - [#158](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/158)
+* Fixed merge conflict in pom during `hotfix-finish` into existing release branch - [#160](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/160)
+* Added support for using properties in `releaseFinishMergeMessage` - [#163](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/163)
+* Added support to push the release branch on `hotfix-finish` goal - [#166](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/166)
+* Improved check of snapshot dependencies in the current pom - [#169](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/169)
+* Added support to skip merging into the development branch in `hotfit-finish` goal - [#149]https://github.com/aleksandr-m/gitflow-maven-plugin/pull/149)
+* Added support to skip merging into the production branch in `hotfix-finish` goal - [#164](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/164)
+* Improved usage and content of commit messages
+
 ## v1.11.0
 
 * Fixed `versionsForceUpdate` parameter doesn't work on windows - [#134](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/134)

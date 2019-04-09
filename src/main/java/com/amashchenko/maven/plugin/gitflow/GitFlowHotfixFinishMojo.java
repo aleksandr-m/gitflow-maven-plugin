@@ -105,6 +105,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     /**
      * Whether to skip merging into the production branch.
      *
+     * @since 1.12.0
      */
     @Parameter(property = "skipMergeProdBranch", defaultValue = "false")
     private boolean skipMergeProdBranch = false;
@@ -112,6 +113,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     /**
      * Whether to skip merging into the development branch.
      *
+     * @since 1.12.0
      */
     @Parameter(property = "skipMergeDevBranch", defaultValue = "false")
     private boolean skipMergeDevBranch = false;
