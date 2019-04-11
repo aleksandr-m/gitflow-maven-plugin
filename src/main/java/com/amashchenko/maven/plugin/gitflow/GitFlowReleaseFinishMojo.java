@@ -168,9 +168,9 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             // check uncommitted changes
             checkUncommittedChanges();
 
-            // git for-each-ref --format='%(refname:short)' refs/heads/release/*
+            // git for-each-ref --format='%(refname:short)' refs/heads/release/*  refs/remotes/{origin}/release/*
             final String releaseBranch = gitFindBranches(
-                    gitFlowConfig.getReleaseBranchPrefix(), false).trim();
+                    gitFlowConfig.getReleaseBranchPrefix(), false, true).trim();
 
             if (StringUtils.isBlank(releaseBranch)) {
                 throw new MojoFailureException("There is no release branch.");

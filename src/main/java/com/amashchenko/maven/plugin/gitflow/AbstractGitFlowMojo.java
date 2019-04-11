@@ -418,20 +418,44 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected String gitFindBranches(final String branchName,
             final boolean firstMatch) throws MojoFailureException,
             CommandLineException {
+
+        return gitFindBranches(branchName, firstMatch, false);
+    }
+
+    /**
+     * Executes git for-each-ref with <code>refname:short</code> format.
+     *
+     * @param branchName
+     *            Branch name to find.
+     * @param firstMatch
+     *            Return first match.
+     * @param includeRemote
+     *            Include remote origin
+     * @return Branch names which matches <code>refs/heads/{branchName}*</code> and conditionally also
+     * <code>refs/remote/{origin}/{branchName}*</code>.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected String gitFindBranches(final String branchName,
+            final boolean firstMatch, final boolean includeRemote) throws MojoFailureException,
+            CommandLineException {
         String wildcard = "*";
         if (branchName.endsWith("/")) {
             wildcard = "**";
         }
 
+        String pattern = "refs/heads/" + branchName + wildcard;
+        if (includeRemote) {
+            pattern = pattern + " refs/remotes/" + gitFlowConfig.getOrigin() + "/" + branchName + wildcard;
+        }
+
         String branches;
         if (firstMatch) {
             branches = executeGitCommandReturn("for-each-ref", "--count=1",
-                    "--format=\"%(refname:short)\"", "refs/heads/" + branchName
-                            + wildcard);
+                    "--format=\"%(refname:short)\"", pattern);
         } else {
             branches = executeGitCommandReturn("for-each-ref",
-                    "--format=\"%(refname:short)\"", "refs/heads/" + branchName
-                            + wildcard);
+                    "--format=\"%(refname:short)\"", pattern);
         }
 
         // on *nix systems return values from git for-each-ref are wrapped in
