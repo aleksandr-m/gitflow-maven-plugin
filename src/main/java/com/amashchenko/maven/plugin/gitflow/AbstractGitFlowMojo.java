@@ -46,6 +46,8 @@ import org.codehaus.plexus.util.cli.Commandline;
 public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** A full name of the versions-maven-plugin set goal. */
     private static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:set";
+    /** Update property goal on versions-maven-plugin */
+    private static final String VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL = "org.codehaus.mojo:versions-maven-plugin:set-property";
     /** Name of the tycho-versions-plugin set-version goal. */
     private static final String TYCHO_VERSIONS_PLUGIN_SET_GOAL = "org.eclipse.tycho:tycho-versions-plugin:set-version";
 
@@ -132,6 +134,14 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     @Parameter(property = "versionsForceUpdate", defaultValue = "false")
     private boolean versionsForceUpdate = false;
+
+    /**
+     * Property to update when updating versions
+     *
+     * @since 1.12.1
+     */
+    @Parameter(property = "propertyUpdate")
+    private String propertyUpdate = null;
 
     /**
      * The path to the Maven executable. Defaults to "mvn".
@@ -906,19 +916,31 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             throws MojoFailureException, CommandLineException {
         getLog().info("Updating version(s) to '" + version + "'.");
 
+        String newVersion = "-DnewVersion=" + version;
         String g = "";
         String a = "";
+        String p = "";
+        boolean updateProperty = propertyUpdate != null && !propertyUpdate.isEmpty();
         if (versionsForceUpdate) {
             g = "-DgroupId=";
             a = "-DartifactId=";
         }
 
+        if (updateProperty) {
+            getLog().info("Updating property '" + propertyUpdate + "' to '" + version + "'.");
+            p = "-Dproperties=" + propertyUpdate;
+        }
+
         if (tychoBuild) {
-            executeMvnCommand(TYCHO_VERSIONS_PLUGIN_SET_GOAL, "-DnewVersion="
-                    + version, "-Dtycho.mode=maven");
+            executeMvnCommand(TYCHO_VERSIONS_PLUGIN_SET_GOAL, p, newVersion, "-Dtycho.mode=maven");
         } else {
-            executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, g, a, "-DnewVersion="
-                    + version, "-DgenerateBackupPoms=false");
+            executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, g, a, newVersion, "-DgenerateBackupPoms=false");
+
+            // Launch update-property goal if defined
+            if (updateProperty) {
+                executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL, newVersion,
+                  "-Dproperty=" + propertyUpdate, "-DgenerateBackupPoms=false");
+            }
         }
     }
 

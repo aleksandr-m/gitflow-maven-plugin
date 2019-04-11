@@ -180,6 +180,19 @@ Note that although `${project.version}` can be used, any changes to version intr
 The `argLine` parameter can be used to pass command line arguments to the underlying Maven commands. For example, `-DcreateChecksum` in `mvn gitflow:release-start -DargLine=-DcreateChecksum` 
 will be passed to all underlying Maven commands.
 
+### Update maven properties
+
+Since 1.12.1 version, if you want to update a maven property with the new version, you can set the `propertyUpdate` parameter with the property you want to update.
+For example, `-DpropertyUpdate=revision` will update the `<revision>` property defined in the project `pom.xml` files.
+
+```xml
+<configuration>
+  <!-- since 1.12.1 -->
+  <propertyUpdate>revision</propertyUpdate>
+  ...
+</configuration>
+```
+
 ## Additional goal parameters
 
 The `gitflow:release-finish`, `gitflow:release` and `gitflow:hotfix-finish` goals have `skipTag` parameter. This parameter controls whether the release/hotfix will be tagged in Git.
