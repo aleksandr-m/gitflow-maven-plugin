@@ -4,4 +4,7 @@
     <artifactId>gitflow-maven-test</artifactId>
     <packaging>pom</packaging>
     <version>3.0.1-SNAPSHOT</version>
+    <properties>
+        <revision>3.0.1-SNAPSHOT</revision>
+    </properties>
 </project>
