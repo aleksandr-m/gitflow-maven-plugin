@@ -56,9 +56,19 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
      * Whether to push to the remote.
      * 
      * @since 1.6.0
+     * @deprecated 1.13.0 Use {@link #pushRemoteFeatureStart}
      */
+    @Deprecated
     @Parameter(property = "pushRemote", defaultValue = "false")
     private boolean pushRemote;
+
+    /**
+     * Whether to push to the remote.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "pushRemoteFeatureStart", defaultValue = "false")
+    private boolean pushRemoteFeatureStart = false;
 
     /**
      * Feature name to use in non-interactive mode.
@@ -153,7 +163,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                 mvnCleanInstall();
             }
 
-            if (pushRemote) {
+            if (pushRemoteFeatureStart) {
                 gitPush(gitFlowConfig.getFeatureBranchPrefix()
                         + featureBranchName, false);
             }

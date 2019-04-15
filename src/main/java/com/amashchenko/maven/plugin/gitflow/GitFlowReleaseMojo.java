@@ -76,9 +76,19 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
      * Whether to push to the remote.
      * 
      * @since 1.3.0
+     * @deprecated 1.13.0 {@link #pushRemoteRelease}
      */
+    @Deprecated
     @Parameter(property = "pushRemote", defaultValue = "true")
     private boolean pushRemote;
+
+    /**
+     * Whether to push to the remote.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "pushRemoteRelease", defaultValue = "true")
+    private boolean pushRemoteRelease = true;
 
     /**
      * Release version to use instead of the default next release version in non
@@ -323,7 +333,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 mvnCleanInstall();
             }
 
-            if (pushRemote) {
+            if (pushRemoteRelease) {
                 gitPush(gitFlowConfig.getProductionBranch(), !skipTag);
                 if (notSameProdDevName()) {
                     gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);

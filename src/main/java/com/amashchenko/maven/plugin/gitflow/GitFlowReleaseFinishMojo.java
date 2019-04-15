@@ -37,9 +37,22 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipTag", defaultValue = "false")
     private boolean skipTag = false;
 
-    /** Whether to keep release branch after finish. */
+    /**
+     * Whether to keep release branch after finish.
+     *
+     * @deprecated 1.13.0 Use {@link #keepBranchRelease}
+     */
     @Parameter(property = "keepBranch", defaultValue = "false")
+    @Deprecated
     private boolean keepBranch = false;
+
+    /**
+     * Whether to keep release branch after finish.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "keepBranchRelease", defaultValue = "false")
+    private boolean keepBranchRelease = false;
 
     /**
      * Whether to skip calling Maven test goal before merging the branch.
@@ -78,9 +91,19 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
      * Whether to push to the remote.
      *
      * @since 1.3.0
+     * @deprecated 1.13.0 Use {@link #pushRemoteReleaseFinish}
      */
+    @Deprecated
     @Parameter(property = "pushRemote", defaultValue = "true")
     private boolean pushRemote;
+
+    /**
+     * Whether to push to the remote.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "pushRemoteReleaseFinish", defaultValue = "true")
+    private boolean pushRemoteReleaseFinish = true;
 
     /**
      * Whether to use <code>--ff-only</code> option when merging.
@@ -331,18 +354,18 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 mvnCleanInstall();
             }
 
-            if (pushRemote) {
+            if (pushRemoteReleaseFinish) {
                 gitPush(gitFlowConfig.getProductionBranch(), !skipTag);
                 if (notSameProdDevName()) {
                     gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
                 }
 
-                if (!keepBranch) {
+                if (!keepBranchRelease) {
                     gitPushDelete(releaseBranch);
                 }
             }
 
-            if (!keepBranch) {
+            if (!keepBranchRelease) {
                 // git branch -d release/...
                 gitBranchDelete(releaseBranch);
             }
