@@ -182,16 +182,8 @@ will be passed to all underlying Maven commands.
 
 ### Update maven properties
 
-Since 1.12.1 version, if you want to update a maven property with the new version, you can set the `propertyUpdate` parameter with the property you want to update.
-For example, `-DpropertyUpdate=revision` will update the `<revision>` property defined in the project `pom.xml` files.
-
-```xml
-<configuration>
-  <!-- since 1.12.1 -->
-  <propertyUpdate>revision</propertyUpdate>
-  ...
-</configuration>
-```
+Since 1.12.1 version, if you want to update a maven property with the new version, you can set the `versionProperty` parameter with the property you want to update.
+For example, `-DversionProperty=revision` will update the `<revision>` property defined in the project pom.xml.
 
 ## Additional goal parameters
 
