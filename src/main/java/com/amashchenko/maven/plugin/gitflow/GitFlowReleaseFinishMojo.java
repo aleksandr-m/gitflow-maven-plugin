@@ -278,7 +278,8 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 }
 
                 // merge branch master into develop
-                gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, false, null, null);
+                gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, false,
+                        commitMessages.getReleaseFinishDevMergeMessage(), messageProperties);
 
                 if (commitDevelopmentVersionAtStart && useSnapshotInRelease) {
                     // updating develop poms version back to pre merge state
