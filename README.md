@@ -259,10 +259,10 @@ Feature branch can be squashed before merging by setting `featureSquash` paramet
 ### Running custom Maven goals
 
 The `preFeatureFinishGoals` parameter can be used in `gitflow:feature-finish` goal to run defined Maven goals before the finishing and merging a feature.
-E.g. `mvn gitflow:feature-finish -DpreFeatureFinishGoals=test` will run `mvn test` goal in the release branch before merging into the production branch.
+E.g. `mvn gitflow:feature-finish -DpreFeatureFinishGoals=test` will run `mvn test` goal in the feature branch before merging into the development branch.
 
 The `postFeatureFinishGoals` parameter can be used in `gitflow:feature-finish` goal to run defined Maven goals after merging a feature.
-E.g. `mvn gitflow:feature-finish -postFeatureFinishGoals=test` will run `mvn test` goal in the release branch after merging into the production branch.
+E.g. `mvn gitflow:feature-finish -postFeatureFinishGoals=test` will run `mvn test` goal in the development branch after merging a feature.
 
 The `preReleaseGoals` parameter can be used in `gitflow:release-finish` and `gitflow:release` goals to run defined Maven goals before the release.
 E.g. `mvn gitflow:release-finish -DpreReleaseGoals=test` will run `mvn test` goal in the release branch before merging into the production branch.
