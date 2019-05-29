@@ -72,10 +72,28 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "featureName")
     private String featureName;
 
+    /**
+     * Maven goals to execute in the feature branch before merging into the
+     * production branch.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "preFeatureFinishGoals")
+    private String preFeatureFinishGoals;
+
+    /**
+     * Maven goals to execute in the production branch after merging a feature.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "postFeatureFinishGoals")
+    private String postFeatureFinishGoals;
+
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        validateConfiguration();
+        validateConfiguration(preFeatureFinishGoals, postFeatureFinishGoals);
 
         try {
             // check uncommitted changes
@@ -113,6 +131,11 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
                 // mvn clean test
                 mvnCleanTest();
+            }
+
+            // maven goals before merge
+            if (StringUtils.isNotBlank(preFeatureFinishGoals)) {
+                mvnRun(preFeatureFinishGoals);
             }
 
             // git checkout develop
@@ -170,7 +193,11 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                     gitBranchDelete(featureBranchName);
                 }
             }
-        } catch (CommandLineException e) {
+            // maven goals after merge
+            if (StringUtils.isNotBlank(postFeatureFinishGoals)) {
+                mvnRun(postFeatureFinishGoals);
+            }
+        } catch (Exception e) {
             throw new MojoFailureException("feature-finish", e);
         }
     }
