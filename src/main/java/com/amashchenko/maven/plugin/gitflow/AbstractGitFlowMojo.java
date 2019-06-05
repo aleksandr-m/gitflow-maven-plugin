@@ -444,9 +444,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
         String branches;
         if (firstMatch) {
-            branches = executeGitCommandReturn("for-each-ref", "--count=1",
+            branches = org.apache.commons.lang.StringUtils.strip(
+                    executeGitCommandReturn("for-each-ref", "--count=1",
                     "--format=\"%(refname:short)\"", "refs/heads/" + branchName
-                            + wildcard);
+                            + wildcard));
         } else {
             branches = executeGitCommandReturn("for-each-ref",
                     "--format=\"%(refname:short)\"", "refs/heads/" + branchName
