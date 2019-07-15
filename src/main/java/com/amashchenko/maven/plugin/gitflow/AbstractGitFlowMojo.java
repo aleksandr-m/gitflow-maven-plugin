@@ -1047,7 +1047,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private void executeMvnCommand(final String... args)
             throws CommandLineException, MojoFailureException {
-        executeCommand(cmdMvn, true, argLine, args);
+        String argLineStripped = argLine.replaceAll("^'|'$", "");
+        executeCommand(cmdMvn, true, argLineStripped, args);
     }
 
     /**
