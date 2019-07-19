@@ -462,6 +462,19 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Executes git branch --show-current to get current branch.
+     *
+     * @return Git current branch.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected String gitGetCurrentBranch() throws MojoFailureException, CommandLineException {
+        String currentBranch = executeGitCommandReturn("branch", "--show-current");
+        currentBranch = removeQuotes(currentBranch);
+        return currentBranch;
+    }
+
+    /**
      * Executes git for-each-ref to get all tags.
      *
      * @return Git tags.

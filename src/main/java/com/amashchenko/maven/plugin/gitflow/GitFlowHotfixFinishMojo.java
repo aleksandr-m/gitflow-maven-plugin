@@ -130,6 +130,9 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             String hotfixBranchName = null;
             if (settings.isInteractiveMode()) {
                 hotfixBranchName = promptBranchName();
+            } else if (gitGetCurrentBranch().startsWith(gitFlowConfig.getHotfixBranchPrefix())) {
+                // If we're already on a hotfix branch, assume it's the branch we wish to use.
+                hotfixBranchName = gitGetCurrentBranch();
             } else if (StringUtils.isNotBlank(hotfixVersion)) {
                 final String branch = gitFlowConfig.getHotfixBranchPrefix()
                         + hotfixVersion;
