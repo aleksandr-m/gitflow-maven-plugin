@@ -50,6 +50,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private static final String VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL = "org.codehaus.mojo:versions-maven-plugin:set-property";
     /** Name of the tycho-versions-plugin set-version goal. */
     private static final String TYCHO_VERSIONS_PLUGIN_SET_GOAL = "org.eclipse.tycho:tycho-versions-plugin:set-version";
+    /** Name of the maven-help-plugin evaluate goal .*/
+    private static final String HELP_PLUGIN_EVALUATE_GOAL = "org.apache.maven.plugins:maven-help-plugin:evaluate";
 
     /** System line separator. */
     protected static final String LS = System.getProperty("line.separator");
@@ -220,18 +222,27 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
-     * Gets current project version from pom.xml file.
+     * Gets current project version evaluating pom.xml
+     * This implementation takes care of version based on properties or other runtime evaluation needed.
+     * Under the hood it delegates to org.apache.maven.plugins:maven-help-plugin which is the same used for
+     * effective-pom
      * 
      * @return Current project version.
      * @throws MojoFailureException
+     * @throws CommandLineException 
      */
-    protected String getCurrentProjectVersion() throws MojoFailureException {
-        final Model model = readModel(mavenSession.getCurrentProject());
-        if (model.getVersion() == null) {
+    protected String getCurrentProjectVersion() throws MojoFailureException, CommandLineException {
+    	
+    	CommandResult res = executeCommand(cmdMvn, true, argLine,HELP_PLUGIN_EVALUATE_GOAL,"-Dexpression=project.version","-q","-DforceStdout");
+    	String evaulatedVersion = res.getOut().trim();
+    	if (getLog().isDebugEnabled()) {
+    	 getLog().debug("evaluated version from pom.xml: '"+evaulatedVersion+"'");
+    	}
+        if (StringUtils.isBlank(evaulatedVersion)) {
             throw new MojoFailureException(
-                    "Cannot get current project version. This plugin should be executed from the parent project.");
+                    "Cannot get current project version. Try running help:effective-pom");
         }
-        return model.getVersion();
+        return evaulatedVersion;
     }
 
     /**
