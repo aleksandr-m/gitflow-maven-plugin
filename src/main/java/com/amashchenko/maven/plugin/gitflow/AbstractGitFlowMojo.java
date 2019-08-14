@@ -233,8 +233,11 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected String getCurrentProjectVersion() throws MojoFailureException, CommandLineException {
     	
-    	CommandResult res = executeCommand(cmdMvn, true, argLine,HELP_PLUGIN_EVALUATE_GOAL,"-Dexpression=project.version");
-    	String evaulatedVersion = res.getOut();
+    	CommandResult res = executeCommand(cmdMvn, true, argLine,HELP_PLUGIN_EVALUATE_GOAL,"-Dexpression=project.version","-q","-DforceStdout");
+    	String evaulatedVersion = res.getOut().trim();
+    	if (getLog().isDebugEnabled()) {
+    	 getLog().debug("evaluated version from pom.xml: '"+evaulatedVersion+"'");
+    	}
         if (StringUtils.isBlank(evaulatedVersion)) {
             throw new MojoFailureException(
                     "Cannot get current project version. Try running help:effective-pom");
