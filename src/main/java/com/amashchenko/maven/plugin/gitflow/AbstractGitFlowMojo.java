@@ -51,7 +51,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** Name of the tycho-versions-plugin set-version goal. */
     private static final String TYCHO_VERSIONS_PLUGIN_SET_GOAL = "org.eclipse.tycho:tycho-versions-plugin:set-version";
     /** Name of the maven-help-plugin evaluate goal .*/
-    private static final String HELP_PLUGIN_EVALUATE_GOAL = "maven-help-plugin:evaluate";
+    private static final String HELP_PLUGIN_EVALUATE_GOAL = "org.apache.maven.plugins:maven-help-plugin:evaluate";
 
     /** System line separator. */
     protected static final String LS = System.getProperty("line.separator");
