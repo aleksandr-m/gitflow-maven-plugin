@@ -5,7 +5,7 @@
         <name>Git-Flow Maven Plugin</name>
     </bannerLeft>
 
-    <googleAnalyticsAccountId>UA-65158625-2</googleAnalyticsAccountId>
+    <googleAnalyticsAccountId></googleAnalyticsAccountId>
 
     <publishDate position="right"/>
     <version position="right"/>
@@ -21,7 +21,7 @@
            <leftColumnClass>span3</leftColumnClass>
            <bodyColumnClass>span9</bodyColumnClass>
            <gitHub>
-               <projectId>aleksandr-m/gitflow-maven-plugin</projectId>
+               <projectId>openmindlab/gitflow-maven-plugin</projectId>
                <ribbonOrientation>right</ribbonOrientation>
                <ribbonColor>red</ribbonColor>
             </gitHub>

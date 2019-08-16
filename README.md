@@ -185,6 +185,8 @@ will be passed to all underlying Maven commands.
 Since 1.12.1 version, if you want to update a maven property with the new version, you can set the `versionProperty` parameter with the property you want to update.
 For example, `-DversionProperty=revision` will update the `<revision>` property defined in the project pom.xml.
 
+Since 1.12.2 version, the `<version>` of your pom.xml will be evaluated so that version value such as `<version>${revision}</version>` will correctly recognized (if property "revision" can be resolved, of course). Notice that if you need gitflow-maven-plugin not modify version tag after release, you must use parameter `skipUpdateVersion=true`
+
 ## Additional goal parameters
 
 The `gitflow:release-finish`, `gitflow:release` and `gitflow:hotfix-finish` goals have `skipTag` parameter. This parameter controls whether the release/hotfix will be tagged in Git.

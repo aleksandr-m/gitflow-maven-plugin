@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.12.2 (forked)
+* allows property value in version of pom.xml. This is often used in CI-friendly versioning.
+
 ## v1.12.0
 
 * Fixed wrong versions in production branch when using `useSnapshotInHotfix` parameter

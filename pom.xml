@@ -17,11 +17,11 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.amashchenko.maven.plugin</groupId>
+    <groupId>com.openmindlab.maven.plugin</groupId>
     <artifactId>gitflow-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <name>gitflow-maven-plugin</name>
-    <version>1.12.1-SNAPSHOT</version>
+    <version>1.12.2-SNAPSHOT</version>
 
     <description>The Git-Flow Maven Plugin supports various Git workflows, including Vincent Driessen's successful Git branching model and GitHub Flow. This plugin runs Git and Maven commands from the command line. Supports Eclipse Plugins build with Tycho.</description>
 
@@ -38,6 +38,9 @@
     <developers>
         <developer>
             <name>Aleksandr Mashchenko</name>
+        </developer>
+         <developer>
+            <name>Vincenzo Cerbone</name>
         </developer>
     </developers>
 
@@ -65,8 +68,8 @@
     <properties>
         <java.version>1.6</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scm.url>scm:git:git@github.com:aleksandr-m/gitflow-maven-plugin.git</scm.url>
-        <url>https://github.com/aleksandr-m/gitflow-maven-plugin</url>
+        <scm.url>scm:git:git@github.com:openmindlab/gitflow-maven-plugin.git</scm.url>
+        <url>https://github.com/openmindlab/gitflow-maven-plugin</url>
         <maven-plugin-plugin.version>3.6.0</maven-plugin-plugin.version>
     </properties>
 
