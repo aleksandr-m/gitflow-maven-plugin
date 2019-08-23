@@ -22,7 +22,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.10.0</version>
+                <version>1.12.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -136,17 +136,31 @@ Since `1.2.1` commit messages can be changed in plugin's configuration section i
 
     <configuration>
         <commitMessages>
-            <featureStartMessage>update versions for feature branch</featureStartMessage>
-            <featureFinishMessage>update versions for development branch</featureFinishMessage>
+            <featureStartMessage>Update versions for feature branch</featureStartMessage>
+            <featureFinishMessage>Update versions for development branch</featureFinishMessage>
+
+            <hotfixStartMessage>Update versions for hotfix</hotfixStartMessage>
+            <hotfixFinishMessage>Update for next development version</hotfixFinishMessage>
+
+            <hotfixVersionUpdateMessage>Update to hotfix version</hotfixVersionUpdateMessage>
+
+            <releaseStartMessage>Update versions for release</releaseStartMessage>
+            <releaseFinishMessage>Update for next development version</releaseFinishMessage>
+
+            <releaseVersionUpdateMessage>Update for next development version</releaseVersionUpdateMessage>
+
+            <!-- Default git merge commit message will be used if left empty or undefined. -->
+            <releaseFinishMergeMessage></releaseFinishMergeMessage>
+
+            <tagHotfixMessage>Tag hotfix</tagHotfixMessage>
+            <tagReleaseMessage>Tag release</tagReleaseMessage>
+
+            <!-- Migration Note: This was called <updateDevToAvoidConflitsMessage> in version 1.11.0, but has been deprecated in favour of the correctly spelt one below. -->
+            <updateDevToAvoidConflictsMessage>Update develop to production version to avoid merge conflicts</updateDevToAvoidConflictsMessage>
+            <updateDevBackPreMergeStateMessage>Update develop version back to pre-merge state</updateDevBackPreMergeStateMessage>
             
-            <hotfixStartMessage>update versions for hotfix</hotfixStartMessage>
-            <hotfixFinishMessage>update for next development version</hotfixFinishMessage>
-            
-            <releaseStartMessage>update versions for release</releaseStartMessage>
-            <releaseFinishMessage>update for next development version</releaseFinishMessage>
-            
-            <tagHotfixMessage>tag hotfix</tagHotfixMessage>
-            <tagReleaseMessage>tag release</tagReleaseMessage>
+            <updateReleaseToAvoidConflictsMessage>Update release to hotfix version to avoid merge conflicts</updateReleaseToAvoidConflictsMessage>
+            <updateReleaseBackPreMergeStateMessage>Update release version back to pre-merge state</updateReleaseBackPreMergeStateMessage>
         </commitMessages>
     </configuration>
 
@@ -165,6 +179,11 @@ Note that although `${project.version}` can be used, any changes to version intr
 
 The `argLine` parameter can be used to pass command line arguments to the underlying Maven commands. For example, `-DcreateChecksum` in `mvn gitflow:release-start -DargLine=-DcreateChecksum` 
 will be passed to all underlying Maven commands.
+
+### Update maven properties
+
+Since 1.12.1 version, if you want to update a maven property with the new version, you can set the `versionProperty` parameter with the property you want to update.
+For example, `-DversionProperty=revision` will update the `<revision>` property defined in the project pom.xml.
 
 ## Additional goal parameters
 
@@ -209,6 +228,10 @@ For example, if the release version  is `1.0.2` and `useSnapshotInRelease` is se
 The `gitflow:hotfix-start` and `gitflow:hotfix-finish` goals have `useSnapshotInHotfix` parameter which allows to start the hotfix with SNAPSHOT version and finish it without this value in the version. By default the value is `false`.
 For example, if the hotfix version  is `1.0.2.1` and `useSnapshotInHotfix` is set to `true` and using `gitflow:hotfix-start` goal then the hotfix version will be `1.0.2.1-SNAPSHOT` and when finishing the release with `gitflow:hotfix-finish` goal, the release version will be `1.0.2.1`
 
+The `gitflow:hotfix-finish` goal also supports the parameter `skipMergeDevBranch` which prevents merging the hotfix branch into the development branch. 
+
+The `gitflow:hotfix-finish` goal also supports the parameter `skipMergeProdBranch` which prevents merging the hotfix branch into the production branch and deletes the hotfix branch leaving only the tagged commit. Useful, along with `skipMergeDevBranch`, to allow hotfixes to very old code that are not applicable to current development.
+
 Version update of all modules ignoring groupId and artifactId can be forced by setting `versionsForceUpdate` parameter to `true`. The default value is `false`.
 
 ### Remote interaction
@@ -234,6 +257,12 @@ Release branch can be merged with `--ff-only` option by setting `releaseMergeFFO
 Feature branch can be squashed before merging by setting `featureSquash` parameter to `true`. The default value is `false` (i.e. merge w/o squash will be performed).
 
 ### Running custom Maven goals
+
+The `preFeatureFinishGoals` parameter can be used in `gitflow:feature-finish` goal to run defined Maven goals before the finishing and merging a feature.
+E.g. `mvn gitflow:feature-finish -DpreFeatureFinishGoals=test` will run `mvn test` goal in the feature branch before merging into the development branch.
+
+The `postFeatureFinishGoals` parameter can be used in `gitflow:feature-finish` goal to run defined Maven goals after merging a feature.
+E.g. `mvn gitflow:feature-finish -postFeatureFinishGoals=test` will run `mvn test` goal in the development branch after merging a feature.
 
 The `preReleaseGoals` parameter can be used in `gitflow:release-finish` and `gitflow:release` goals to run defined Maven goals before the release.
 E.g. `mvn gitflow:release-finish -DpreReleaseGoals=test` will run `mvn test` goal in the release branch before merging into the production branch.

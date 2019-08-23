@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 Aleksandr Mashchenko.
+ * Copyright 2014-2019 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,10 +72,28 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "featureName")
     private String featureName;
 
+    /**
+     * Maven goals to execute in the feature branch before merging into the
+     * development branch.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "preFeatureFinishGoals")
+    private String preFeatureFinishGoals;
+
+    /**
+     * Maven goals to execute in the development branch after merging a feature.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "postFeatureFinishGoals")
+    private String postFeatureFinishGoals;
+
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        validateConfiguration();
+        validateConfiguration(preFeatureFinishGoals, postFeatureFinishGoals);
 
         try {
             // check uncommitted changes
@@ -115,6 +133,11 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 mvnCleanTest();
             }
 
+            // maven goals before merge
+            if (StringUtils.isNotBlank(preFeatureFinishGoals)) {
+                mvnRun(preFeatureFinishGoals);
+            }
+
             // git checkout develop
             gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
@@ -148,6 +171,11 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 gitCommit(commitMessages.getFeatureFinishMessage(), properties);
             }
 
+            // maven goals after merge
+            if (StringUtils.isNotBlank(postFeatureFinishGoals)) {
+                mvnRun(postFeatureFinishGoals);
+            }
+
             if (installProject) {
                 // mvn clean install
                 mvnCleanInstall();
@@ -170,7 +198,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                     gitBranchDelete(featureBranchName);
                 }
             }
-        } catch (CommandLineException e) {
+        } catch (Exception e) {
             throw new MojoFailureException("feature-finish", e);
         }
     }

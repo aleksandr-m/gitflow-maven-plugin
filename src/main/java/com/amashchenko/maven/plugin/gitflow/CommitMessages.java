@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 Aleksandr Mashchenko.
+ * Copyright 2014-2019 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,10 +33,19 @@ public class CommitMessages {
 
     private String releaseVersionUpdateMessage;
 
+    private String releaseFinishMergeMessage;
+    private String releaseFinishDevMergeMessage;
+
     private String tagHotfixMessage;
     private String tagReleaseMessage;
 
     private String suportStartMessage;
+  
+    private String updateDevToAvoidConflictsMessage;
+    private String updateDevBackPreMergeStateMessage;
+
+    private String updateReleaseToAvoidConflictsMessage;
+    private String updateReleaseBackPreMergeStateMessage;
 
     public CommitMessages() {
         featureStartMessage = "Update versions for feature branch";
@@ -52,10 +61,19 @@ public class CommitMessages {
 
         releaseVersionUpdateMessage = "Update for next development version";
 
+        releaseFinishMergeMessage = "";
+        releaseFinishDevMergeMessage = "";
+
         tagHotfixMessage = "Tag hotfix";
         tagReleaseMessage = "Tag release";
 
-        suportStartMessage = "update versions for support";
+        suportStartMessage = "Update versions for support";
+      
+        updateDevToAvoidConflictsMessage = "Update develop to production version to avoid merge conflicts";
+        updateDevBackPreMergeStateMessage = "Update develop version back to pre-merge state";
+
+        updateReleaseToAvoidConflictsMessage = "Update release to hotfix version to avoid merge conflicts";
+        updateReleaseBackPreMergeStateMessage = "Update release version back to pre-merge state";
     }
 
     /**
@@ -182,6 +200,36 @@ public class CommitMessages {
     }
 
     /**
+     * @return the releaseFinishMergeMessage
+     */
+    public String getReleaseFinishMergeMessage() {
+        return releaseFinishMergeMessage;
+    }
+
+    /**
+     * @param releaseFinishMergeMessage
+     *            the releaseFinishMergeMessage to set
+     */
+    public void setReleaseFinishMergeMessage(String releaseFinishMergeMessage) {
+        this.releaseFinishMergeMessage = releaseFinishMergeMessage;
+    }
+
+    /**
+     * @return the releaseFinishDevMergeMessage
+     */
+    public String getReleaseFinishDevMergeMessage() {
+        return releaseFinishDevMergeMessage;
+    }
+
+    /**
+     * @param releaseFinishDevMergeMessage
+     *            the releaseFinishDevMergeMessage to set
+     */
+    public void setReleaseFinishDevMergeMessage(String releaseFinishDevMergeMessage) {
+        this.releaseFinishDevMergeMessage = releaseFinishDevMergeMessage;
+    }
+
+    /**
      * @return the tagHotfixMessage
      */
     public String getTagHotfixMessage() {
@@ -209,5 +257,73 @@ public class CommitMessages {
      */
     public void setTagReleaseMessage(String tagReleaseMessage) {
         this.tagReleaseMessage = tagReleaseMessage;
+    }
+
+    /**
+     * @return the updateDevToAvoidConflictsMessage
+     */
+    public String getUpdateDevToAvoidConflictsMessage() {
+        return updateDevToAvoidConflictsMessage;
+    }
+
+    /**
+     * @param updateDevToAvoidConflictsMessage
+     *            the updateDevToAvoidConflictsMessage to set
+     */
+    public void setUpdateDevToAvoidConflictsMessage(String updateDevToAvoidConflictsMessage) {
+        this.updateDevToAvoidConflictsMessage = updateDevToAvoidConflictsMessage;
+    }
+
+    /**
+     * @param updateDevToAvoidConflitsMessage
+     *            the updateDevToAvoidConflitsMessage to set
+     * @deprecated Use the correctly spelt updateDevToAvoidConflictsMessage instead
+     */
+    @Deprecated
+    public void setUpdateDevToAvoidConflitsMessage(String updateDevToAvoidConflitsMessage) {
+        this.updateDevToAvoidConflictsMessage = updateDevToAvoidConflitsMessage;
+    }
+
+    /**
+     * @return the updateDevBackPreMergeStateMessage
+     */
+    public String getUpdateDevBackPreMergeStateMessage() {
+        return updateDevBackPreMergeStateMessage;
+    }
+
+    /**
+     * @param updateDevBackPreMergeStateMessage
+     *            the updateDevBackPreMergeStateMessage to set
+     */
+    public void setUpdateDevBackPreMergeStateMessage(String updateDevBackPreMergeStateMessage) {
+        this.updateDevBackPreMergeStateMessage = updateDevBackPreMergeStateMessage;
+    }
+
+    /**
+     * @return the updateReleaseToAvoidConflictsMessage
+     */
+    public String getUpdateReleaseToAvoidConflictsMessage() {
+        return updateReleaseToAvoidConflictsMessage;
+    }
+
+    /**
+     * @param updateReleaseToAvoidConflictsMessage the updateReleaseToAvoidConflictsMessage to set
+     */
+    public void setUpdateReleaseToAvoidConflictsMessage(String updateReleaseToAvoidConflictsMessage) {
+        this.updateReleaseToAvoidConflictsMessage = updateReleaseToAvoidConflictsMessage;
+    }
+
+    /**
+     * @return the updateReleaseBackPreMergeStateMessage
+     */
+    public String getUpdateReleaseBackPreMergeStateMessage() {
+        return updateReleaseBackPreMergeStateMessage;
+    }
+
+    /**
+     * @param updateReleaseBackPreMergeStateMessage the updateReleaseBackPreMergeStateMessage to set
+     */
+    public void setUpdateReleaseBackPreMergeStateMessage(String updateReleaseBackPreMergeStateMessage) {
+        this.updateReleaseBackPreMergeStateMessage = updateReleaseBackPreMergeStateMessage;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 Aleksandr Mashchenko.
+ * Copyright 2014-2019 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -63,13 +64,13 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
     private String hotfixVersion;
 
     /**
-     * Whether this is use snapshot in hotfix.
+     * Whether to use snapshot in hotfix.
      * 
      * @since 1.10.0
      */
-    @Parameter(defaultValue = "false")
-    protected boolean useSnapshotInHotfix;
-    
+    @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
+    private boolean useSnapshotInHotfix;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -221,9 +222,15 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             if (!version.equals(currentVersion)) {
                 String projectVersion = version;
                 if (useSnapshotInHotfix && !ArtifactUtils.isSnapshot(version)) {
-                    projectVersion = version + "-SNAPSHOT";
+                    projectVersion = version + "-" + Artifact.SNAPSHOT_VERSION;
                 }
-                
+
+                if (useSnapshotInHotfix && mavenSession.getUserProperties().get("useSnapshotInHotfix") != null) {
+                    getLog().warn(
+                            "The useSnapshotInHotfix parameter is set from the command line. Don't forget to use it in the finish goal as well."
+                                    + " It is better to define it in the project's pom file.");
+                }
+
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(projectVersion);
 
