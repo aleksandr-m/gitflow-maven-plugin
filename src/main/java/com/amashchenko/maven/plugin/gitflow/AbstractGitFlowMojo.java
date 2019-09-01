@@ -457,6 +457,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         // quotes
         // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
         branches = removeQuotes(branches);
+        branches = StringUtils.strip(branches);
 
         return branches;
     }
