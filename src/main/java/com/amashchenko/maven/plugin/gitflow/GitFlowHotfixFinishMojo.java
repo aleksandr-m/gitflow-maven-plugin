@@ -189,26 +189,29 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             }
 
             String currentHotfixVersion = getCurrentProjectVersion();
+
+            Map<String, String> messageProperties = new HashMap<String, String>();
+            messageProperties.put("version", currentHotfixVersion);
+
             if (useSnapshotInHotfix && ArtifactUtils.isSnapshot(currentHotfixVersion)) {
                 String commitVersion = currentHotfixVersion.replace("-" + Artifact.SNAPSHOT_VERSION, "");
 
                 mvnSetVersions(commitVersion);
 
-                Map<String, String> properties = new HashMap<String, String>();
-                properties.put("version", commitVersion);
+                messageProperties.put("version", commitVersion);
 
-                gitCommit(commitMessages.getHotfixFinishMessage(), properties);
+                gitCommit(commitMessages.getHotfixFinishMessage(), messageProperties);
             }
 
             if (supportBranchName != null) {
                 gitCheckout(supportBranchName);
                 // git merge --no-ff hotfix/...
-                gitMergeNoff(hotfixBranchName);
+                gitMergeNoff(hotfixBranchName, commitMessages.getHotfixFinishSupportMergeMessage(), messageProperties);
             } else if (!skipMergeProdBranch) {
                 // git checkout master
                 gitCheckout(gitFlowConfig.getProductionBranch());
                 // git merge --no-ff hotfix/...
-                gitMergeNoff(hotfixBranchName);
+                gitMergeNoff(hotfixBranchName, commitMessages.getHotfixFinishMergeMessage(), messageProperties);
             }
 
             final String currentVersion = getCurrentProjectVersion();
@@ -257,8 +260,11 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                         gitCommit(commitMessages.getUpdateReleaseToAvoidConflictsMessage());
                     }
 
+                    messageProperties.put("version", currentVersion);
+
                     // git merge --no-ff hotfix/...
-                    gitMergeNoff(hotfixBranchName);
+                    gitMergeNoff(hotfixBranchName, commitMessages.getHotfixFinishReleaseMergeMessage(),
+                            messageProperties);
 
                     if (!currentVersion.equals(releaseBranchVersion)) {
                         mvnSetVersions(releaseBranchVersion);
@@ -277,8 +283,11 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                         mvnSetVersions(currentVersion);
                         gitCommit(commitMessages.getHotfixVersionUpdateMessage());
 
+                        messageProperties.put("version", currentVersion);
+
                         // git merge --no-ff hotfix/...
-                        gitMergeNoff(hotfixBranchName);
+                        gitMergeNoff(hotfixBranchName, commitMessages.getHotfixFinishDevMergeMessage(),
+                                messageProperties);
 
                         // which version to increment
                         GitFlowVersionInfo hotfixVersionInfo = new GitFlowVersionInfo(

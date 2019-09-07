@@ -147,7 +147,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 gitCommit(featureBranchName);
             } else {
                 // git merge --no-ff feature/...
-                gitMergeNoff(featureBranchName);
+                gitMergeNoff(featureBranchName, commitMessages.getFeatureFinishDevMergeMessage(), null);
             }
 
             // get current project version from pom

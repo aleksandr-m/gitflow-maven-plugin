@@ -36,6 +36,13 @@ public class CommitMessages {
     private String releaseFinishMergeMessage;
     private String releaseFinishDevMergeMessage;
 
+    private String featureFinishDevMergeMessage;
+
+    private String hotfixFinishMergeMessage;
+    private String hotfixFinishDevMergeMessage;
+    private String hotfixFinishReleaseMergeMessage;
+    private String hotfixFinishSupportMergeMessage;
+
     private String tagHotfixMessage;
     private String tagReleaseMessage;
 
@@ -304,5 +311,80 @@ public class CommitMessages {
      */
     public void setUpdateReleaseBackPreMergeStateMessage(String updateReleaseBackPreMergeStateMessage) {
         this.updateReleaseBackPreMergeStateMessage = updateReleaseBackPreMergeStateMessage;
+    }
+
+    /**
+     * @return the hotfixFinishMergeMessage
+     */
+    public String getHotfixFinishMergeMessage() {
+        return hotfixFinishMergeMessage;
+    }
+
+    /**
+     * @param hotfixFinishMergeMessage
+     *            the hotfixFinishMergeMessage to set
+     */
+    public void setHotfixFinishMergeMessage(String hotfixFinishMergeMessage) {
+        this.hotfixFinishMergeMessage = hotfixFinishMergeMessage;
+    }
+
+    /**
+     * @return the hotfixFinishDevMergeMessage
+     */
+    public String getHotfixFinishDevMergeMessage() {
+        return hotfixFinishDevMergeMessage;
+    }
+
+    /**
+     * @param hotfixFinishDevMergeMessage
+     *            the hotfixFinishDevMergeMessage to set
+     */
+    public void setHotfixFinishDevMergeMessage(String hotfixFinishDevMergeMessage) {
+        this.hotfixFinishDevMergeMessage = hotfixFinishDevMergeMessage;
+    }
+
+    /**
+     * @return the hotfixFinishReleaseMergeMessage
+     */
+    public String getHotfixFinishReleaseMergeMessage() {
+        return hotfixFinishReleaseMergeMessage;
+    }
+
+    /**
+     * @param hotfixFinishReleaseMergeMessage
+     *            the hotfixFinishReleaseMergeMessage to set
+     */
+    public void setHotfixFinishReleaseMergeMessage(String hotfixFinishReleaseMergeMessage) {
+        this.hotfixFinishReleaseMergeMessage = hotfixFinishReleaseMergeMessage;
+    }
+
+    /**
+     * @return the hotfixFinishSupportMergeMessage
+     */
+    public String getHotfixFinishSupportMergeMessage() {
+        return hotfixFinishSupportMergeMessage;
+    }
+
+    /**
+     * @param hotfixFinishSupportMergeMessage
+     *            the hotfixFinishSupportMergeMessage to set
+     */
+    public void setHotfixFinishSupportMergeMessage(String hotfixFinishSupportMergeMessage) {
+        this.hotfixFinishSupportMergeMessage = hotfixFinishSupportMergeMessage;
+    }
+
+    /**
+     * @return the featureFinishDevMergeMessage
+     */
+    public String getFeatureFinishDevMergeMessage() {
+        return featureFinishDevMergeMessage;
+    }
+
+    /**
+     * @param featureFinishDevMergeMessage
+     *            the featureFinishDevMergeMessage to set
+     */
+    public void setFeatureFinishDevMergeMessage(String featureFinishDevMergeMessage) {
+        this.featureFinishDevMergeMessage = featureFinishDevMergeMessage;
     }
 }

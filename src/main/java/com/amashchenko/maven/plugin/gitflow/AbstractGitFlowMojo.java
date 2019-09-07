@@ -701,12 +701,17 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * 
      * @param branchName
      *            Branch name to merge.
+     * @param message
+     *            Merge commit message.
+     * @param messageProperties
+     *            Properties to replace in message.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitMergeNoff(final String branchName)
+    protected void gitMergeNoff(final String branchName, final String message,
+            final Map<String, String> messageProperties)
             throws MojoFailureException, CommandLineException {
-        gitMerge(branchName, false, true, false, null, null);
+        gitMerge(branchName, false, true, false, message, messageProperties);
     }
 
     /**
