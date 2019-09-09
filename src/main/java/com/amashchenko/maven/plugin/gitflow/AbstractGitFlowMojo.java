@@ -138,7 +138,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /**
      * Property to set version to.
      *
-     * @since 1.12.1
+     * @since 1.13.0
      */
     @Parameter(property = "versionProperty")
     private String versionProperty;
@@ -147,7 +147,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * Whether to skip updating version. Useful with {@link #versionProperty} to be
      * able to update <code>revision</code> property without modifying version tag.
      * 
-     * @since 1.12.1
+     * @since 1.13.0
      */
     @Parameter(property = "skipUpdateVersion")
     private boolean skipUpdateVersion = false;

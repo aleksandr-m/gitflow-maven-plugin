@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.13.0
+
+* Added ability to change git merge messages for feature and hotfix goals - [#185](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/185)
+* Added support for running custom Maven goals in `feature-finish` - [#177](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/177)
+* Added ability to change release finish development merge commit message - [#175](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/175)
+* Added ability to skip updating `version`
+* Added support for updating property in pom (e.g. `revision`) - [#151](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/151)
+
 ## v1.12.0
 
 * Fixed wrong versions in production branch when using `useSnapshotInHotfix` parameter
