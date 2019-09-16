@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 Aleksandr Mashchenko.
+ * Copyright 2014-2019 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
  * The git flow release mojo.
@@ -125,9 +123,35 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     @Parameter(property = "versionDigitToIncrement")
     private Integer versionDigitToIncrement;
 
+    /**
+     * Maven goals to execute before the release.
+     * 
+     * @since 1.8.0
+     */
+    @Parameter(property = "preReleaseGoals")
+    private String preReleaseGoals;
+
+    /**
+     * Maven goals to execute after the release.
+     * 
+     * @since 1.8.0
+     */
+    @Parameter(property = "postReleaseGoals")
+    private String postReleaseGoals;
+
+    /**
+     * Whether to make a GPG-signed tag.
+     * 
+     * @since 1.9.0
+     */
+    @Parameter(property = "gpgSignTag", defaultValue = "false")
+    private boolean gpgSignTag = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        validateConfiguration(preReleaseGoals, postReleaseGoals);
+
         try {
             // set git flow configuration
             initGitFlowConfig();
@@ -207,26 +231,32 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                         }
                     }
                 } catch (PrompterException e) {
-                    getLog().error(e);
+                    throw new MojoFailureException("release", e);
                 }
             } else {
                 version = releaseVersion;
             }
 
             if (StringUtils.isBlank(version)) {
+                getLog().info("Version is blank. Using default version.");
                 version = defaultVersion;
             }
+
+            // maven goals before release
+            if (StringUtils.isNotBlank(preReleaseGoals)) {
+                mvnRun(preReleaseGoals);
+            }
+
+            Map<String, String> messageProperties = new HashMap<String, String>();
+            messageProperties.put("version", version);
 
             // execute if version changed
             if (!version.equals(currentVersion)) {
                 // mvn set version
                 mvnSetVersions(version);
 
-                Map<String, String> properties = new HashMap<String, String>();
-                properties.put("version", version);
-
                 // git commit -a -m updating versions for release
-                gitCommit(commitMessages.getReleaseStartMessage(), properties);
+                gitCommit(commitMessages.getReleaseStartMessage(), messageProperties);
             }
 
             if (notSameProdDevName()) {
@@ -234,18 +264,25 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 gitCheckout(gitFlowConfig.getProductionBranch());
 
                 gitMerge(gitFlowConfig.getDevelopmentBranch(), releaseRebase,
-                        releaseMergeNoFF, releaseMergeFFOnly);
+                        releaseMergeNoFF, releaseMergeFFOnly, commitMessages.getReleaseFinishMergeMessage(),
+                        messageProperties);
             }
 
             if (!skipTag) {
                 if (tychoBuild && ArtifactUtils.isSnapshot(version)) {
-                    version = version.replace("-" + Artifact.SNAPSHOT_VERSION,
-                            "");
+                    version = version.replace("-" + Artifact.SNAPSHOT_VERSION, "");
                 }
+
+                messageProperties.put("version", version);
 
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + version,
-                        commitMessages.getTagReleaseMessage());
+                        commitMessages.getTagReleaseMessage(), gpgSignTag, messageProperties);
+            }
+
+            // maven goals after release
+            if (StringUtils.isNotBlank(postReleaseGoals)) {
+                mvnRun(postReleaseGoals);
             }
 
             if (notSameProdDevName()) {
@@ -276,11 +313,10 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             // mvn set version
             mvnSetVersions(nextSnapshotVersion);
 
-            Map<String, String> properties = new HashMap<String, String>();
-            properties.put("version", nextSnapshotVersion);
+            messageProperties.put("version", nextSnapshotVersion);
 
             // git commit -a -m updating for next development version
-            gitCommit(commitMessages.getReleaseFinishMessage(), properties);
+            gitCommit(commitMessages.getReleaseFinishMessage(), messageProperties);
 
             if (installProject) {
                 // mvn clean install
@@ -293,10 +329,8 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                     gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
                 }
             }
-        } catch (CommandLineException e) {
-            getLog().error(e);
-        } catch (VersionParseException e) {
-            getLog().error(e);
+        } catch (Exception e) {
+            throw new MojoFailureException("release", e);
         }
     }
 }

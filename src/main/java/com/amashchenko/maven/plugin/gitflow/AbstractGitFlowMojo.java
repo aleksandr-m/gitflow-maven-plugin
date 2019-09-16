@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 Aleksandr Mashchenko.
+ * Copyright 2014-2019 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.MavenSession;
@@ -44,7 +45,9 @@ import org.codehaus.plexus.util.cli.Commandline;
  */
 public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** A full name of the versions-maven-plugin set goal. */
-    private static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:2.1:set";
+    private static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:set";
+    /** A full name of the versions-maven-plugin set-property goal. */
+    private static final String VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL = "org.codehaus.mojo:versions-maven-plugin:set-property";
     /** Name of the tycho-versions-plugin set-version goal. */
     private static final String TYCHO_VERSIONS_PLUGIN_SET_GOAL = "org.eclipse.tycho:tycho-versions-plugin:set-version";
 
@@ -53,6 +56,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /** Success exit code. */
     private static final int SUCCESS_EXIT_CODE = 0;
+
+    /** Pattern of disallowed characters in Maven commands. */
+    private static final Pattern MAVEN_DISALLOWED_PATTERN = Pattern
+            .compile("[&|;]");
 
     /** Command line for Git executable. */
     private final Commandline cmdGit = new Commandline();
@@ -78,7 +85,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "false")
     protected boolean tychoBuild;
-
+    
     /**
      * Whether to call Maven install goal during the mojo execution.
      * 
@@ -104,6 +111,48 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private boolean verbose = false;
 
     /**
+     * Command line arguments to pass to the underlying Maven commands.
+     * 
+     * @since 1.8.0
+     */
+    @Parameter(property = "argLine")
+    private String argLine;
+
+    /**
+     * Whether to make a GPG-signed commit.
+     * 
+     * @since 1.9.0
+     */
+    @Parameter(property = "gpgSignCommit", defaultValue = "false")
+    private boolean gpgSignCommit = false;
+
+    /**
+     * Whether to set -DgroupId='*' -DartifactId='*' when calling
+     * versions-maven-plugin.
+     * 
+     * @since 1.10.0
+     */
+    @Parameter(property = "versionsForceUpdate", defaultValue = "false")
+    private boolean versionsForceUpdate = false;
+
+    /**
+     * Property to set version to.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "versionProperty")
+    private String versionProperty;
+
+    /**
+     * Whether to skip updating version. Useful with {@link #versionProperty} to be
+     * able to update <code>revision</code> property without modifying version tag.
+     * 
+     * @since 1.13.0
+     */
+    @Parameter(property = "skipUpdateVersion")
+    private boolean skipUpdateVersion = false;
+
+    /**
      * The path to the Maven executable. Defaults to "mvn".
      */
     @Parameter(property = "mvnExecutable")
@@ -116,7 +165,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     /** Maven session. */
     @Parameter(defaultValue = "${session}", readonly = true)
-    private MavenSession mavenSession;
+    protected MavenSession mavenSession;
     /** Default prompter. */
     @Component
     protected Prompter prompter;
@@ -144,31 +193,69 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Validates plugin configuration. Throws exception if configuration is not
+     * valid.
+     * 
+     * @param params
+     *            Configuration parameters to validate.
+     * @throws MojoFailureException
+     *             If configuration is not valid.
+     */
+    protected void validateConfiguration(String... params)
+            throws MojoFailureException {
+        if (StringUtils.isNotBlank(argLine)
+                && MAVEN_DISALLOWED_PATTERN.matcher(argLine).find()) {
+            throw new MojoFailureException(
+                    "The argLine doesn't match allowed pattern.");
+        }
+        if (params != null && params.length > 0) {
+            for (String p : params) {
+                if (StringUtils.isNotBlank(p)
+                        && MAVEN_DISALLOWED_PATTERN.matcher(p).find()) {
+                    throw new MojoFailureException("The '" + p
+                            + "' value doesn't match allowed pattern.");
+                }
+            }
+        }
+    }
+
+    /**
      * Gets current project version from pom.xml file.
      * 
      * @return Current project version.
      * @throws MojoFailureException
      */
     protected String getCurrentProjectVersion() throws MojoFailureException {
+        final Model model = readModel(mavenSession.getCurrentProject());
+        if (model.getVersion() == null) {
+            throw new MojoFailureException(
+                    "Cannot get current project version. This plugin should be executed from the parent project.");
+        }
+        return model.getVersion();
+    }
+
+    /**
+     * Reads model from Maven project pom.xml.
+     * 
+     * @param project
+     *            Maven project
+     * @return Maven model
+     * @throws MojoFailureException
+     */
+    private Model readModel(MavenProject project) throws MojoFailureException {
         try {
             // read pom.xml
-            final MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-            final FileReader fileReader = new FileReader(mavenSession
-                    .getCurrentProject().getFile().getAbsoluteFile());
+            Model model;
+            FileReader fileReader = new FileReader(project.getFile().getAbsoluteFile());
+            MavenXpp3Reader mavenReader = new MavenXpp3Reader();
             try {
-                final Model model = mavenReader.read(fileReader);
-
-                if (model.getVersion() == null) {
-                    throw new MojoFailureException(
-                            "Cannot get current project version. This plugin should be executed from the parent project.");
-                }
-
-                return model.getVersion();
+                model = mavenReader.read(fileReader);
             } finally {
                 if (fileReader != null) {
                     fileReader.close();
                 }
             }
+            return model;
         } catch (Exception e) {
             throw new MojoFailureException("", e);
         }
@@ -208,16 +295,15 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
         List<MavenProject> projects = mavenSession.getProjects();
         for (MavenProject project : projects) {
-            builtArtifacts.add(project.getGroupId() + ":"
-                    + project.getArtifactId() + ":" + project.getVersion());
+            final Model model = readModel(project);
 
-            List<Dependency> dependencies = project.getDependencies();
+            builtArtifacts.add(model.getGroupId() + ":" + model.getArtifactId() + ":" + model.getVersion());
+
+            List<Dependency> dependencies = model.getDependencies();
             for (Dependency d : dependencies) {
-                String id = d.getGroupId() + ":" + d.getArtifactId() + ":"
-                        + d.getVersion();
-                if (!builtArtifacts.contains(id)
-                        && ArtifactUtils.isSnapshot(d.getVersion())) {
-                    snapshots.add(project + " -> " + d);
+                String id = d.getGroupId() + ":" + d.getArtifactId() + ":" + d.getVersion();
+                if (!builtArtifacts.contains(id) && ArtifactUtils.isSnapshot(d.getVersion())) {
+                    snapshots.add(model + " -> " + d);
                 }
             }
         }
@@ -370,37 +456,60 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         // on *nix systems return values from git for-each-ref are wrapped in
         // quotes
         // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
-        if (branches != null && !branches.isEmpty()) {
-            branches = branches.replaceAll("\"", "");
-        }
+        branches = removeQuotes(branches);
+        branches = StringUtils.strip(branches);
 
         return branches;
     }
 
     /**
      * Executes git for-each-ref to get all tags.
-     * 
+     *
      * @return Git tags.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected String gitFindTags() throws MojoFailureException,
-            CommandLineException {
-        String tags = executeGitCommandReturn("for-each-ref",
-                "--sort=*authordate", "--format=\"%(refname:short)\"",
+    protected String gitFindTags() throws MojoFailureException, CommandLineException {
+        String tags = executeGitCommandReturn("for-each-ref", "--sort=*authordate", "--format=\"%(refname:short)\"",
                 "refs/tags/");
-
         // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
-        if (tags != null && !tags.isEmpty()) {
-            tags = tags.replaceAll("\"", "");
-        }
-
+        tags = removeQuotes(tags);
         return tags;
     }
 
     /**
-     * Checks if local branch with given name exists.
+     * Executes git for-each-ref to get the last tag.
+     *
+     * @return Last tag.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected String gitFindLastTag() throws MojoFailureException, CommandLineException {
+        String tag = executeGitCommandReturn("for-each-ref", "--sort=-*authordate", "--count=1",
+                "--format=\"%(refname:short)\"", "refs/tags/");
+        // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
+        tag = removeQuotes(tag);
+        tag = tag.replaceAll("\\r?\\n", "");
+        return tag;
+    }
+
+    /**
+     * Removes double quotes from the string.
      * 
+     * @param str
+     *            String to remove quotes from.
+     * @return String without quotes.
+     */
+    private String removeQuotes(String str) {
+        if (str != null && !str.isEmpty()) {
+            str = str.replaceAll("\"", "");
+        }
+        return str;
+    }
+
+    /**
+     * Checks if local branch with given name exists.
+     *
      * @param branchName
      *            Name of the branch to check.
      * @return <code>true</code> if local branch exists, <code>false</code>
@@ -416,8 +525,23 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Checks if local tag with given name exists.
+     *
+     * @param tagName
+     *            Name of the tag to check.
+     * @return <code>true</code> if local tag exists, <code>false</code> otherwise.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected boolean gitCheckTagExists(final String tagName) throws MojoFailureException, CommandLineException {
+        CommandResult commandResult = executeGitCommandExitCode("show-ref", "--verify", "--quiet",
+                "refs/tags/" + tagName);
+        return commandResult.getExitCode() == SUCCESS_EXIT_CODE;
+    }
+
+    /**
      * Executes git checkout.
-     * 
+     *
      * @param branchName
      *            Branch name to checkout.
      * @throws MojoFailureException
@@ -470,6 +594,24 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Replaces properties in message.
+     * 
+     * @param message
+     * @param map
+     *            Key is a string to replace wrapped in <code>@{...}</code>. Value
+     *            is a string to replace with.
+     * @return
+     */
+    private String replaceProperties(String message, Map<String, String> map) {
+        if (map != null) {
+            for (Entry<String, String> entr : map.entrySet()) {
+                message = StringUtils.replace(message, "@{" + entr.getKey() + "}", entr.getValue());
+            }
+        }
+        return message;
+    }
+
+    /**
      * Executes git commit -a -m.
      * 
      * @param message
@@ -479,9 +621,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitCommit(final String message) throws MojoFailureException,
             CommandLineException {
-        getLog().info("Committing changes.");
-
-        executeGitCommand("commit", "-a", "-m", message);
+        gitCommit(message, null);
     }
 
     /**
@@ -490,28 +630,28 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * 
      * @param message
      *            Commit message.
-     * @param map
-     *            Key is a string to replace wrapped in <code>@{...}</code>.
-     *            Value is a string to replace with.
+     * @param messageProperties
+     *            Properties to replace in message.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitCommit(String message, Map<String, String> map)
+    protected void gitCommit(String message, Map<String, String> messageProperties)
             throws MojoFailureException, CommandLineException {
-        getLog().info("Committing changes.");
+        message = replaceProperties(message, messageProperties);
 
-        if (map != null) {
-            for (Entry<String, String> entr : map.entrySet()) {
-                message = StringUtils.replace(message, "@{" + entr.getKey()
-                        + "}", entr.getValue());
-            }
+        if (gpgSignCommit) {
+            getLog().info("Committing changes. GPG-signed.");
+
+            executeGitCommand("commit", "-a", "-S", "-m", message);
+        } else {
+            getLog().info("Committing changes.");
+
+            executeGitCommand("commit", "-a", "-m", message);
         }
-
-        executeGitCommand("commit", "-a", "-m", message);
     }
 
     /**
-     * Executes git rebase or git merge --no-ff or git merge.
+     * Executes git rebase or git merge --ff-only or git merge --no-ff or git merge.
      * 
      * @param branchName
      *            Branch name to merge.
@@ -521,24 +661,38 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *            Merge with --no-ff.
      * @param ffonly
      *            Merge with --ff-only.
+     * @param message
+     *            Merge commit message.
+     * @param messageProperties
+     *            Properties to replace in message.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitMerge(final String branchName, boolean rebase,
-            boolean noff, boolean ffonly) throws MojoFailureException,
-            CommandLineException {
+    protected void gitMerge(final String branchName, boolean rebase, boolean noff, boolean ffonly, String message,
+            Map<String, String> messageProperties)
+            throws MojoFailureException, CommandLineException {
+        String sign = "";
+        if (gpgSignCommit) {
+            sign = "-S";
+        }
+        String msgParam = "";
+        String msg = "";
+        if (StringUtils.isNotBlank(message)) {
+            msgParam = "-m";
+            msg = replaceProperties(message, messageProperties);
+        }
         if (rebase) {
             getLog().info("Rebasing '" + branchName + "' branch.");
-            executeGitCommand("rebase", branchName);
+            executeGitCommand("rebase", sign, branchName);
         } else if (ffonly) {
             getLog().info("Merging (--ff-only) '" + branchName + "' branch.");
-            executeGitCommand("merge", "--ff-only", branchName);
+            executeGitCommand("merge", "--ff-only", sign, branchName);
         } else if (noff) {
             getLog().info("Merging (--no-ff) '" + branchName + "' branch.");
-            executeGitCommand("merge", "--no-ff", branchName);
+            executeGitCommand("merge", "--no-ff", sign, branchName, msgParam, msg);
         } else {
             getLog().info("Merging '" + branchName + "' branch.");
-            executeGitCommand("merge", branchName);
+            executeGitCommand("merge", sign, branchName, msgParam, msg);
         }
     }
 
@@ -547,12 +701,17 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * 
      * @param branchName
      *            Branch name to merge.
+     * @param message
+     *            Merge commit message.
+     * @param messageProperties
+     *            Properties to replace in message.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitMergeNoff(final String branchName)
+    protected void gitMergeNoff(final String branchName, final String message,
+            final Map<String, String> messageProperties)
             throws MojoFailureException, CommandLineException {
-        gitMerge(branchName, false, true, false);
+        gitMerge(branchName, false, true, false, message, messageProperties);
     }
 
     /**
@@ -570,20 +729,32 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
-     * Executes git tag -a -m.
+     * Executes git tag -a [-s] -m.
      * 
      * @param tagName
      *            Name of the tag.
      * @param message
      *            Tag message.
+     * @param gpgSignTag
+     *            Make a GPG-signed tag.
+     * @param messageProperties
+     *            Properties to replace in message.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitTag(final String tagName, final String message)
+    protected void gitTag(final String tagName, String message, boolean gpgSignTag, Map<String, String> messageProperties)
             throws MojoFailureException, CommandLineException {
-        getLog().info("Creating '" + tagName + "' tag.");
+        message = replaceProperties(message, messageProperties);
 
-        executeGitCommand("tag", "-a", tagName, "-m", message);
+        if (gpgSignTag) {
+            getLog().info("Creating GPG-signed '" + tagName + "' tag.");
+
+            executeGitCommand("tag", "-a", "-s", tagName, "-m", message);
+        } else {
+            getLog().info("Creating '" + tagName + "' tag.");
+
+            executeGitCommand("tag", "-a", tagName, "-m", message);
+        }
     }
 
     /**
@@ -756,16 +927,36 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void mvnSetVersions(final String version)
-            throws MojoFailureException, CommandLineException {
+    protected void mvnSetVersions(final String version) throws MojoFailureException, CommandLineException {
         getLog().info("Updating version(s) to '" + version + "'.");
 
+        String newVersion = "-DnewVersion=" + version;
+        String g = "";
+        String a = "";
+        if (versionsForceUpdate) {
+            g = "-DgroupId=";
+            a = "-DartifactId=";
+        }
+
         if (tychoBuild) {
-            executeMvnCommand(TYCHO_VERSIONS_PLUGIN_SET_GOAL, "-DnewVersion="
-                    + version, "-Dtycho.mode=maven");
+            String prop = "";
+            if (StringUtils.isNotBlank(versionProperty)) {
+                prop = "-Dproperties=" + versionProperty;
+                getLog().info("Updating property '" + versionProperty + "' to '" + version + "'.");
+            }
+
+            executeMvnCommand(TYCHO_VERSIONS_PLUGIN_SET_GOAL, prop, newVersion, "-Dtycho.mode=maven");
         } else {
-            executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, "-DnewVersion="
-                    + version, "-DgenerateBackupPoms=false");
+            if (!skipUpdateVersion) {
+                executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, g, a, newVersion, "-DgenerateBackupPoms=false");
+            }
+
+            if (StringUtils.isNotBlank(versionProperty)) {
+                getLog().info("Updating property '" + versionProperty + "' to '" + version + "'.");
+
+                executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL, newVersion, "-Dproperty=" + versionProperty,
+                        "-DgenerateBackupPoms=false");
+            }
         }
     }
 
@@ -799,6 +990,19 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Executes Maven goals.
+     * 
+     * @param goals
+     *            The goals to execute.
+     * @throws Exception
+     */
+    protected void mvnRun(final String goals) throws Exception {
+        getLog().info("Running Maven goals: " + goals);
+
+        executeMvnCommand(CommandLineUtils.translateCommandline(goals));
+    }
+
+    /**
      * Executes Git command and returns output.
      * 
      * @param args
@@ -809,7 +1013,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private String executeGitCommandReturn(final String... args)
             throws CommandLineException, MojoFailureException {
-        return executeCommand(cmdGit, true, args).getOut();
+        return executeCommand(cmdGit, true, null, args).getOut();
     }
 
     /**
@@ -823,7 +1027,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private CommandResult executeGitCommandExitCode(final String... args)
             throws CommandLineException, MojoFailureException {
-        return executeCommand(cmdGit, false, args);
+        return executeCommand(cmdGit, false, null, args);
     }
 
     /**
@@ -836,7 +1040,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private void executeGitCommand(final String... args)
             throws CommandLineException, MojoFailureException {
-        executeCommand(cmdGit, true, args);
+        executeCommand(cmdGit, true, null, args);
     }
 
     /**
@@ -849,7 +1053,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private void executeMvnCommand(final String... args)
             throws CommandLineException, MojoFailureException {
-        executeCommand(cmdMvn, true, args);
+        executeCommand(cmdMvn, true, argLine, args);
     }
 
     /**
@@ -859,6 +1063,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *            Command line.
      * @param failOnError
      *            Whether to throw exception on NOT success exit code.
+     * @param argStr
+     *            Command line arguments as a string.
      * @param args
      *            Command line arguments.
      * @return {@link CommandResult} instance holding command exit code, output
@@ -869,18 +1075,24 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *             exit code is NOT equals to 0.
      */
     private CommandResult executeCommand(final Commandline cmd,
-            final boolean failOnError, final String... args)
-            throws CommandLineException, MojoFailureException {
+            final boolean failOnError, final String argStr,
+            final String... args) throws CommandLineException,
+            MojoFailureException {
         // initialize executables
         initExecutables();
 
         if (getLog().isDebugEnabled()) {
             getLog().debug(
-                    cmd.getExecutable() + " " + StringUtils.join(args, " "));
+                    cmd.getExecutable() + " " + StringUtils.join(args, " ")
+                            + (argStr == null ? "" : " " + argStr));
         }
 
         cmd.clearArgs();
         cmd.addArguments(args);
+
+        if (StringUtils.isNotBlank(argStr)) {
+            cmd.createArg().setLine(argStr);
+        }
 
         final StringBufferStreamConsumer out = new StringBufferStreamConsumer(
                 verbose);
@@ -937,5 +1149,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         public String getError() {
             return error;
         }
+    }
+
+    public void setArgLine(String argLine) {
+        this.argLine = argLine;
     }
 }

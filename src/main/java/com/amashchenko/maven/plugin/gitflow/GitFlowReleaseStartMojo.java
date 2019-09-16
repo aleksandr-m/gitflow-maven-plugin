@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 Aleksandr Mashchenko.
+ * Copyright 2014-2019 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package com.amashchenko.maven.plugin.gitflow;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -120,15 +122,25 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     private String fromCommit;
 
     /**
-     * Name of the created release branch.<br>
-     * The effective branch name will be a composite of this branch name and the <code>releaseBranchPrefix</code>.<br>
+     * Whether to use snapshot in release.
+     * 
+     * @since 1.10.0
      */
-    @Parameter(property = "branchName", defaultValue = "")
+    @Parameter(property = "useSnapshotInRelease", defaultValue = "false")
+    private boolean useSnapshotInRelease;
+  
+    /**
+     * Name of the created release branch.<br>
+     * The effective branch name will be a composite of this branch name and the <code>releaseBranchPrefix</code>.
+     */
+    @Parameter(property = "branchName")
     private String branchNameSuffix;
-
+  
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        validateConfiguration();
+
         try {
             // set git flow configuration
             initGitFlowConfig();
@@ -180,17 +192,28 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             // get release branch
             String branchName = gitFlowConfig.getReleaseBranchPrefix();
-            if(StringUtils.isNotBlank(branchNameSuffix)){
+            if (StringUtils.isNotBlank(branchNameSuffix)) {
                 branchName += branchNameSuffix;
             } else if (!sameBranchName) {
                 branchName += releaseVersion;
             }
 
+            String projectVersion = releaseVersion;
+            if (useSnapshotInRelease && !ArtifactUtils.isSnapshot(projectVersion)) {
+                projectVersion = projectVersion + "-" + Artifact.SNAPSHOT_VERSION;
+            }
+
+            if (useSnapshotInRelease && mavenSession.getUserProperties().get("useSnapshotInRelease") != null) {
+                getLog().warn(
+                        "The useSnapshotInRelease parameter is set from the command line. Don't forget to use it in the finish goal as well."
+                                + " It is better to define it in the project's pom file.");
+            }
+
             if (commitDevelopmentVersionAtStart) {
                 // mvn versions:set ...
                 // git commit -a -m ...
-                commitProjectVersion(releaseVersion,
-                        commitMessages.getReleaseStartMessage());
+                commitProjectVersion(projectVersion,
+                        commitMessages.getReleaseStartMessage()); 
 
                 // git branch release/... develop
                 gitCreateBranch(branchName, startPoint);
@@ -200,8 +223,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
                 // mvn versions:set ...
                 // git commit -a -m ...
-                commitProjectVersion(nextSnapshotVersion,
-                        commitMessages.getReleaseFinishMessage());
+                commitProjectVersion(nextSnapshotVersion, commitMessages.getReleaseVersionUpdateMessage());
 
                 // git checkout release/...
                 gitCheckout(branchName);
@@ -211,7 +233,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
                 // mvn versions:set ...
                 // git commit -a -m ...
-                commitProjectVersion(releaseVersion,
+                commitProjectVersion(projectVersion,
                         commitMessages.getReleaseStartMessage());
             }
 
@@ -228,9 +250,9 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 gitPush(branchName, false);
             }
         } catch (CommandLineException e) {
-            getLog().error(e);
+            throw new MojoFailureException("release-start", e);
         } catch (VersionParseException e) {
-            getLog().error(e);
+            throw new MojoFailureException("release-start", e);
         }
     }
 
@@ -290,13 +312,14 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                     }
                 }
             } catch (PrompterException e) {
-                getLog().error(e);
+                throw new MojoFailureException("release-start", e);
             }
         } else {
             version = releaseVersion;
         }
 
         if (StringUtils.isBlank(version)) {
+            getLog().info("Version is blank. Using default version.");
             version = defaultVersion;
         }
 

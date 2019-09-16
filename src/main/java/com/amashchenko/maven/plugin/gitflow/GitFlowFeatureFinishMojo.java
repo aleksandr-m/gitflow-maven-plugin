@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2017 Aleksandr Mashchenko.
+ * Copyright 2014-2019 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,46 +64,53 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "pushRemote", defaultValue = "true")
     private boolean pushRemote;
 
+    /**
+     * Feature name to use in non-interactive mode.
+     * 
+     * @since 1.9.0
+     */
+    @Parameter(property = "featureName")
+    private String featureName;
+
+    /**
+     * Maven goals to execute in the feature branch before merging into the
+     * development branch.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "preFeatureFinishGoals")
+    private String preFeatureFinishGoals;
+
+    /**
+     * Maven goals to execute in the development branch after merging a feature.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "postFeatureFinishGoals")
+    private String postFeatureFinishGoals;
+
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        validateConfiguration(preFeatureFinishGoals, postFeatureFinishGoals);
+
         try {
             // check uncommitted changes
             checkUncommittedChanges();
 
-            // git for-each-ref --format='%(refname:short)' refs/heads/feature/*
-            final String featureBranches = gitFindBranches(
-                    gitFlowConfig.getFeatureBranchPrefix(), false);
-
-            if (StringUtils.isBlank(featureBranches)) {
-                throw new MojoFailureException("There are no feature branches.");
-            }
-
-            final String[] branches = featureBranches.split("\\r?\\n");
-
-            List<String> numberedList = new ArrayList<String>();
-            StringBuilder str = new StringBuilder("Feature branches:")
-                    .append(LS);
-            for (int i = 0; i < branches.length; i++) {
-                str.append((i + 1) + ". " + branches[i] + LS);
-                numberedList.add(String.valueOf(i + 1));
-            }
-            str.append("Choose feature branch to finish");
-
-            String featureNumber = null;
-            try {
-                while (StringUtils.isBlank(featureNumber)) {
-                    featureNumber = prompter.prompt(str.toString(),
-                            numberedList);
-                }
-            } catch (PrompterException e) {
-                getLog().error(e);
-            }
-
             String featureBranchName = null;
-            if (featureNumber != null) {
-                int num = Integer.parseInt(featureNumber);
-                featureBranchName = branches[num - 1];
+            if (settings.isInteractiveMode()) {
+                featureBranchName = promptBranchName();
+            } else if (StringUtils.isNotBlank(featureName)) {
+                final String branch = gitFlowConfig.getFeatureBranchPrefix()
+                        + featureName;
+                if (!gitCheckBranchExists(branch)) {
+                    throw new MojoFailureException("Feature branch with name '"
+                            + branch
+                            + "' doesn't exist. Cannot finish feature.");
+                }
+                featureBranchName = branch;
             }
 
             if (StringUtils.isBlank(featureBranchName)) {
@@ -126,6 +133,11 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 mvnCleanTest();
             }
 
+            // maven goals before merge
+            if (StringUtils.isNotBlank(preFeatureFinishGoals)) {
+                mvnRun(preFeatureFinishGoals);
+            }
+
             // git checkout develop
             gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
@@ -135,33 +147,46 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 gitCommit(featureBranchName);
             } else {
                 // git merge --no-ff feature/...
-                gitMergeNoff(featureBranchName);
+                gitMergeNoff(featureBranchName, commitMessages.getFeatureFinishDevMergeMessage(), null);
             }
 
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
 
-            final String featureName = featureBranchName.replaceFirst(
-                    gitFlowConfig.getFeatureBranchPrefix(), "");
+            final String featName = featureBranchName
+                    .replaceFirst(gitFlowConfig.getFeatureBranchPrefix(), "");
 
-            if (currentVersion.contains("-" + featureName)) {
-                final String version = currentVersion.replaceFirst("-"
-                        + featureName, "");
+            if (currentVersion.contains("-" + featName)) {
+                final String version = currentVersion
+                        .replaceFirst("-" + featName, "");
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(version);
 
                 Map<String, String> properties = new HashMap<String, String>();
                 properties.put("version", version);
-                properties.put("featureName", featureName);
+                properties.put("featureName", featName);
 
                 // git commit -a -m updating versions for development branch
                 gitCommit(commitMessages.getFeatureFinishMessage(), properties);
             }
 
+            // maven goals after merge
+            if (StringUtils.isNotBlank(postFeatureFinishGoals)) {
+                mvnRun(postFeatureFinishGoals);
+            }
+
             if (installProject) {
                 // mvn clean install
                 mvnCleanInstall();
+            }
+
+            if (pushRemote) {
+                gitPush(gitFlowConfig.getDevelopmentBranch(), false);
+
+                if (!keepBranch) {
+                    gitPushDelete(featureBranchName);
+                }
             }
 
             if (!keepBranch) {
@@ -173,16 +198,46 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                     gitBranchDelete(featureBranchName);
                 }
             }
-
-            if (pushRemote) {
-                gitPush(gitFlowConfig.getDevelopmentBranch(), false);
-
-                if (!keepBranch) {
-                    gitPushDelete(featureBranchName);
-                }
-            }
-        } catch (CommandLineException e) {
-            getLog().error(e);
+        } catch (Exception e) {
+            throw new MojoFailureException("feature-finish", e);
         }
+    }
+
+    private String promptBranchName()
+            throws MojoFailureException, CommandLineException {
+        // git for-each-ref --format='%(refname:short)' refs/heads/feature/*
+        final String featureBranches = gitFindBranches(
+                gitFlowConfig.getFeatureBranchPrefix(), false);
+
+        if (StringUtils.isBlank(featureBranches)) {
+            throw new MojoFailureException("There are no feature branches.");
+        }
+
+        final String[] branches = featureBranches.split("\\r?\\n");
+
+        List<String> numberedList = new ArrayList<String>();
+        StringBuilder str = new StringBuilder("Feature branches:").append(LS);
+        for (int i = 0; i < branches.length; i++) {
+            str.append((i + 1) + ". " + branches[i] + LS);
+            numberedList.add(String.valueOf(i + 1));
+        }
+        str.append("Choose feature branch to finish");
+
+        String featureNumber = null;
+        try {
+            while (StringUtils.isBlank(featureNumber)) {
+                featureNumber = prompter.prompt(str.toString(), numberedList);
+            }
+        } catch (PrompterException e) {
+            throw new MojoFailureException("feature-finish", e);
+        }
+
+        String featureBranchName = null;
+        if (featureNumber != null) {
+            int num = Integer.parseInt(featureNumber);
+            featureBranchName = branches[num - 1];
+        }
+
+        return featureBranchName;
     }
 }

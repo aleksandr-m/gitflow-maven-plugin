@@ -22,7 +22,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.7.0</version>
+                <version>1.13.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -75,6 +75,31 @@ Feature name will not be appended to project version on `gitflow:feature-start` 
 If version has qualifier then it will not be removed in the release or hotfix goals.
 
 
+# Signing Your Work
+
+To sign tags and/or commits you need to configure GPG and install personal key. Read more [Git Tools - Signing Your Work](https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work).
+
+Next you need to configure Git to use your personal key.
+
+```
+git config --global user.signingkey GPG_key_id
+```
+
+Sometimes you need to tell Git where the GPG program is. Use `gpg.program` option for that.
+
+```
+git config --global gpg.program "path_to_gpg"
+```
+
+### Signing Tags
+
+The `gitflow:release`, `gitflow:release-finish` and `gitflow:hotfix-finish` goals have `gpgSignTag` parameter. Set it to `true` to sign tags with configured personal key. The default value is `false`.
+
+### Signing Commits
+
+All goals have `gpgSignCommit` parameter. Set it to `true` to sign commits with configured personal key. The default value is `false`.
+
+
 # Plugin Common Parameters
 
 All parameters are optional. The `gitFlowConfig` parameters defaults are the same as in the example below.
@@ -111,22 +136,48 @@ Since `1.2.1` commit messages can be changed in plugin's configuration section i
 
     <configuration>
         <commitMessages>
-            <featureStartMessage>update versions for feature branch</featureStartMessage>
-            <featureFinishMessage>update versions for development branch</featureFinishMessage>
+            <featureStartMessage>Update versions for feature branch</featureStartMessage>
+            <featureFinishMessage>Update versions for development branch</featureFinishMessage>
+
+            <hotfixStartMessage>Update versions for hotfix</hotfixStartMessage>
+            <hotfixFinishMessage>Update for next development version</hotfixFinishMessage>
+
+            <hotfixVersionUpdateMessage>Update to hotfix version</hotfixVersionUpdateMessage>
+
+            <releaseStartMessage>Update versions for release</releaseStartMessage>
+            <releaseFinishMessage>Update for next development version</releaseFinishMessage>
+
+            <releaseVersionUpdateMessage>Update for next development version</releaseVersionUpdateMessage>
+
+            <!-- git merge messages -->
+            <!-- Default git merge commit message will be used if left empty or undefined. -->
+
+            <releaseFinishMergeMessage></releaseFinishMergeMessage>
+            <releaseFinishDevMergeMessage></releaseFinishDevMergeMessage>
+
+            <featureFinishDevMergeMessage></featureFinishDevMergeMessage>
+
+            <hotfixFinishMergeMessage></hotfixFinishMergeMessage>
+            <hotfixFinishDevMergeMessage></hotfixFinishDevMergeMessage>
+            <hotfixFinishReleaseMergeMessage></hotfixFinishReleaseMergeMessage>
+            <hotfixFinishSupportMergeMessage></hotfixFinishSupportMergeMessage>
+
+            <!-- / git merge messages -->
+
+            <tagHotfixMessage>Tag hotfix</tagHotfixMessage>
+            <tagReleaseMessage>Tag release</tagReleaseMessage>
+
+            <!-- Migration Note: This was called <updateDevToAvoidConflitsMessage> in version 1.11.0, but has been deprecated in favour of the correctly spelt one below. -->
+            <updateDevToAvoidConflictsMessage>Update develop to production version to avoid merge conflicts</updateDevToAvoidConflictsMessage>
+            <updateDevBackPreMergeStateMessage>Update develop version back to pre-merge state</updateDevBackPreMergeStateMessage>
             
-            <hotfixStartMessage>update versions for hotfix</hotfixStartMessage>
-            <hotfixFinishMessage>update for next development version</hotfixFinishMessage>
-            
-            <releaseStartMessage>update versions for release</releaseStartMessage>
-            <releaseFinishMessage>update for next development version</releaseFinishMessage>
-            
-            <tagHotfixMessage>tag hotfix</tagHotfixMessage>
-            <tagReleaseMessage>tag release</tagReleaseMessage>
+            <updateReleaseToAvoidConflictsMessage>Update release to hotfix version to avoid merge conflicts</updateReleaseToAvoidConflictsMessage>
+            <updateReleaseBackPreMergeStateMessage>Update release version back to pre-merge state</updateReleaseBackPreMergeStateMessage>
         </commitMessages>
     </configuration>
 
-Maven properties can be used in commit messages. For example `<featureStartMessage>updating ${artifactId} project for feature branch</featureStartMessage>` will produce message where 
-`${artifactId}` will be substituted for projects `<artifactId>`.
+Maven properties can be used in commit messages. For example `<featureStartMessage>updating ${project.artifactId} project for feature branch</featureStartMessage>` will produce message where 
+`${project.artifactId}` will be substituted for projects `<artifactId>`.
 
 Note that although `${project.version}` can be used, any changes to version introduced by this goal won't be reflected in a commit message for this goal (see Custom properties).
 
@@ -135,6 +186,22 @@ Note that although `${project.version}` can be used, any changes to version intr
 `@{version}` will be replaced with the updated version.
 
 `@{featureName}` will be replaced in `feature-` goals with the name of the current feature.
+
+## Maven arguments
+
+The `argLine` parameter can be used to pass command line arguments to the underlying Maven commands. For example, `-DcreateChecksum` in `mvn gitflow:release-start -DargLine=-DcreateChecksum` 
+will be passed to all underlying Maven commands.
+
+## Maven CI friendly versions
+
+Maven property can be updated with the new version by setting the `versionProperty` parameter with the property you want to update.
+For example, `-DversionProperty=revision` will update the `<revision>` property defined in the project pom.xml.
+
+The `skipUpdateVersion` parameter can be used to skip updating `<version>` in the pom.xml. The default value is `false` (i.e. the version will be updated).
+
+To support [CI friendly versioning](https://maven.apache.org/maven-ci-friendly.html) in projects which use `<version>${revision}</version>` (e.g. [spring-boot](https://github.com/spring-projects/spring-boot/blob/master/pom.xml))
+set `versionProperty` to `revision` and `skipUpdateVersion` to `true`, add [flatten-maven-plugin](https://www.mojohaus.org/flatten-maven-plugin/) and call its `flatten` goal before gitflow goal.
+For example, `mvn flatten:flatten gitflow:release`.
 
 ## Additional goal parameters
 
@@ -159,8 +226,6 @@ The `gitflow:release-finish` and `gitflow:release` goals have `digitsOnlyDevVers
 For example, if the release version is `1.0.0-Final` then development version will be `1.0.1-SNAPSHOT`.
 The default value is `false` (i.e. qualifiers will be preserved in next development version).
 
-The `gitflow:release-finish` and `gitflow:release` goals have `developmentVersion` parameter which can be used to set the next development version in non-interactive mode.
-
 The `gitflow:release-finish` and `gitflow:release` goals have `versionDigitToIncrement` parameter which controls which digit to increment in the next development version. Starts from zero.
 For example, if the release version is `1.2.3.4` and `versionDigitToIncrement` is set to `1` then the next development version will be `1.3.0.0-SNAPSHOT`.
 If not set or set to not valid value defaults to increment last digit in the version.
@@ -174,6 +239,18 @@ This allows the development branch to continue immediately with a new version an
 Has effect only when there are separate development and production branches.
 
 The `gitflow:release-start` goal have `fromCommit` parameter which allows to start the release from the specific commit (SHA).
+
+The `gitflow:release-start` and `gitflow:release-finish` goals have `useSnapshotInRelease` parameter which allows to start the release with SNAPSHOT version and finish it without this value in project version. By default the value is `false`.
+For example, if the release version  is `1.0.2` and `useSnapshotInRelease` is set to `true` and using `gitflow:release-start` goal then the release version will be `1.0.2-SNAPSHOT` and when finishing the release with `gitflow:release-finish` goal, the release version will be `1.0.2`
+
+The `gitflow:hotfix-start` and `gitflow:hotfix-finish` goals have `useSnapshotInHotfix` parameter which allows to start the hotfix with SNAPSHOT version and finish it without this value in the version. By default the value is `false`.
+For example, if the hotfix version  is `1.0.2.1` and `useSnapshotInHotfix` is set to `true` and using `gitflow:hotfix-start` goal then the hotfix version will be `1.0.2.1-SNAPSHOT` and when finishing the release with `gitflow:hotfix-finish` goal, the release version will be `1.0.2.1`
+
+The `gitflow:hotfix-finish` goal also supports the parameter `skipMergeDevBranch` which prevents merging the hotfix branch into the development branch. 
+
+The `gitflow:hotfix-finish` goal also supports the parameter `skipMergeProdBranch` which prevents merging the hotfix branch into the production branch and deletes the hotfix branch leaving only the tagged commit. Useful, along with `skipMergeDevBranch`, to allow hotfixes to very old code that are not applicable to current development.
+
+Version update of all modules ignoring groupId and artifactId can be forced by setting `versionsForceUpdate` parameter to `true`. The default value is `false`.
 
 ### Remote interaction
 
@@ -197,12 +274,31 @@ Release branch can be merged with `--ff-only` option by setting `releaseMergeFFO
 
 Feature branch can be squashed before merging by setting `featureSquash` parameter to `true`. The default value is `false` (i.e. merge w/o squash will be performed).
 
-# Non-interactive Release
+### Running custom Maven goals
+
+The `preFeatureFinishGoals` parameter can be used in `gitflow:feature-finish` goal to run defined Maven goals before the finishing and merging a feature.
+E.g. `mvn gitflow:feature-finish -DpreFeatureFinishGoals=test` will run `mvn test` goal in the feature branch before merging into the development branch.
+
+The `postFeatureFinishGoals` parameter can be used in `gitflow:feature-finish` goal to run defined Maven goals after merging a feature.
+E.g. `mvn gitflow:feature-finish -postFeatureFinishGoals=test` will run `mvn test` goal in the development branch after merging a feature.
+
+The `preReleaseGoals` parameter can be used in `gitflow:release-finish` and `gitflow:release` goals to run defined Maven goals before the release.
+E.g. `mvn gitflow:release-finish -DpreReleaseGoals=test` will run `mvn test` goal in the release branch before merging into the production branch.
+
+The `postReleaseGoals` parameter can be used in `gitflow:release-finish` and `gitflow:release` goals to run defined Maven goals after the release.
+E.g. `mvn gitflow:release-finish -DpostReleaseGoals=deploy` will run `mvn deploy` goal in the production branch after the release.
+
+The `gitflow:hotfix-finish` goal have `preHotfixGoals` and `postHotfixGoals` parameters which can be used to run defined Maven goals before and after the hotfix respectively.
+
+# Non-interactive Mode
+
+Maven can be run in non-interactive (batch) mode. By using non-interactive mode goals can be run in continuous integration environment.
+To put Maven in the batch mode use `-B` or `--batch-mode` option.
+
+## Non-interactive Release
 
 Releases could be performed without prompting for the release version during `gitflow:release-start` or `gitflow:release` goals by telling Maven to run in non-interactive (batch) mode.
 The `releaseVersion` parameter can be used to set the release version in non-interactive mode. If `releaseVersion` parameter is not set then the default release version will be used.
-
-To put Maven in the batch mode use `-B` or `--batch-mode` option.
 
     mvn -B gitflow:release-start gitflow:release-finish
     
@@ -211,3 +307,22 @@ To release w/o creating separate release branch use `gitflow:release` goal.
     mvn -B gitflow:release
 
 This gives the ability to perform releases in non-interactive mode (e.g. in CI server).
+
+The `gitflow:release-finish` and `gitflow:release` goals have `developmentVersion` parameter which can be used to set the next development version in non-interactive mode.
+
+## Non-interactive Feature
+
+The `gitflow:feature-start` and `gitflow:feature-finish` goals have `featureName` parameter which can be used to set a name of the feature in non-interactive mode.
+
+## Non-interactive Hotfix
+
+The `gitflow:hotfix-start` goal has `fromBranch` parameter which can be used to set starting branch of the hotfix. It can be set to production branch or one of the support branches.
+If it is left blank then hotfix will be started from the production branch.
+
+The `gitflow:hotfix-start` and `gitflow:hotfix-finish` goals have `hotfixVersion` parameter which can be used to set version of the hotfix.
+If it is left blank in `gitflow:hotfix-start` goal then the default version will be used.
+
+## Non-interactive Support
+
+The `gitflow:support-start` goal can be run in non-interactive mode. Use `tagName` parameter to set tag from which supporting branch will be started.
+If `tagName` is not set but the goal is running in non-interactive mode then the last tag will be used.

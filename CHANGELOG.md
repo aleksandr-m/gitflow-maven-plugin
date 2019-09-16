@@ -1,5 +1,60 @@
 # Changelog
 
+## v1.13.0
+
+* Added ability to change git merge messages for feature and hotfix goals - [#185](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/185)
+* Added support for running custom Maven goals in `feature-finish` - [#177](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/177)
+* Added ability to change release finish development merge commit message - [#175](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/175)
+* Added ability to skip updating `version`
+* Added support for updating property in pom (e.g. `revision`) - [#151](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/151)
+
+## v1.12.0
+
+* Fixed wrong versions in production branch when using `useSnapshotInHotfix` parameter
+* Fixed wrong versions in production branch when using `useSnapshotInRelease` parameter - [#158](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/158)
+* Fixed merge conflict in pom during `hotfix-finish` into existing release branch - [#160](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/160)
+* Added support for using properties in `releaseFinishMergeMessage` - [#163](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/163)
+* Added support to push the release branch on `hotfix-finish` goal - [#166](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/166)
+* Improved check of snapshot dependencies in the current pom - [#169](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/169)
+* Added support to skip merging into the development branch in `hotfit-finish` goal - [#149]https://github.com/aleksandr-m/gitflow-maven-plugin/pull/149)
+* Added support to skip merging into the production branch in `hotfix-finish` goal - [#164](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/164)
+* Improved usage and content of commit messages
+
+## v1.11.0
+
+* Fixed `versionsForceUpdate` parameter doesn't work on windows - [#134](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/134)
+* Fixed merge pom's conflict on release finish using `useSnapshotInRelease` - [#123](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/123)
+* Fixed merge conflict during release finish when using `commitDevelopmentVersionAtStart` and `useSnapshotInRelease` - [#122](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/122)
+* Added ability to change release finish merge commit message - [#135](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/135)
+* Capitalized default messages - [#131](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/131)
+* Added configurable commit message for hotfix version update - [#128](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/128)
+* Added configurable commit message for release start with `commitDevelopmentVersionAtStart` - [#120](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/120)
+* Added ability to use `useSnapshotInHotfix` and `useSnapshotInRelease` from the command line with a warning message in logs
+
+## v1.10.0
+
+* Improved branch removing. Deleting remote first then local branch to avoid failing a build - [#114](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/114)
+* Added ability to use different versions-maven-plugin version - [#116](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/116)
+* Added ability to replace `@{version}` with updated version in tag messages - [#113](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/113)
+* Added ability to force update versions of modules with different groupId / artifactId - [#48](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/48)
+* Added ability to use SNAPSHOT versions in release - [#98](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/98)
+* Added ability to use SNAPSHOT versions in hotfix - [#81](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/81)
+
+## v1.9.0
+
+* Fixed not failing the whole build on goals errors
+* Added ability to make a GPG-signed tags and commits - [#73](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/73)
+* Added ability to execute `support-start` goal in non-interactive mode - [#75](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/75)
+* Added ability to execute feature and hotfix goals in non-interactive mode - [#71](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/71)
+* Added ability to start hotfix from support branch in non-interactive mode - [#88](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/88)
+* Added ability to fetch and checkout from the remote if local branch doesn't exist in `hotfix-finish` goal - [#87](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/87)
+* Improved finding of hotfix support branches in `hotfix-finish` goal - [#68](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/68)
+
+## v1.8.0
+
+* Added ability to run custom Maven goals before and after release and hotfix - [#13](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/13), [#29](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/29), [#54](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/54)
+* Added ability to allow to pass arguments to the underlying Maven commands - [#53](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/53)
+
 ## v1.7.0
 
 * Fixed [#19](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/19) - Avoid merge conflict in `hotfix-finish`

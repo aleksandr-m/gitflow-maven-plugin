@@ -1,0 +1,65 @@
+import org.codehaus.plexus.util.FileUtils;
+
+try {
+
+    File gitTag = new File(basedir, ".git/refs/tags/1.0.1");
+    if (!gitTag.exists()) {
+        System.out.println("hotfix-finish .git/refs/tags/1.0.1 does not exist");
+        return false;
+    }
+
+    File gitReleaseRef = new File(basedir, ".git/refs/heads/release/1.0");
+    if (!gitReleaseRef.exists()) {
+        System.out.println("hotfix-finish .git/refs/heads/release/1.0 doesn't exist");
+        return false;
+    }
+    File gitDevelopRef = new File(basedir, ".git/refs/heads/develop");
+    if (!gitDevelopRef.exists()) {
+        System.out.println("hotfix-finish .git/refs/heads/develop doesn't exist");
+        return false;
+    }
+    File gitMasterRef = new File(basedir, ".git/refs/heads/master");
+    if (!gitMasterRef.exists()) {
+        System.out.println("hotfix-finish .git/refs/heads/master doesn't exist");
+        return false;
+    }
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " checkout release/1.0");
+    p.waitFor();
+
+    File file = new File(basedir, "pom.xml");
+    File expectedFile = new File(basedir, "expected-release-pom.xml");
+
+    String actual = FileUtils.fileRead(file, "UTF-8");
+    String expected = FileUtils.fileRead(expectedFile, "UTF-8");
+
+    actual = actual.replaceAll("\\r?\\n", "");
+    expected = expected.replaceAll("\\r?\\n", "");
+
+    if (!expected.equals(actual)) {
+        System.out.println("hotfix-finish expected: " + expected + " actual was:" + actual);
+        return false;
+    }
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " checkout master");
+    p.waitFor();
+
+    file = new File(basedir, "pom.xml");
+    expectedFile = new File(basedir, "expected-production-pom.xml");
+
+    actual = FileUtils.fileRead(file, "UTF-8");
+    expected = FileUtils.fileRead(expectedFile, "UTF-8");
+
+    actual = actual.replaceAll("\\r?\\n", "");
+    expected = expected.replaceAll("\\r?\\n", "");
+
+    if (!expected.equals(actual)) {
+        System.out.println("hotfix-finish: " + expected + " actual was:" + actual);
+        return false;
+    }
+
+} catch (Exception e) {
+    e.printStackTrace();
+    return false;
+}
+return true;
