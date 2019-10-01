@@ -15,42 +15,31 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-@RunWith(Parameterized.class)
 public class FeatureVersionTest {
-    private final String version;
-    private final String featureName;
-    private final String expectedVersion;
 
-    public FeatureVersionTest(final String version, final String featureName,
-            final String expectedVersion) {
-        this.version = version;
-        this.featureName = featureName;
-        this.expectedVersion = expectedVersion;
+    public static Collection<Arguments> data() {
+        return Arrays.asList(
+                arguments("0.9-SNAPSHOT", "feature", "0.9-feature-SNAPSHOT"),
+                arguments("0.9-RC3-SNAPSHOT", "feature", "0.9-RC3-feature-SNAPSHOT"),
+                arguments("0.9", "feature", "0.9-feature"),
+                arguments("0.9-RC3", "feature", "0.9-RC3-feature"),
+                arguments("0.9-RC3", null, "0.9-RC3"));
     }
 
-    @Parameters
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-                        { "0.9-SNAPSHOT", "feature", "0.9-feature-SNAPSHOT" },
-                        { "0.9-RC3-SNAPSHOT", "feature",
-                                        "0.9-RC3-feature-SNAPSHOT" },
-                        { "0.9", "feature", "0.9-feature" },
-                        { "0.9-RC3", "feature", "0.9-RC3-feature" },
-                        { "0.9-RC3", null, "0.9-RC3" } });
-    }
-
-    @Test
-    public void testFeatureVersion() throws Exception {
-        Assert.assertEquals(expectedVersion,
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testFeatureVersion(String version, String featureName, String expectedVersion) throws Exception {
+        Assertions.assertEquals(expectedVersion,
                 new GitFlowVersionInfo(version).featureVersion(featureName));
     }
 }

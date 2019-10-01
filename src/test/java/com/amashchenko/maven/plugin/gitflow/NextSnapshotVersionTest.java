@@ -15,58 +15,45 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-@RunWith(Parameterized.class)
 public class NextSnapshotVersionTest {
-    private final String version;
-    private final Integer index;
-    private final String expectedVersion;
 
-    public NextSnapshotVersionTest(final String version, final Integer index,
-            final String expectedVersion) {
-        this.version = version;
-        this.index = index;
-        this.expectedVersion = expectedVersion;
+    public static Collection<Arguments> data() {
+        return Arrays.asList(
+                arguments("some-SNAPSHOT", null, "some-SNAPSHOT"),
+                arguments("some-SNAPSHOT", 0, "some-SNAPSHOT"),
+                arguments("0.58", null, "0.59-SNAPSHOT"),
+                arguments("0.58", -1, "0.59-SNAPSHOT"),
+                arguments("0.58", 0, "1.0-SNAPSHOT"),
+                arguments("0.58", 1, "0.59-SNAPSHOT"),
+                arguments("0.58", 100, "0.59-SNAPSHOT"),
+                arguments("0.9", 1, "0.10-SNAPSHOT"),
+                arguments("0.09", 1, "0.10-SNAPSHOT"),
+                arguments("0.0009", 0, "1.0-SNAPSHOT"),
+                arguments("0.0009", 1, "0.0010-SNAPSHOT"),
+                arguments("0.09-RC2", null, "0.09-RC3-SNAPSHOT"),
+                arguments("0.09-RC3", 0, "1.0-RC3-SNAPSHOT"),
+                arguments("0.09-RC3-SNAPSHOT", 0, "1.0-RC3-SNAPSHOT"),
+                arguments("0.9-SNAPSHOT", null, "0.10-SNAPSHOT"),
+                arguments("0.09-RC3-feature-SNAPSHOT", 0, "1.0-RC3-feature-SNAPSHOT"),
+                arguments("0.09-RC3-feature", null, "0.09-RC4-feature-SNAPSHOT"),
+                arguments("2.3.4", 0, "3.0.0-SNAPSHOT"),
+                arguments("2.3.4", 1, "2.4.0-SNAPSHOT"));
     }
 
-    @Parameters
-    public static Collection<Object[]> data() {
-        return Arrays
-                .asList(new Object[][] {
-                                { "some-SNAPSHOT", null, "some-SNAPSHOT" },
-                                { "some-SNAPSHOT", 0, "some-SNAPSHOT" },
-                                { "0.58", null, "0.59-SNAPSHOT" },
-                                { "0.58", -1, "0.59-SNAPSHOT" },
-                                { "0.58", 0, "1.0-SNAPSHOT" },
-                                { "0.58", 1, "0.59-SNAPSHOT" },
-                                { "0.58", 100, "0.59-SNAPSHOT" },
-                                { "0.9", 1, "0.10-SNAPSHOT" },
-                                { "0.09", 1, "0.10-SNAPSHOT" },
-                                { "0.0009", 0, "1.0-SNAPSHOT" },
-                                { "0.0009", 1, "0.0010-SNAPSHOT" },
-                                { "0.09-RC2", null, "0.09-RC3-SNAPSHOT" },
-                                { "0.09-RC3", 0, "1.0-RC3-SNAPSHOT" },
-                                { "0.09-RC3-SNAPSHOT", 0, "1.0-RC3-SNAPSHOT" },
-                                { "0.9-SNAPSHOT", null, "0.10-SNAPSHOT" },
-                                { "0.09-RC3-feature-SNAPSHOT", 0,
-                                                "1.0-RC3-feature-SNAPSHOT" },
-                                { "0.09-RC3-feature", null,
-                                                "0.09-RC4-feature-SNAPSHOT" },
-                                { "2.3.4", 0, "3.0.0-SNAPSHOT" },
-                                { "2.3.4", 1, "2.4.0-SNAPSHOT" } });
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testNextSnapshotVersion(String version, Integer index, String expectedVersion) throws Exception {
+        assertEquals(expectedVersion, new GitFlowVersionInfo(version).nextSnapshotVersion(index));
     }
 
-    @Test
-    public void testNextSnapshotVersion() throws Exception {
-        Assert.assertEquals(expectedVersion,
-                new GitFlowVersionInfo(version).nextSnapshotVersion(index));
-    }
 }

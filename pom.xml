@@ -63,7 +63,7 @@
     </distributionManagement>
 
     <properties>
-        <java.version>1.6</java.version>
+        <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scm.url>scm:git:git@github.com:aleksandr-m/gitflow-maven-plugin.git</scm.url>
         <url>https://github.com/aleksandr-m/gitflow-maven-plugin</url>
@@ -103,8 +103,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <source>8</source>
+                    <target>8</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
@@ -257,9 +257,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.5.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

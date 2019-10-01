@@ -16,81 +16,83 @@
 package com.amashchenko.maven.plugin.gitflow;
 
 import org.apache.maven.shared.release.versions.VersionParseException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GitFlowVersionInfoTest {
+
     @Test
     public void testCreating() throws Exception {
         final String version = "0.9";
         GitFlowVersionInfo info = new GitFlowVersionInfo(version);
-        Assert.assertNotNull(info);
-        Assert.assertEquals(version, info.toString());
+        assertNotNull(info);
+        assertEquals(version, info.toString());
     }
 
-    @Test(expected = VersionParseException.class)
+    @Test
     public void testVersionParseException() throws Exception {
-        new GitFlowVersionInfo("");
+        assertThrows(VersionParseException.class, () -> new GitFlowVersionInfo(""));
     }
 
     @Test
     public void testIsValidVersion() throws Exception {
-        Assert.assertTrue(GitFlowVersionInfo.isValidVersion("0.9"));
-        Assert.assertTrue(GitFlowVersionInfo.isValidVersion("some-SNAPSHOT"));
-        Assert.assertTrue(GitFlowVersionInfo
+        assertTrue(GitFlowVersionInfo.isValidVersion("0.9"));
+        assertTrue(GitFlowVersionInfo.isValidVersion("some-SNAPSHOT"));
+        assertTrue(GitFlowVersionInfo
                 .isValidVersion("0.9-RC3-feature-SNAPSHOT"));
 
-        Assert.assertFalse(GitFlowVersionInfo.isValidVersion("some.0.9"));
-        Assert.assertFalse(GitFlowVersionInfo.isValidVersion(null));
-        Assert.assertFalse(GitFlowVersionInfo.isValidVersion(""));
-        Assert.assertFalse(GitFlowVersionInfo.isValidVersion(" "));
-        Assert.assertFalse(GitFlowVersionInfo.isValidVersion("-1"));
+        assertFalse(GitFlowVersionInfo.isValidVersion("some.0.9"));
+        assertFalse(GitFlowVersionInfo.isValidVersion(null));
+        assertFalse(GitFlowVersionInfo.isValidVersion(""));
+        assertFalse(GitFlowVersionInfo.isValidVersion(" "));
+        assertFalse(GitFlowVersionInfo.isValidVersion("-1"));
     }
 
     @Test
     public void testHotfixVersion() throws Exception {
         GitFlowVersionInfo info = new GitFlowVersionInfo("0.9");
-        Assert.assertNotNull(info);
-        Assert.assertEquals("0.10", info.hotfixVersion(false));
+        assertNotNull(info);
+        assertEquals("0.10", info.hotfixVersion(false));
     }
 
     @Test
     public void testHotfixVersion2() throws Exception {
         GitFlowVersionInfo info = new GitFlowVersionInfo("0.9-SNAPSHOT");
-        Assert.assertNotNull(info);
-        Assert.assertEquals("0.10", info.hotfixVersion(false));
+        assertNotNull(info);
+        assertEquals("0.10", info.hotfixVersion(false));
     }
 
     @Test
     public void testHotfixVersion3() throws Exception {
         GitFlowVersionInfo info = new GitFlowVersionInfo("0.9");
-        Assert.assertNotNull(info);
-        Assert.assertEquals("0.10", info.hotfixVersion(true));
+        assertNotNull(info);
+        assertEquals("0.10", info.hotfixVersion(true));
     }
 
     @Test
     public void testHotfixVersion4() throws Exception {
         GitFlowVersionInfo info = new GitFlowVersionInfo("0.9-SNAPSHOT");
-        Assert.assertNotNull(info);
-        Assert.assertEquals("0.10-SNAPSHOT", info.hotfixVersion(true));
+        assertNotNull(info);
+        assertEquals("0.10-SNAPSHOT", info.hotfixVersion(true));
     }
 
     @Test
     public void testDigitsVersionInfo() throws Exception {
         GitFlowVersionInfo info = new GitFlowVersionInfo("0.9");
-        Assert.assertNotNull(info);
+        assertNotNull(info);
         info = info.digitsVersionInfo();
-        Assert.assertNotNull(info);
-        Assert.assertEquals(new GitFlowVersionInfo("0.9"), info);
+        assertNotNull(info);
+        assertEquals(new GitFlowVersionInfo("0.9"), info);
     }
 
     @Test
     public void testDigitsVersionInfo2() throws Exception {
         GitFlowVersionInfo info = new GitFlowVersionInfo(
                 "0.9-RC3-feature-SNAPSHOT");
-        Assert.assertNotNull(info);
+        assertNotNull(info);
         info = info.digitsVersionInfo();
-        Assert.assertNotNull(info);
-        Assert.assertEquals(new GitFlowVersionInfo("0.9"), info);
+        assertNotNull(info);
+        assertEquals(new GitFlowVersionInfo("0.9"), info);
     }
 }
