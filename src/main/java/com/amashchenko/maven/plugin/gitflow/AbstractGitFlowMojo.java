@@ -15,7 +15,6 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +24,13 @@ import java.util.regex.Pattern;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.project.ProjectBuildingResult;
 import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.components.interactivity.Prompter;
 import org.codehaus.plexus.util.StringUtils;
@@ -166,6 +165,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** Maven session. */
     @Parameter(defaultValue = "${session}", readonly = true)
     protected MavenSession mavenSession;
+
+    @Component
+    protected ProjectBuilder projectBuilder;
+    
     /** Default prompter. */
     @Component
     protected Prompter prompter;
@@ -226,38 +229,27 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws MojoFailureException
      */
     protected String getCurrentProjectVersion() throws MojoFailureException {
-        final Model model = readModel(mavenSession.getCurrentProject());
-        if (model.getVersion() == null) {
+        final MavenProject reloadedProject = reloadProject(mavenSession.getCurrentProject());
+        if (reloadedProject.getVersion() == null) {
             throw new MojoFailureException(
                     "Cannot get current project version. This plugin should be executed from the parent project.");
         }
-        return model.getVersion();
+        return reloadedProject.getVersion();
     }
 
     /**
-     * Reads model from Maven project pom.xml.
+     * Reloads project info from file
      * 
      * @param project
-     *            Maven project
-     * @return Maven model
+     * @return
      * @throws MojoFailureException
      */
-    private Model readModel(MavenProject project) throws MojoFailureException {
+    private MavenProject reloadProject(MavenProject project) throws MojoFailureException {
         try {
-            // read pom.xml
-            Model model;
-            FileReader fileReader = new FileReader(project.getFile().getAbsoluteFile());
-            MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-            try {
-                model = mavenReader.read(fileReader);
-            } finally {
-                if (fileReader != null) {
-                    fileReader.close();
-                }
-            }
-            return model;
+        	ProjectBuildingResult result = projectBuilder.build(project.getFile(), mavenSession.getProjectBuildingRequest());
+        	return result.getProject();
         } catch (Exception e) {
-            throw new MojoFailureException("", e);
+            throw new MojoFailureException("Error re-loading project info", e);
         }
     }
 
@@ -295,15 +287,15 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
         List<MavenProject> projects = mavenSession.getProjects();
         for (MavenProject project : projects) {
-            final Model model = readModel(project);
+            final MavenProject reloadedProject = reloadProject(project);
 
-            builtArtifacts.add(model.getGroupId() + ":" + model.getArtifactId() + ":" + model.getVersion());
+            builtArtifacts.add(reloadedProject.getGroupId() + ":" + reloadedProject.getArtifactId() + ":" + reloadedProject.getVersion());
 
-            List<Dependency> dependencies = model.getDependencies();
+            List<Dependency> dependencies = reloadedProject.getDependencies();
             for (Dependency d : dependencies) {
                 String id = d.getGroupId() + ":" + d.getArtifactId() + ":" + d.getVersion();
                 if (!builtArtifacts.contains(id) && ArtifactUtils.isSnapshot(d.getVersion())) {
-                    snapshots.add(model + " -> " + d);
+                    snapshots.add(reloadedProject + " -> " + d);
                 }
             }
         }
