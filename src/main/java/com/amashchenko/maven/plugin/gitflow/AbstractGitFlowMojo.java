@@ -152,6 +152,14 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private boolean skipUpdateVersion = false;
 
     /**
+     * Prefix that is applied to commit messages.
+     * 
+     * @since 1.13.1
+     */
+    @Parameter(property = "commitMessagePrefix")
+    private String commitMessagePrefix;
+
+    /**
      * The path to the Maven executable. Defaults to "mvn".
      */
     @Parameter(property = "mvnExecutable")
@@ -629,6 +637,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitCommit(String message, Map<String, String> messageProperties)
             throws MojoFailureException, CommandLineException {
+        if (StringUtils.isNotBlank(commitMessagePrefix)) {
+            message = commitMessagePrefix + message;
+        }
+
         message = replaceProperties(message, messageProperties);
 
         if (gpgSignCommit) {
@@ -670,6 +682,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         String msgParam = "";
         String msg = "";
         if (StringUtils.isNotBlank(message)) {
+            if (StringUtils.isNotBlank(commitMessagePrefix)) {
+                message = commitMessagePrefix + message;
+            }
+
             msgParam = "-m";
             msg = replaceProperties(message, messageProperties);
         }
