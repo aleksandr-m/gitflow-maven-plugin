@@ -434,7 +434,25 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected String gitFindBranches(final String branchName,
+    protected String gitFindBranches(final String branchName, final boolean firstMatch)
+            throws MojoFailureException, CommandLineException {
+        return gitFindBranches("refs/heads/", branchName, firstMatch);
+    }
+
+    /**
+     * Executes git for-each-ref with <code>refname:short</code> format.
+     * 
+     * @param refs
+     *            Refs to search.
+     * @param branchName
+     *            Branch name to find.
+     * @param firstMatch
+     *            Return first match.
+     * @return Branch names which matches <code>{refs}{branchName}*</code>.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    private String gitFindBranches(final String refs, final String branchName,
             final boolean firstMatch) throws MojoFailureException,
             CommandLineException {
         String wildcard = "*";
@@ -445,12 +463,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         String branches;
         if (firstMatch) {
             branches = executeGitCommandReturn("for-each-ref", "--count=1",
-                    "--format=\"%(refname:short)\"", "refs/heads/" + branchName
-                            + wildcard);
+                    "--format=\"%(refname:short)\"", refs + branchName + wildcard);
         } else {
             branches = executeGitCommandReturn("for-each-ref",
-                    "--format=\"%(refname:short)\"", "refs/heads/" + branchName
-                            + wildcard);
+                    "--format=\"%(refname:short)\"", refs + branchName + wildcard);
         }
 
         // on *nix systems return values from git for-each-ref are wrapped in
@@ -851,7 +867,39 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Executes git fetch and git for-each-ref with <code>refname:short</code>
+     * format. Searches <code>refs/remotes/{remoteName}/</code>.
+     * 
+     * @param remoteName
+     *            Name of the remote.
+     * @param branchName
+     *            Branch name to find.
+     * @param firstMatch
+     *            Return first match.
+     * @return Branch names which matches <code>refs/heads/{branchName}*</code>.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected String gitFetchAndFindRemoteBranches(final String remoteName, final String branchName,
+            final boolean firstMatch) throws MojoFailureException, CommandLineException {
+        gitFetchRemote();
+        return gitFindBranches("refs/remotes/" + remoteName + "/", branchName, firstMatch);
+    }
+
+    /**
      * Executes git fetch.
+     * 
+     * @return <code>true</code> if git fetch returned success exit code,
+     *         <code>false</code> otherwise.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    private boolean gitFetchRemote() throws MojoFailureException, CommandLineException {
+        return gitFetchRemote("");
+    }
+
+    /**
+     * Executes git fetch with specific branch.
      * 
      * @param branchName
      *            Branch name to fetch.

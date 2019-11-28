@@ -169,13 +169,30 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             checkUncommittedChanges();
 
             // git for-each-ref --format='%(refname:short)' refs/heads/release/*
-            final String releaseBranch = gitFindBranches(
-                    gitFlowConfig.getReleaseBranchPrefix(), false).trim();
+            String releaseBranch = gitFindBranches(gitFlowConfig.getReleaseBranchPrefix(), false).trim();
 
             if (StringUtils.isBlank(releaseBranch)) {
-                throw new MojoFailureException("There is no release branch.");
-            } else if (StringUtils.countMatches(releaseBranch,
-                    gitFlowConfig.getReleaseBranchPrefix()) > 1) {
+                if (fetchRemote) {
+                    releaseBranch = gitFetchAndFindRemoteBranches(gitFlowConfig.getOrigin(),
+                            gitFlowConfig.getReleaseBranchPrefix(), false).trim();
+                    if (StringUtils.isBlank(releaseBranch)) {
+                        throw new MojoFailureException("There is no remote or local release branch.");
+                    }
+
+                    // remove remote name with slash from branch name
+                    releaseBranch = releaseBranch.substring(gitFlowConfig.getOrigin().length() + 1);
+
+                    if (StringUtils.countMatches(releaseBranch, gitFlowConfig.getReleaseBranchPrefix()) > 1) {
+                        throw new MojoFailureException(
+                                "More than one remote release branch exists. Cannot finish release.");
+                    }
+
+                    gitCreateAndCheckout(releaseBranch, gitFlowConfig.getOrigin() + "/" + releaseBranch);
+                } else {
+                    throw new MojoFailureException("There is no release branch.");
+                }
+            }
+            if (StringUtils.countMatches(releaseBranch, gitFlowConfig.getReleaseBranchPrefix()) > 1) {
                 throw new MojoFailureException(
                         "More than one release branch exists. Cannot finish release.");
             }
