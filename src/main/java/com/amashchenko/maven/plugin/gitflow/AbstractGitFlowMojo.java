@@ -154,7 +154,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /**
      * Prefix that is applied to commit messages.
      * 
-     * @since 1.13.1
+     * @since 1.14.0
      */
     @Parameter(property = "commitMessagePrefix")
     private String commitMessagePrefix;

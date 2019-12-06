@@ -134,7 +134,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
      * The effective branch name will be a composite of this branch name and the
      * <code>releaseBranchPrefix</code>.
      * 
-     * @since 1.13.1
+     * @since 1.14.0
      */
     @Parameter(property = "branchName")
     private String branchName;

@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.14.0 (2019-12-06)
+
+* Fixed snapshot dependencies check and improved version resolution - [#204](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/204)
+* Added fetching of the remote release branch in `release-finish` goal - [#196](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/196)
+* Added ability to add prefix to commit messages - [#188](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/188)
+* Added `branchName` parameter in the `release-start` goal - [#70](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/70)
+
 ## v1.13.0 (2019-09-09)
 
 * Added ability to change git merge messages for feature and hotfix goals - [#185](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/185)

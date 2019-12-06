@@ -3,7 +3,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.amashchenko.maven.plugin/gitflow-maven-plugin/badge.svg?subject=Maven%20Central)](https://maven-badges.herokuapp.com/maven-central/com.amashchenko.maven.plugin/gitflow-maven-plugin/)
 [![License](https://img.shields.io/badge/License-Apache%20License%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
-The Maven plugin that supports various Git workflows, including Vincent Driessen's [successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/) and [GitHub Flow](https://guides.github.com/introduction/flow/).
+The Maven plugin that supports various Git workflows, including Vincent Driessen's [successful Git branching model](https://nvie.com/posts/a-successful-git-branching-model/) and [GitHub Flow](https://guides.github.com/introduction/flow/).
 
 Currently a Java implementation of Git version control system [JGit](https://github.com/eclipse/jgit) doesn't support [`.gitattributes`](https://git-scm.com/book/en/Customizing-Git-Git-Attributes).
 
@@ -22,7 +22,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.13.0</version>
+                <version>1.14.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -68,7 +68,7 @@ To enable this feature put `<tychoBuild>true</tychoBuild>` into `<configuration>
 
 ### Features of `tychoBuild` 
 
-The [`tycho-versions-plugin`](https://eclipse.org/tycho/sitedocs/tycho-release/tycho-versions-plugin/plugin-info.html) Maven plugin will be used to set versions instead of [`versions-maven-plugin`](http://www.mojohaus.org/versions-maven-plugin/).
+The [`tycho-versions-plugin`](https://eclipse.org/tycho/sitedocs/tycho-release/tycho-versions-plugin/plugin-info.html) Maven plugin will be used to set versions instead of [`versions-maven-plugin`](https://www.mojohaus.org/versions-maven-plugin/).
 
 Feature name will not be appended to project version on `gitflow:feature-start` goal even if the `skipFeatureVersion` is set to `false`.
 
@@ -181,6 +181,8 @@ Maven properties can be used in commit messages. For example `<featureStartMessa
 
 Note that although `${project.version}` can be used, any changes to version introduced by this goal won't be reflected in a commit message for this goal (see Custom properties).
 
+Commit messages can be prefixed by using `commitMessagePrefix` parameter.
+
 ### Custom properties in commit messages
 
 `@{version}` will be replaced with the updated version.
@@ -200,8 +202,7 @@ For example, `-DversionProperty=revision` will update the `<revision>` property 
 The `skipUpdateVersion` parameter can be used to skip updating `<version>` in the pom.xml. The default value is `false` (i.e. the version will be updated).
 
 To support [CI friendly versioning](https://maven.apache.org/maven-ci-friendly.html) in projects which use `<version>${revision}</version>` (e.g. [spring-boot](https://github.com/spring-projects/spring-boot/blob/master/pom.xml))
-set `versionProperty` to `revision` and `skipUpdateVersion` to `true`, add [flatten-maven-plugin](https://www.mojohaus.org/flatten-maven-plugin/) and call its `flatten` goal before gitflow goal.
-For example, `mvn flatten:flatten gitflow:release`.
+set `versionProperty` to `revision` and `skipUpdateVersion` to `true`.
 
 ## Additional goal parameters
 
@@ -238,7 +239,13 @@ Then the development branch is set to the next development version.
 This allows the development branch to continue immediately with a new version and helps avoid any future merge conflicts related to project versioning.
 Has effect only when there are separate development and production branches.
 
-The `gitflow:release-start` goal have `fromCommit` parameter which allows to start the release from the specific commit (SHA).
+The `gitflow:release-start` goal has `sameBranchName` parameter which can be used to use the same name for the release branch. The default value is `false`.
+By itself the default `releaseBranchPrefix` is not a valid branch name. You must change it when setting `sameBranchName` to `true`.
+Will have no effect if the `branchName` parameter is set.
+
+The `gitflow:release-start` goal has `branchName` parameter which controls how the release branch will be named.
+
+The `gitflow:release-start` goal has `fromCommit` parameter which allows to start the release from the specific commit (SHA).
 
 The `gitflow:release-start` and `gitflow:release-finish` goals have `useSnapshotInRelease` parameter which allows to start the release with SNAPSHOT version and finish it without this value in project version. By default the value is `false`.
 For example, if the release version  is `1.0.2` and `useSnapshotInRelease` is set to `true` and using `gitflow:release-start` goal then the release version will be `1.0.2-SNAPSHOT` and when finishing the release with `gitflow:release-finish` goal, the release version will be `1.0.2`
@@ -288,7 +295,7 @@ E.g. `mvn gitflow:release-finish -DpreReleaseGoals=test` will run `mvn test` goa
 The `postReleaseGoals` parameter can be used in `gitflow:release-finish` and `gitflow:release` goals to run defined Maven goals after the release.
 E.g. `mvn gitflow:release-finish -DpostReleaseGoals=deploy` will run `mvn deploy` goal in the production branch after the release.
 
-The `gitflow:hotfix-finish` goal have `preHotfixGoals` and `postHotfixGoals` parameters which can be used to run defined Maven goals before and after the hotfix respectively.
+The `gitflow:hotfix-finish` goal has `preHotfixGoals` and `postHotfixGoals` parameters which can be used to run defined Maven goals before and after the hotfix respectively.
 
 # Non-interactive Mode
 
