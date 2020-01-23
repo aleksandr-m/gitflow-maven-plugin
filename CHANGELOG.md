@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.15.0 (2020-01-23)
+* Added `releaseBranchVersionSuffix` parameter in `release-start` and `release-finish`
+
 ## v1.14.0 (2019-12-06)
 
 * Fixed snapshot dependencies check and improved version resolution - [#204](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/204)
