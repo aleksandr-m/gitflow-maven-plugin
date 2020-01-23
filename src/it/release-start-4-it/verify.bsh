@@ -1,0 +1,27 @@
+import org.codehaus.plexus.util.FileUtils;
+
+try {
+    File gitRef = new File(basedir, ".git/refs/heads/release/0.0.3");
+    if (!gitRef.exists()) {
+        System.out.println("release-start .git/refs/heads/release/0.0.3 doesn't exist");
+        return false;
+    }
+
+    File file = new File(basedir, "pom.xml");
+    File expectedFile = new File(basedir, "expected-pom.xml");
+
+    String actual = FileUtils.fileRead(file, "UTF-8");
+    String expected = FileUtils.fileRead(expectedFile, "UTF-8");
+
+    actual = actual.replaceAll("\\r?\\n", "");
+    expected = expected.replaceAll("\\r?\\n", "");
+
+    if (!expected.equals(actual)) {
+        System.out.println("release-start expected: " + expected + " actual was:" + actual);
+        return false;
+    }
+} catch (Exception e) {
+    e.printStackTrace();
+    return false;
+}
+return true;

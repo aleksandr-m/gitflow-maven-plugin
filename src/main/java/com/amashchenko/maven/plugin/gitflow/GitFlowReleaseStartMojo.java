@@ -139,6 +139,25 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "branchName")
     private String branchName;
 
+    /**
+     * Suffix to append to versions on the release branch.<br>
+     *
+     * @since 1.14.1
+     */
+    @Parameter(property = "releaseBranchVersionSuffix", defaultValue = "")
+    private String releaseBranchVersionSuffix = "";
+
+    @Override
+    protected void validateConfiguration(String... params) throws MojoFailureException {
+        super.validateConfiguration(params);
+
+        if (releaseBranchVersionSuffix.compareTo(Artifact.SNAPSHOT_VERSION) == 0) {
+            throw new MojoFailureException(
+                    "Release branch version suffix " +
+                            Artifact.SNAPSHOT_VERSION + " is not allowed.");
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -202,6 +221,17 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             }
 
             String projectVersion = releaseVersion;
+            if (StringUtils.isNotBlank(releaseBranchVersionSuffix)) {
+                projectVersion = projectVersion + "-" + releaseBranchVersionSuffix;
+
+                if (mavenSession.getUserProperties().get("releaseBranchVersionSuffix") != null) {
+                    getLog().warn(
+                            "The releaseBranchVersionSuffix parameter is set from the command line."
+                                    + " Don't forget to use it in the finish goal as well."
+                                    + " It is better to define it in the project's pom file.");
+                }
+            }
+
             if (useSnapshotInRelease && !ArtifactUtils.isSnapshot(projectVersion)) {
                 projectVersion = projectVersion + "-" + Artifact.SNAPSHOT_VERSION;
             }

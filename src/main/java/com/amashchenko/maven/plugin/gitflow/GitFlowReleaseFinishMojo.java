@@ -159,6 +159,25 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "useSnapshotInRelease", defaultValue = "false")
     private boolean useSnapshotInRelease;
 
+    /**
+     * Suffix to append to versions on the release branch.<br>
+     *
+     * @since 1.14.1
+     */
+    @Parameter(property = "releaseBranchVersionSuffix", defaultValue = "")
+    private String releaseBranchVersionSuffix = "";
+
+    @Override
+    protected void validateConfiguration(String... params) throws MojoFailureException {
+        super.validateConfiguration(params);
+
+        if (releaseBranchVersionSuffix.compareTo(Artifact.SNAPSHOT_VERSION) == 0) {
+            throw new MojoFailureException(
+                    "Release branch version suffix " +
+                            Artifact.SNAPSHOT_VERSION + " is not allowed.");
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -242,12 +261,25 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             Map<String, String> messageProperties = new HashMap<String, String>();
             messageProperties.put("version", currentReleaseVersion);
 
+            boolean setCommitVersion = false;
+
+            if (StringUtils.isNotBlank(releaseBranchVersionSuffix) &&
+                    currentReleaseVersion.contains("-" + releaseBranchVersionSuffix)) {
+                currentReleaseVersion = currentReleaseVersion.replace("-" + releaseBranchVersionSuffix, "");
+
+                setCommitVersion = true;
+            }
+
             if (useSnapshotInRelease && ArtifactUtils.isSnapshot(currentReleaseVersion)) {
-                String commitVersion = currentReleaseVersion.replace("-" + Artifact.SNAPSHOT_VERSION, "");
+                currentReleaseVersion = currentReleaseVersion.replace("-" + Artifact.SNAPSHOT_VERSION, "");
 
-                mvnSetVersions(commitVersion);
+                setCommitVersion = true;
+            }
 
-                messageProperties.put("version", commitVersion);
+            if (setCommitVersion) {
+                mvnSetVersions(currentReleaseVersion);
+
+                messageProperties.put("version", currentReleaseVersion);
 
                 gitCommit(commitMessages.getReleaseFinishMessage(), messageProperties);
             }
@@ -259,7 +291,12 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                     commitMessages.getReleaseFinishMergeMessage(), messageProperties);
 
             // get current project version from pom
-            final String currentVersion = getCurrentProjectVersion();
+            String currentVersion = getCurrentProjectVersion();
+
+            if (StringUtils.isNotBlank(releaseBranchVersionSuffix) &&
+                    currentVersion.contains("-" + releaseBranchVersionSuffix)) {
+                currentVersion = currentVersion.replace("-" + releaseBranchVersionSuffix, "");
+            }
 
             if (!skipTag) {
                 String tagVersion = currentVersion;
