@@ -290,6 +290,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
     }
 
+    protected boolean hasUncommittedChanges() throws CommandLineException, MojoFailureException {
+        return executeGitHasUncommitted();
+    }
+
     protected void checkSnapshotDependencies() throws MojoFailureException {
         getLog().info("Checking for SNAPSHOT versions in dependencies.");
 
@@ -318,6 +322,19 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             throw new MojoFailureException(
                     "There is some SNAPSHOT dependencies in the project, see warnings above. Change them or ignore with `allowSnapshots` property.");
         }
+    }
+
+    protected void checkSnapshotDependenciesWithoutCorrespondingReleases()
+            throws MojoFailureException, CommandLineException {
+
+        mvnUseReleases();
+        try {
+            checkSnapshotDependencies();
+        } catch (MojoFailureException exception) {
+            gitReset();
+            throw exception;
+        }
+        gitReset();
     }
 
     /**
@@ -795,6 +812,19 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
             executeGitCommand("tag", "-a", tagName, "-m", message);
         }
+    }
+
+    /**
+     * Executes git reset --hard
+     *
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitReset()
+            throws MojoFailureException, CommandLineException {
+        getLog().info("Resetting uncommited changes.");
+
+        executeGitCommand("reset", "--hard");
     }
 
     /**

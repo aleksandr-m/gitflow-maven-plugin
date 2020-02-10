@@ -189,7 +189,11 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             // check snapshots dependencies
             if (!allowSnapshots) {
-                checkSnapshotDependencies();
+                if (updateSnapshotDependencies) {
+                    checkSnapshotDependenciesWithoutCorrespondingReleases();
+                } else {
+                    checkSnapshotDependencies();
+                }
             }
 
             if (commitDevelopmentVersionAtStart && !notSameProdDevName()) {
@@ -336,7 +340,9 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
     private void commitReleasedDependencies() throws CommandLineException, MojoFailureException {
         mvnUseReleases();
-        gitCommit(commitMessages.getReplaceSnapshotDependenciesMessage());
+        if (hasUncommittedChanges()) {
+            gitCommit(commitMessages.getReplaceSnapshotDependenciesMessage());
+        }
     }
 
     private void commitProjectVersion(String version, String commitMessage)
