@@ -61,6 +61,14 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     private boolean allowSnapshots = false;
 
     /**
+     * Whether to replace all released -SNAPSHOT dependencies with the corresponding release versions
+     *
+     * @since 1.15.0
+     */
+    @Parameter(property = "updateSnapshotDependencies", defaultValue = "false")
+    private boolean updateSnapshotDependencies = false;
+
+    /**
      * Release version to use instead of the default next release version in non
      * interactive mode.
      * 
@@ -212,14 +220,22 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                                 + " It is better to define it in the project's pom file.");
             }
 
-            if (commitDevelopmentVersionAtStart) {
-                // mvn versions:set ...
-                // git commit -a -m ...
-                commitProjectVersion(projectVersion,
-                        commitMessages.getReleaseStartMessage()); 
+            // git checkout -b release/... develop
+            gitCreateAndCheckout(fullBranchName, startPoint);
 
-                // git branch release/... develop
-                gitCreateBranch(fullBranchName, startPoint);
+            // mvn versions:set ...
+            // git commit -a -m ...
+            commitProjectVersion(projectVersion, commitMessages.getReleaseStartMessage());
+
+            if (updateSnapshotDependencies) {
+                // mvn versions:use-releases ...
+                commitReleasedDependencies();
+            }
+
+            if (commitDevelopmentVersionAtStart) {
+                gitCheckout(startPoint);
+
+                gitMergeFfOnly(fullBranchName);
 
                 final String nextSnapshotVersion =
                         getNextSnapshotVersion(releaseVersion);
@@ -227,17 +243,6 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 // mvn versions:set ...
                 // git commit -a -m ...
                 commitProjectVersion(nextSnapshotVersion, commitMessages.getReleaseVersionUpdateMessage());
-
-                // git checkout release/...
-                gitCheckout(fullBranchName);
-            } else {
-                // git checkout -b release/... develop
-                gitCreateAndCheckout(fullBranchName, startPoint);
-
-                // mvn versions:set ...
-                // git commit -a -m ...
-                commitProjectVersion(projectVersion,
-                        commitMessages.getReleaseStartMessage());
             }
 
             if (installProject) {
@@ -327,6 +332,11 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
         }
 
         return version;
+    }
+
+    private void commitReleasedDependencies() throws CommandLineException, MojoFailureException {
+        mvnUseReleases();
+        gitCommit(commitMessages.getReplaceSnapshotDependenciesMessage());
     }
 
     private void commitProjectVersion(String version, String commitMessage)

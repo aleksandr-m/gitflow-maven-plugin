@@ -52,6 +52,8 @@ public class CommitMessages {
     private String updateReleaseToAvoidConflictsMessage;
     private String updateReleaseBackPreMergeStateMessage;
 
+    private String replaceSnapshotDependenciesMessage;
+
     public CommitMessages() {
         featureStartMessage = "Update versions for feature branch";
         featureFinishMessage = "Update versions for development branch";
@@ -77,6 +79,8 @@ public class CommitMessages {
 
         updateReleaseToAvoidConflictsMessage = "Update release to hotfix version to avoid merge conflicts";
         updateReleaseBackPreMergeStateMessage = "Update release version back to pre-merge state";
+
+        replaceSnapshotDependenciesMessage = "Replace all released -SNAPSHOT dependencies with the corresponding release versions";
     }
 
     /**
@@ -386,5 +390,20 @@ public class CommitMessages {
      */
     public void setFeatureFinishDevMergeMessage(String featureFinishDevMergeMessage) {
         this.featureFinishDevMergeMessage = featureFinishDevMergeMessage;
+    }
+
+    /**
+     * @return the replaceSnapshotDependenciesMessage
+     */
+    public String getReplaceSnapshotDependenciesMessage() {
+        return replaceSnapshotDependenciesMessage;
+    }
+
+    /**
+     * @param replaceSnapshotDependenciesMessage
+     *            the replaceSnapshotDependenciesMessage to set
+     */
+    public void setReplaceSnapshotDependenciesMessage(String replaceSnapshotDependenciesMessage) {
+        this.replaceSnapshotDependenciesMessage = replaceSnapshotDependenciesMessage;
     }
 }

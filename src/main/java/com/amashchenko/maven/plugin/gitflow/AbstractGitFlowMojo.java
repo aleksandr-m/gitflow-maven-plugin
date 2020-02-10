@@ -16,6 +16,7 @@
 package com.amashchenko.maven.plugin.gitflow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -738,6 +739,19 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             final Map<String, String> messageProperties)
             throws MojoFailureException, CommandLineException {
         gitMerge(branchName, false, true, false, message, messageProperties);
+    }
+
+    /**
+     * Executes git merge --ff-only.
+     *
+     * @param branchName
+     *            Branch name to merge.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitMergeFfOnly(final String branchName)
+            throws MojoFailureException, CommandLineException {
+        gitMerge(branchName, false, false, true, "", new HashMap<String, String>());
     }
 
     /**
