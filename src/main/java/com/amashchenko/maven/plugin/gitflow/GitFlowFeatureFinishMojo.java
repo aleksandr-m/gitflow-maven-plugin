@@ -203,11 +203,11 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
         }
     }
 
-    private String promptBranchName()
-            throws MojoFailureException, CommandLineException {
+    private String promptBranchName() throws MojoFailureException, CommandLineException {
         // git for-each-ref --format='%(refname:short)' refs/heads/feature/*
-        final String featureBranches = gitFindBranches(
-                gitFlowConfig.getFeatureBranchPrefix(), false);
+        final String featureBranches = gitFindBranches(gitFlowConfig.getFeatureBranchPrefix(), false);
+
+        final String currentBranch = gitCurrentBranch();
 
         if (StringUtils.isBlank(featureBranches)) {
             throw new MojoFailureException("There are no feature branches.");
@@ -216,17 +216,21 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
         final String[] branches = featureBranches.split("\\r?\\n");
 
         List<String> numberedList = new ArrayList<String>();
+        String defaultChoice = null;
         StringBuilder str = new StringBuilder("Feature branches:").append(LS);
         for (int i = 0; i < branches.length; i++) {
             str.append((i + 1) + ". " + branches[i] + LS);
             numberedList.add(String.valueOf(i + 1));
+            if (branches[i].equals(currentBranch)) {
+                defaultChoice = String.valueOf(i + 1);
+            }
         }
         str.append("Choose feature branch to finish");
 
         String featureNumber = null;
         try {
             while (StringUtils.isBlank(featureNumber)) {
-                featureNumber = prompter.prompt(str.toString(), numberedList);
+                featureNumber = prompter.prompt(str.toString(), numberedList, defaultChoice);
             }
         } catch (PrompterException e) {
             throw new MojoFailureException("feature-finish", e);

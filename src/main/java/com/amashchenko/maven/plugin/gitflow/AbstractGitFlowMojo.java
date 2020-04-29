@@ -524,6 +524,19 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Gets the current branch name.
+     * 
+     * @return Current branch name.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected String gitCurrentBranch() throws MojoFailureException, CommandLineException {
+        String name = executeGitCommandReturn("symbolic-ref", "-q", "--short", "HEAD");
+        name = StringUtils.strip(name);
+        return name;
+    }
+
+    /**
      * Checks if local branch with given name exists.
      *
      * @param branchName
