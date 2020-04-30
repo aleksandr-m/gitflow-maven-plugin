@@ -304,7 +304,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                         }
                     }
                     
-                    String nextSnapshotVersion = developVersionInfo.nextSnapshotVersion();
+                    String nextSnapshotVersion = developVersionInfo.getSnapshotVersionString();
                     if (shouldIncrementDevVersion) { 
                         // get next snapshot version
                         nextSnapshotVersion = developVersionInfo.nextSnapshotVersion();
