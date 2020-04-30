@@ -274,7 +274,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 } else if (!skipMergeDevBranch) {
                     // I should update the DEV version only if the hotfix 
                     // version is superior to the DEV version  
-                    boolean shouldUpdateDevVersion = true;
+                    boolean shouldIncrementDevVersion = true;
                     GitFlowVersionInfo developVersionInfo = new GitFlowVersionInfo(
                             currentVersion);
                     if (notSameProdDevName()) {
@@ -300,30 +300,32 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                                 .compareTo(hotfixVersionInfo) < 0) {
                             developVersionInfo = hotfixVersionInfo;
                         } else {
-                          shouldUpdateDevVersion = false;
+                          shouldIncrementDevVersion = false;
                         }
                     }
                     
-                    if (shouldUpdateDevVersion) { 
+                    String nextSnapshotVersion = developVersionInfo.nextSnapshotVersion();
+                    if (shouldIncrementDevVersion) { 
                         // get next snapshot version
-                        final String nextSnapshotVersion = developVersionInfo.nextSnapshotVersion();
+                        nextSnapshotVersion = developVersionInfo.nextSnapshotVersion();
 
                         if (StringUtils.isBlank(nextSnapshotVersion)) {
                             throw new MojoFailureException(
                                 "Next snapshot version is blank.");
                         }
-
-                        // mvn versions:set -DnewVersion=...
-                        // -DgenerateBackupPoms=false
-                        mvnSetVersions(nextSnapshotVersion);
-
-                        Map<String, String> properties = new HashMap<String, String>();
-                        properties.put("version", nextSnapshotVersion);
-
-                        // git commit -a -m updating for next development version
-                        gitCommit(commitMessages.getHotfixFinishMessage(),
-                               properties);
                     }
+                        
+
+                    // mvn versions:set -DnewVersion=...
+                    // -DgenerateBackupPoms=false
+                    mvnSetVersions(nextSnapshotVersion);
+
+                    Map<String, String> properties = new HashMap<String, String>();
+                    properties.put("version", nextSnapshotVersion);
+
+                    // git commit -a -m updating for next development version
+                    gitCommit(commitMessages.getHotfixFinishMessage(),
+                        properties);
                 }
             }
 
