@@ -342,7 +342,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws CommandLineException
      * @throws MojoFailureException
      */
-    private boolean executeGitHasUncommitted() throws MojoFailureException,
+    protected boolean executeGitHasUncommitted() throws MojoFailureException,
             CommandLineException {
         boolean uncommited = false;
 
