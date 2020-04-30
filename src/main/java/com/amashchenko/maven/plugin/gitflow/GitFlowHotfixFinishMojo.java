@@ -248,6 +248,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     gitFlowConfig.getReleaseBranchPrefix(), true);
 
             if (supportBranchName == null) {
+              
                 // if release branch exists merge hotfix changes into it
                 if (StringUtils.isNotBlank(releaseBranch)) {
                     // git checkout release
@@ -271,6 +272,9 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                         gitCommit(commitMessages.getUpdateReleaseBackPreMergeStateMessage());
                     }
                 } else if (!skipMergeDevBranch) {
+                    // I should update the DEV version only if the hotfix 
+                    // version is superior to the DEV version  
+                    boolean shouldUpdateDevVersion = true;
                     GitFlowVersionInfo developVersionInfo = new GitFlowVersionInfo(
                             currentVersion);
                     if (notSameProdDevName()) {
@@ -295,32 +299,36 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                         if (developVersionInfo
                                 .compareTo(hotfixVersionInfo) < 0) {
                             developVersionInfo = hotfixVersionInfo;
+                        } else {
+                          shouldUpdateDevVersion = false;
                         }
                     }
+                    
+                    if (shouldUpdateDevVersion) { 
+                        // get next snapshot version
+                        final String nextSnapshotVersion = developVersionInfo.nextSnapshotVersion();
 
-                    // get next snapshot version
-                    final String nextSnapshotVersion = developVersionInfo.nextSnapshotVersion();
-
-                    if (StringUtils.isBlank(nextSnapshotVersion)) {
-                        throw new MojoFailureException(
+                        if (StringUtils.isBlank(nextSnapshotVersion)) {
+                            throw new MojoFailureException(
                                 "Next snapshot version is blank.");
+                        }
+
+                        // mvn versions:set -DnewVersion=...
+                        // -DgenerateBackupPoms=false
+                        mvnSetVersions(nextSnapshotVersion);
+
+                        Map<String, String> properties = new HashMap<String, String>();
+                        properties.put("version", nextSnapshotVersion);
+
+                        // git commit -a -m updating for next development version
+                        gitCommit(commitMessages.getHotfixFinishMessage(),
+                               properties);
                     }
-
-                    // mvn versions:set -DnewVersion=...
-                    // -DgenerateBackupPoms=false
-                    mvnSetVersions(nextSnapshotVersion);
-
-                    Map<String, String> properties = new HashMap<String, String>();
-                    properties.put("version", nextSnapshotVersion);
-
-                    // git commit -a -m updating for next development version
-                    gitCommit(commitMessages.getHotfixFinishMessage(),
-                            properties);
                 }
             }
 
             if (installProject) {
-                // mvn clean install
+              // mvn clean install
                 mvnCleanInstall();
             }
 
