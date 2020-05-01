@@ -41,6 +41,10 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipTag", defaultValue = "false")
     private boolean skipTag = false;
 
+    /** Whether to fail if tag exists the hotfix in Git (such as when already merged). */
+    @Parameter(property = "failIfTagExists", defaultValue = "true")
+    private boolean failIfTagExists = true;
+
     /** Whether to keep hotfix branch after finish. */
     @Parameter(property = "keepBranch", defaultValue = "false")
     private boolean keepBranch = false;
@@ -227,8 +231,12 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 properties.put("version", tagVersion);
 
                 // git tag -a ...
-                gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
-                        commitMessages.getTagHotfixMessage(), gpgSignTag, properties);
+                String tagName = gitFlowConfig.getVersionTagPrefix() + tagVersion;
+                if (! gitCheckTagExists(tagName) || failIfTagExists) {
+                  gitTag(tagName, commitMessages.getTagHotfixMessage(), gpgSignTag, properties);
+                } else if (! failIfTagExists) {
+                  getLog().warn("Tag '" + tagName + "' already exists, But '-DfailIfTagExists' set to false.");
+                }
             }
 
             if (skipMergeProdBranch && (supportBranchName == null)) {
@@ -285,7 +293,11 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
                         // set version to avoid merge conflict
                         mvnSetVersions(currentVersion);
-                        gitCommit(commitMessages.getHotfixVersionUpdateMessage());
+                        if (executeGitHasUncommitted()) {
+                          gitCommit(commitMessages.getHotfixVersionUpdateMessage());
+                        } else {
+                          getLog().info("No changes detected. Did you manually merge '" + currentVersion + "' branch into '"+gitFlowConfig.getDevelopmentBranch()+"'?");
+                        }
 
                         messageProperties.put("version", currentVersion);
 
@@ -297,7 +309,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                         GitFlowVersionInfo hotfixVersionInfo = new GitFlowVersionInfo(
                                 currentVersion);
                         if (developVersionInfo
-                                .compareTo(hotfixVersionInfo) < 0) {
+                                .compareTo(hotfixVersionInfo) <= 0) {
                             developVersionInfo = hotfixVersionInfo;
                         } else {
                           shouldIncrementDevVersion = false;
