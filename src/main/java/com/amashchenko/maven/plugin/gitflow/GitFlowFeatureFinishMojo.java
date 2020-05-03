@@ -144,7 +144,11 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             if (featureSquash) {
                 // git merge --squash feature/...
                 gitMergeSquash(featureBranchName);
-                gitCommit(featureBranchName);
+                if (executeGitHasUncommitted()) {
+                  gitCommit(featureBranchName);
+                } else {
+                  getLog().info("No changes detected. Did you manually merge '" + featureBranchName + "' branch into '"+gitFlowConfig.getDevelopmentBranch()+"'?");
+                }
             } else {
                 // git merge --no-ff feature/...
                 gitMergeNoff(featureBranchName, commitMessages.getFeatureFinishDevMergeMessage(), null);

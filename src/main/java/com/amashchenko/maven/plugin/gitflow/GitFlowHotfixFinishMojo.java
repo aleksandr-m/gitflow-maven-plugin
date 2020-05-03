@@ -41,6 +41,10 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipTag", defaultValue = "false")
     private boolean skipTag = false;
 
+    /** Whether to fail if tag exists the hotfix in Git (such as when already merged). */
+    @Parameter(property = "failIfTagExists", defaultValue = "true")
+    private boolean failIfTagExists = true;
+
     /** Whether to keep hotfix branch after finish. */
     @Parameter(property = "keepBranch", defaultValue = "false")
     private boolean keepBranch = false;
@@ -227,8 +231,12 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 properties.put("version", tagVersion);
 
                 // git tag -a ...
-                gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
-                        commitMessages.getTagHotfixMessage(), gpgSignTag, properties);
+                String tagName = gitFlowConfig.getVersionTagPrefix() + tagVersion;
+                if (! gitCheckTagExists(tagName) || failIfTagExists) {
+                  gitTag(tagName, commitMessages.getTagHotfixMessage(), gpgSignTag, properties);
+                } else if (! failIfTagExists) {
+                  getLog().warn("Tag '" + tagName + "' already exists, But '-DfailIfTagExists' set to false.");
+                }
             }
 
             if (skipMergeProdBranch && (supportBranchName == null)) {
@@ -248,6 +256,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     gitFlowConfig.getReleaseBranchPrefix(), true);
 
             if (supportBranchName == null) {
+              
                 // if release branch exists merge hotfix changes into it
                 if (StringUtils.isNotBlank(releaseBranch)) {
                     // git checkout release
@@ -271,6 +280,9 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                         gitCommit(commitMessages.getUpdateReleaseBackPreMergeStateMessage());
                     }
                 } else if (!skipMergeDevBranch) {
+                    // I should update the DEV version only if the hotfix 
+                    // version is superior to the DEV version  
+                    boolean shouldIncrementDevVersion = true;
                     GitFlowVersionInfo developVersionInfo = new GitFlowVersionInfo(
                             currentVersion);
                     if (notSameProdDevName()) {
@@ -281,7 +293,11 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
                         // set version to avoid merge conflict
                         mvnSetVersions(currentVersion);
-                        gitCommit(commitMessages.getHotfixVersionUpdateMessage());
+                        if (executeGitHasUncommitted()) {
+                          gitCommit(commitMessages.getHotfixVersionUpdateMessage());
+                        } else {
+                          getLog().info("No changes detected. Did you manually merge '" + currentVersion + "' branch into '"+gitFlowConfig.getDevelopmentBranch()+"'?");
+                        }
 
                         messageProperties.put("version", currentVersion);
 
@@ -293,18 +309,24 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                         GitFlowVersionInfo hotfixVersionInfo = new GitFlowVersionInfo(
                                 currentVersion);
                         if (developVersionInfo
-                                .compareTo(hotfixVersionInfo) < 0) {
+                                .compareTo(hotfixVersionInfo) <= 0) {
                             developVersionInfo = hotfixVersionInfo;
+                        } else {
+                          shouldIncrementDevVersion = false;
                         }
                     }
+                    
+                    String nextSnapshotVersion = developVersionInfo.getSnapshotVersionString();
+                    if (shouldIncrementDevVersion) { 
+                        // get next snapshot version
+                        nextSnapshotVersion = developVersionInfo.nextSnapshotVersion();
 
-                    // get next snapshot version
-                    final String nextSnapshotVersion = developVersionInfo.nextSnapshotVersion();
-
-                    if (StringUtils.isBlank(nextSnapshotVersion)) {
-                        throw new MojoFailureException(
+                        if (StringUtils.isBlank(nextSnapshotVersion)) {
+                            throw new MojoFailureException(
                                 "Next snapshot version is blank.");
+                        }
                     }
+                        
 
                     // mvn versions:set -DnewVersion=...
                     // -DgenerateBackupPoms=false
@@ -315,12 +337,12 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
                     // git commit -a -m updating for next development version
                     gitCommit(commitMessages.getHotfixFinishMessage(),
-                            properties);
+                        properties);
                 }
             }
 
             if (installProject) {
-                // mvn clean install
+              // mvn clean install
                 mvnCleanInstall();
             }
 
