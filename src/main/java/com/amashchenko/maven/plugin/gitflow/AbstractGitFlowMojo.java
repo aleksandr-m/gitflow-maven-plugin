@@ -16,6 +16,7 @@
 package com.amashchenko.maven.plugin.gitflow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -47,6 +48,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:set";
     /** A full name of the versions-maven-plugin set-property goal. */
     private static final String VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL = "org.codehaus.mojo:versions-maven-plugin:set-property";
+    /** A full name of the versions-maven-plugin use-releases goal. */
+    private static final String VERSIONS_MAVEN_PLUGIN_USE_RELEASES_GOAL = "org.codehaus.mojo:versions-maven-plugin:use-releases";
     /** Name of the tycho-versions-plugin set-version goal. */
     private static final String TYCHO_VERSIONS_PLUGIN_SET_GOAL = "org.eclipse.tycho:tycho-versions-plugin:set-version";
 
@@ -287,6 +290,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
     }
 
+    protected boolean hasUncommittedChanges() throws CommandLineException, MojoFailureException {
+        return executeGitHasUncommitted();
+    }
+
     protected void checkSnapshotDependencies() throws MojoFailureException {
         getLog().info("Checking for SNAPSHOT versions in dependencies.");
 
@@ -315,6 +322,19 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             throw new MojoFailureException(
                     "There is some SNAPSHOT dependencies in the project, see warnings above. Change them or ignore with `allowSnapshots` property.");
         }
+    }
+
+    protected void checkSnapshotDependenciesWithoutCorrespondingReleases()
+            throws MojoFailureException, CommandLineException {
+
+        mvnUseReleases();
+        try {
+            checkSnapshotDependencies();
+        } catch (MojoFailureException exception) {
+            gitReset();
+            throw exception;
+        }
+        gitReset();
     }
 
     /**
@@ -752,6 +772,19 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Executes git merge --ff-only.
+     *
+     * @param branchName
+     *            Branch name to merge.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitMergeFfOnly(final String branchName)
+            throws MojoFailureException, CommandLineException {
+        gitMerge(branchName, false, false, true, "", new HashMap<String, String>());
+    }
+
+    /**
      * Executes git merge --squash.
      * 
      * @param branchName
@@ -792,6 +825,19 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
             executeGitCommand("tag", "-a", tagName, "-m", message);
         }
+    }
+
+    /**
+     * Executes git reset --hard
+     *
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitReset()
+            throws MojoFailureException, CommandLineException {
+        getLog().info("Resetting uncommited changes.");
+
+        executeGitCommand("reset", "--hard");
     }
 
     /**
@@ -1027,6 +1073,17 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                         "-DgenerateBackupPoms=false");
             }
         }
+    }
+
+    /**
+     * Executes 'use-releases' goal of versions-maven-plugin.
+     *
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void mvnUseReleases() throws MojoFailureException, CommandLineException {
+        getLog().info("Searching the pom for all -SNAPSHOT versions which have been released and replacing them with the corresponding release version.");
+        executeMvnCommand(VERSIONS_MAVEN_PLUGIN_USE_RELEASES_GOAL, "-DgenerateBackupPoms=false");
     }
 
     /**

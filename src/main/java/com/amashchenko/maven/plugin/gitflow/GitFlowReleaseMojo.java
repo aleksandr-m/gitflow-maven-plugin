@@ -56,6 +56,14 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     private boolean allowSnapshots = false;
 
     /**
+     * Whether to replace all released -SNAPSHOT dependencies with the corresponding release versions
+     *
+     * @since 1.15.0
+     */
+    @Parameter(property = "updateSnapshotDependencies", defaultValue = "false")
+    private boolean updateSnapshotDependencies = false;
+
+    /**
      * Whether to rebase branch or merge. If <code>true</code> then rebase will
      * be performed.
      * 
@@ -192,7 +200,11 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
             // check snapshots dependencies
             if (!allowSnapshots) {
-                checkSnapshotDependencies();
+                if (updateSnapshotDependencies) {
+                    checkSnapshotDependenciesWithoutCorrespondingReleases();
+                } else {
+                    checkSnapshotDependencies();
+                }
             }
 
             if (!skipTestProject) {
@@ -257,6 +269,14 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
                 // git commit -a -m updating versions for release
                 gitCommit(commitMessages.getReleaseStartMessage(), messageProperties);
+            }
+
+            if (updateSnapshotDependencies) {
+                // mvn versions:use-releases ...
+                mvnUseReleases();
+                if (hasUncommittedChanges()) {
+                    gitCommit(commitMessages.getReplaceSnapshotDependenciesMessage());
+                }
             }
 
             if (notSameProdDevName()) {
