@@ -37,9 +37,19 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
      * Whether to push to the remote.
      * 
      * @since 1.6.0
+     * @deprecated 1.13.0 Use {@link #pushRemoteSupport}
      */
+    @Deprecated
     @Parameter(property = "pushRemote", defaultValue = "true")
     private boolean pushRemote;
+
+    /**
+     * Whether to push to the remote.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "pushRemoteSupport", defaultValue = "true")
+    private boolean pushRemoteSupport = true;
 
     /**
      * Tag name to use in non-interactive mode.
@@ -108,7 +118,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
                 mvnCleanInstall();
             }
 
-            if (pushRemote) {
+            if (pushRemoteSupport) {
                 gitPush(gitFlowConfig.getSupportBranchPrefix() + tag, false);
             }
         } catch (CommandLineException e) {

@@ -42,9 +42,19 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
      * Whether to push to the remote.
      * 
      * @since 1.6.0
+     * @deprecated 1.13.0 Use {@link #pushRemoteHotfixStart}
      */
+    @Deprecated
     @Parameter(property = "pushRemote", defaultValue = "false")
     private boolean pushRemote;
+
+    /**
+     * Whether to push to the remote.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "pushRemoteHotfixStart", defaultValue = "false")
+    private boolean pushRemoteHotfixStart = false;
 
     /**
      * Branch to start hotfix in non-interactive mode. Production branch or one of
@@ -246,7 +256,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                 mvnCleanInstall();
             }
 
-            if (pushRemote) {
+            if (pushRemoteHotfixStart) {
                 gitPush(hotfixBranchName, false);
             }
         } catch (CommandLineException e) {

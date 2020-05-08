@@ -41,9 +41,23 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipTag", defaultValue = "false")
     private boolean skipTag = false;
 
-    /** Whether to keep hotfix branch after finish. */
+    /**
+     * Whether to keep hotfix branch after finish.
+     *
+     * @deprecated 1.13.0 Use {@link #keepBranchHotfix}
+     *
+     */
+    @Deprecated
     @Parameter(property = "keepBranch", defaultValue = "false")
     private boolean keepBranch = false;
+
+    /**
+     * Whether to keep hotfix branch after finish.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "keepBranchHotfix", defaultValue = "false")
+    private boolean keepBranchHotfix = false;
 
     /**
      * Whether to skip calling Maven test goal before merging the branch.
@@ -57,9 +71,19 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
      * Whether to push to the remote.
      *
      * @since 1.3.0
+     * @deprecated 1.13.0 Use {@link #pushRemoteHotfixFinish}
      */
+    @Deprecated
     @Parameter(property = "pushRemote", defaultValue = "true")
     private boolean pushRemote;
+
+    /**
+     * Whether to push to the remote.
+     *
+     * @since 1.3.0
+     */
+    @Parameter(property = "pushRemoteHotfixFinish", defaultValue = "true")
+    private boolean pushRemoteHotfixFinish = true;
 
     /**
      * Maven goals to execute in the hotfix branch before merging into the
@@ -324,7 +348,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 mvnCleanInstall();
             }
 
-            if (pushRemote) {
+            if (pushRemoteHotfixFinish) {
                 if (supportBranchName != null) {
                     gitPush(supportBranchName, !skipTag);
                 } else {
@@ -338,12 +362,12 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     }
                 }
 
-                if (!keepBranch) {
+                if (!keepBranchHotfix) {
                     gitPushDelete(hotfixBranchName);
                 }
             }
 
-            if (!keepBranch) {
+            if (!keepBranchHotfix) {
                 if (skipMergeProdBranch){
                     //force delete as upstream merge is skipped
                     gitBranchDeleteForce(hotfixBranchName);

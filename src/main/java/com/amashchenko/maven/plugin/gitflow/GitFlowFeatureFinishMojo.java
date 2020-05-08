@@ -35,9 +35,23 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 @Mojo(name = "feature-finish", aggregator = true)
 public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
-    /** Whether to keep feature branch after finish. */
+    /**
+     * Whether to keep feature branch after finish.
+     *
+     * @deprecated 1.13.0 Use {@link #keepBranchFeature}
+     */
     @Parameter(property = "keepBranch", defaultValue = "false")
+    @Deprecated
     private boolean keepBranch = false;
+
+
+    /**
+     * Whether to keep feature branch after finish.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "keepBranchFeature", defaultValue = "false")
+    private boolean keepBranchFeature = false;
 
     /**
      * Whether to skip calling Maven test goal before merging the branch.
@@ -60,9 +74,19 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
      * Whether to push to the remote.
      * 
      * @since 1.3.0
+     * @deprecated 1.13.0 Use {@link #pushRemoteFeatureFinish}
      */
+    @Deprecated
     @Parameter(property = "pushRemote", defaultValue = "true")
     private boolean pushRemote;
+
+    /**
+     * Whether to push to the remote.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "pushRemoteFeatureFinish", defaultValue = "true")
+    private boolean pushRemoteFeatureFinish = true;
 
     /**
      * Feature name to use in non-interactive mode.
@@ -181,15 +205,15 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 mvnCleanInstall();
             }
 
-            if (pushRemote) {
+            if (pushRemoteFeatureFinish) {
                 gitPush(gitFlowConfig.getDevelopmentBranch(), false);
 
-                if (!keepBranch) {
+                if (!keepBranchFeature) {
                     gitPushDelete(featureBranchName);
                 }
             }
 
-            if (!keepBranch) {
+            if (!keepBranchFeature) {
                 if (featureSquash) {
                     // git branch -D feature/...
                     gitBranchDeleteForce(featureBranchName);

@@ -73,9 +73,19 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
      * Whether to push to the remote.
      *
      * @since 1.6.0
+     * @deprecated 1.13.0 Use {@link #pushRemoteReleaseStart}
      */
     @Parameter(property = "pushRemote", defaultValue = "false")
+    @Deprecated
     private boolean pushRemote;
+
+    /**
+     * Whether to push to the remote.
+     *
+     * @since 1.13.0
+     */
+    @Parameter(property = "pushRemoteReleaseStart", defaultValue = "false")
+    private boolean pushRemoteReleaseStart = false;
 
     /**
      * Whether to commit development version when starting the release (vs when
@@ -245,7 +255,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 mvnCleanInstall();
             }
 
-            if (pushRemote) {
+            if (pushRemoteReleaseStart) {
                 if (commitDevelopmentVersionAtStart) {
                     gitPush(gitFlowConfig.getDevelopmentBranch(), false);
                 }
