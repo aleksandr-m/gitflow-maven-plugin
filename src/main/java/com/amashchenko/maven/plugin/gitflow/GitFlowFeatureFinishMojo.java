@@ -138,27 +138,12 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 mvnRun(preFeatureFinishGoals);
             }
 
-            // git checkout develop
-            gitCheckout(gitFlowConfig.getDevelopmentBranch());
+            final String currentFeatureVersion = getCurrentProjectVersion();
 
-            if (featureSquash) {
-                // git merge --squash feature/...
-                gitMergeSquash(featureBranchName);
-                gitCommit(featureBranchName);
-            } else {
-                // git merge --no-ff feature/...
-                gitMergeNoff(featureBranchName, commitMessages.getFeatureFinishDevMergeMessage(), null);
-            }
+            final String featName = featureBranchName.replaceFirst(gitFlowConfig.getFeatureBranchPrefix(), "");
 
-            // get current project version from pom
-            final String currentVersion = getCurrentProjectVersion();
-
-            final String featName = featureBranchName
-                    .replaceFirst(gitFlowConfig.getFeatureBranchPrefix(), "");
-
-            if (currentVersion.contains("-" + featName)) {
-                final String version = currentVersion
-                        .replaceFirst("-" + featName, "");
+            if (currentFeatureVersion.contains("-" + featName)) {
+                final String version = currentFeatureVersion.replaceFirst("-" + featName, "");
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(version);
@@ -171,6 +156,18 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 gitCommit(commitMessages.getFeatureFinishMessage(), properties);
             }
 
+            // git checkout develop
+            gitCheckout(gitFlowConfig.getDevelopmentBranch());
+
+            if (featureSquash) {
+                // git merge --squash feature/...
+                gitMergeSquash(featureBranchName);
+                gitCommit(featureBranchName);
+            } else {
+                // git merge --no-ff feature/...
+                gitMergeNoff(featureBranchName, commitMessages.getFeatureFinishDevMergeMessage(), null);
+            }
+
             // maven goals after merge
             if (StringUtils.isNotBlank(postFeatureFinishGoals)) {
                 mvnRun(postFeatureFinishGoals);
@@ -181,10 +178,24 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 mvnCleanInstall();
             }
 
+            if (keepBranch) {
+                gitCheckout(featureBranchName);
+
+                mvnSetVersions(currentFeatureVersion);
+
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("version", currentFeatureVersion);
+                properties.put("featureName", featName);
+
+                gitCommit(commitMessages.getUpdateFeatureBackMessage(), properties);
+            }
+
             if (pushRemote) {
                 gitPush(gitFlowConfig.getDevelopmentBranch(), false);
 
-                if (!keepBranch) {
+                if (keepBranch) {
+                    gitPush(featureBranchName, false);
+                } else {
                     gitPushDelete(featureBranchName);
                 }
             }
