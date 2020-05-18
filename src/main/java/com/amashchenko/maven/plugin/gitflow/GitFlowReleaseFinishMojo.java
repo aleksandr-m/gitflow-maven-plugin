@@ -108,6 +108,14 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     private String developmentVersion = "";
 
     /**
+     * Whether to prompt for the next development version in interactive mode (with a default value).
+     * 
+     * @since 1.15.0
+     */
+    @Parameter(property = "developmentVersionPrompt", defaultValue = "false")
+    private boolean developmentVersionPrompt = false;
+
+    /**
      * Which digit to increment in the next development version. Starts from
      * zero.
      *
@@ -167,6 +175,19 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
         try {
             // check uncommitted changes
             checkUncommittedChanges();
+
+            // get current project version from pom
+            final String currentVersion = getCurrentProjectVersion();
+
+            // get next development snapshot version
+            final String nextSnapshotVersion;
+            if (!commitDevelopmentVersionAtStart) {
+                nextSnapshotVersion = getNextSnapshotVersion(currentVersion,
+                        developmentVersion, digitsOnlyDevVersion, versionDigitToIncrement, developmentVersionPrompt);
+            }
+            else {
+                nextSnapshotVersion = null;
+            }
 
             // git for-each-ref --format='%(refname:short)' refs/heads/release/*
             String releaseBranch = gitFindBranches(gitFlowConfig.getReleaseBranchPrefix(), false).trim();
@@ -258,9 +279,6 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, releaseMergeFFOnly,
                     commitMessages.getReleaseFinishMergeMessage(), messageProperties);
 
-            // get current project version from pom
-            final String currentVersion = getCurrentProjectVersion();
-
             if (!skipTag) {
                 String tagVersion = currentVersion;
                 if ((tychoBuild || useSnapshotInRelease) && ArtifactUtils.isSnapshot(currentVersion)) {
@@ -314,27 +332,6 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (!commitDevelopmentVersionAtStart) {
-                // get next snapshot version
-                final String nextSnapshotVersion;
-                if (!settings.isInteractiveMode()
-                        && StringUtils.isNotBlank(developmentVersion)) {
-                    nextSnapshotVersion = developmentVersion;
-                } else {
-                    GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(
-                            currentVersion);
-                    if (digitsOnlyDevVersion) {
-                        versionInfo = versionInfo.digitsVersionInfo();
-                    }
-
-                    nextSnapshotVersion = versionInfo
-                            .nextSnapshotVersion(versionDigitToIncrement);
-                }
-
-                if (StringUtils.isBlank(nextSnapshotVersion)) {
-                    throw new MojoFailureException(
-                            "Next snapshot version is blank.");
-                }
-
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(nextSnapshotVersion);
 

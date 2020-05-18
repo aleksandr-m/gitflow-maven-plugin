@@ -25,7 +25,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.release.versions.VersionParseException;
-import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
@@ -104,6 +103,15 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "developmentVersion", defaultValue = "")
     private String developmentVersion = "";
 
+    /**
+     * Whether to prompt for the next development version in interactive mode (with a default value).
+     * 
+     * @since 1.15.0
+     */
+    @Parameter(property = "developmentVersionPrompt", defaultValue = "false")
+    private boolean developmentVersionPrompt = false;
+
+    
     /**
      * Which digit to increment in the next development version. Starts from
      * zero.
@@ -193,6 +201,16 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             // get release version
             final String releaseVersion = getReleaseVersion();
 
+            // get next development snapshot version
+            final String nextSnapshotVersion;
+            if (commitDevelopmentVersionAtStart) {
+                nextSnapshotVersion = getNextSnapshotVersion(releaseVersion,
+                        developmentVersion, digitsOnlyDevVersion, versionDigitToIncrement, developmentVersionPrompt);
+            }
+            else {
+                nextSnapshotVersion = null;
+            }
+
             // get release branch
             String fullBranchName = gitFlowConfig.getReleaseBranchPrefix();
             if (StringUtils.isNotBlank(branchName)) {
@@ -220,9 +238,6 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
                 // git branch release/... develop
                 gitCreateBranch(fullBranchName, startPoint);
-
-                final String nextSnapshotVersion =
-                        getNextSnapshotVersion(releaseVersion);
 
                 // mvn versions:set ...
                 // git commit -a -m ...
@@ -259,30 +274,6 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
         }
     }
 
-    private String getNextSnapshotVersion(String currentVersion) throws MojoFailureException, VersionParseException {
-        // get next snapshot version
-        final String nextSnapshotVersion;
-        if (!settings.isInteractiveMode()
-                && StringUtils.isNotBlank(developmentVersion)) {
-            nextSnapshotVersion = developmentVersion;
-        } else {
-            GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(
-                    currentVersion);
-            if (digitsOnlyDevVersion) {
-                versionInfo = versionInfo.digitsVersionInfo();
-            }
-
-            nextSnapshotVersion = versionInfo
-                    .nextSnapshotVersion(versionDigitToIncrement);
-        }
-
-        if (StringUtils.isBlank(nextSnapshotVersion)) {
-            throw new MojoFailureException(
-                    "Next snapshot version is blank.");
-        }
-        return nextSnapshotVersion;
-    }
-
     private String getReleaseVersion() throws MojoFailureException, VersionParseException, CommandLineException {
         // get current project version from pom
         final String currentVersion = getCurrentProjectVersion();
@@ -303,20 +294,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
         String version = null;
         if (settings.isInteractiveMode()) {
-            try {
-                while (version == null) {
-                    version = prompter.prompt("What is release version? ["
-                            + defaultVersion + "]");
-
-                    if (!"".equals(version)
-                            && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
-                        getLog().info("The version is not valid.");
-                        version = null;
-                    }
-                }
-            } catch (PrompterException e) {
-                throw new MojoFailureException("release-start", e);
-            }
+            version = promptForVersion("What is release version?", defaultVersion);
         } else {
             version = releaseVersion;
         }

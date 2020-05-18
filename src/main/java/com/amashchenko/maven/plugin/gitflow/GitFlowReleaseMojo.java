@@ -24,7 +24,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
@@ -113,6 +112,14 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
      */
     @Parameter(property = "developmentVersion", defaultValue = "")
     private String developmentVersion = "";
+
+    /**
+     * Whether to prompt for the next development version in interactive mode (with a default value).
+     * 
+     * @since 1.15.0
+     */
+    @Parameter(property = "developmentVersionPrompt", defaultValue = "false")
+    private boolean developmentVersionPrompt = false;
 
     /**
      * Which digit to increment in the next development version. Starts from
@@ -217,22 +224,10 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                         "Cannot get default project version.");
             }
 
+            // get release version
             String version = null;
             if (settings.isInteractiveMode()) {
-                try {
-                    while (version == null) {
-                        version = prompter.prompt("What is release version? ["
-                                + defaultVersion + "]");
-
-                        if (!"".equals(version)
-                                && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
-                            getLog().info("The version is not valid.");
-                            version = null;
-                        }
-                    }
-                } catch (PrompterException e) {
-                    throw new MojoFailureException("release", e);
-                }
+                version = promptForVersion("What is release version?", defaultVersion);
             } else {
                 version = releaseVersion;
             }
@@ -241,6 +236,10 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 getLog().info("Version is blank. Using default version.");
                 version = defaultVersion;
             }
+
+            // get next development snapshot version
+            final String nextSnapshotVersion = getNextSnapshotVersion(version, developmentVersion,
+                    digitsOnlyDevVersion, versionDigitToIncrement, developmentVersionPrompt);
 
             // maven goals before release
             if (StringUtils.isNotBlank(preReleaseGoals)) {
@@ -288,26 +287,6 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             if (notSameProdDevName()) {
                 // git checkout develop
                 gitCheckout(gitFlowConfig.getDevelopmentBranch());
-            }
-
-            // get next snapshot version
-            final String nextSnapshotVersion;
-            if (!settings.isInteractiveMode()
-                    && StringUtils.isNotBlank(developmentVersion)) {
-                nextSnapshotVersion = developmentVersion;
-            } else {
-                GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(version);
-                if (digitsOnlyDevVersion) {
-                    versionInfo = versionInfo.digitsVersionInfo();
-                }
-
-                nextSnapshotVersion = versionInfo
-                        .nextSnapshotVersion(versionDigitToIncrement);
-            }
-
-            if (StringUtils.isBlank(nextSnapshotVersion)) {
-                throw new MojoFailureException(
-                        "Next snapshot version is blank.");
             }
 
             // mvn set version

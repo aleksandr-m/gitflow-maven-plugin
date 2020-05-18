@@ -32,7 +32,9 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingResult;
 import org.apache.maven.settings.Settings;
+import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.components.interactivity.Prompter;
+import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
@@ -1223,4 +1225,77 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     public void setArgLine(String argLine) {
         this.argLine = argLine;
     }
+
+    /**
+     * Prompts the user to enter a new version (or hit enter to accept the default version). Use only in interactive mode.
+     * @param promptMessage Prompt message
+     * @param defaultVersion Default version
+     * @return Version
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected String promptForVersion(String promptMessage, String defaultVersion) throws MojoFailureException, CommandLineException {
+        String version = null;
+        try {
+            while (version == null) {
+                version = prompter.prompt(promptMessage + " [" + defaultVersion + "]");
+
+                if (!"".equals(version)
+                        && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
+                    getLog().info("The version is not valid.");
+                    version = null;
+                }
+            }
+        } catch (PrompterException e) {
+            throw new MojoFailureException("promptForVersion", e);
+        }
+        return version;
+    }
+
+    /**
+     * Gets next development snapshot version.
+     * @param version Release version
+     * @param developmentVersion Development version to use instead of the default next development
+     * @param digitsOnlyDevVersion Whether to remove qualifiers from the next development version.
+     * @param versionDigitToIncrement Which digit to increment in the next development version. Starts from zero.
+     * @param developmentVersionPrompt Whether to prompt for next development version
+     * @return Next development snapshot version
+     * @throws MojoFailureException
+     * @throws VersionParseException
+     */
+    protected String getNextSnapshotVersion(String currentVersion,
+            String developmentVersion, boolean digitsOnlyDevVersion, Integer versionDigitToIncrement, boolean developmentVersionPrompt)
+            throws MojoFailureException, VersionParseException, CommandLineException {
+        // get next snapshot version
+        String nextSnapshotVersion;
+        if (!settings.isInteractiveMode()
+                && StringUtils.isNotBlank(developmentVersion)) {
+            nextSnapshotVersion = developmentVersion;
+        } else {
+            GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(
+                    currentVersion);
+            if (digitsOnlyDevVersion) {
+                versionInfo = versionInfo.digitsVersionInfo();
+            }
+
+            nextSnapshotVersion = versionInfo
+                    .nextSnapshotVersion(versionDigitToIncrement);
+        }
+
+        if (settings.isInteractiveMode() && developmentVersionPrompt) {
+            String defaultVersion = nextSnapshotVersion;
+            nextSnapshotVersion = promptForVersion("What is next snapshot version?", defaultVersion);
+            if (StringUtils.isBlank(nextSnapshotVersion)) {
+                getLog().info("Version is blank. Using default version.");
+                nextSnapshotVersion = defaultVersion;
+            }
+        }
+
+        if (StringUtils.isBlank(nextSnapshotVersion)) {
+            throw new MojoFailureException(
+                    "Next snapshot version is blank.");
+        }
+        return nextSnapshotVersion;
+    }
+
 }
