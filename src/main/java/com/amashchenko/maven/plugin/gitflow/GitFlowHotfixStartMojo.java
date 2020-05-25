@@ -154,7 +154,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             final String currentVersion = getCurrentProjectVersion();
 
             // get default hotfix version
-            final String defaultVersion = new GitFlowVersionInfo(currentVersion)
+            final String defaultVersion = new GitFlowVersionInfo(currentVersion, getVersionPolicy())
                     .hotfixVersion(tychoBuild);
 
             if (defaultVersion == null) {

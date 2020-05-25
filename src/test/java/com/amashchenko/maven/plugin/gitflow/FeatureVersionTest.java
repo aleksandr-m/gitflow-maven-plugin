@@ -51,6 +51,6 @@ public class FeatureVersionTest {
     @Test
     public void testFeatureVersion() throws Exception {
         Assert.assertEquals(expectedVersion,
-                new GitFlowVersionInfo(version).featureVersion(featureName));
+                new GitFlowVersionInfo(version, null).featureVersion(featureName));
     }
 }

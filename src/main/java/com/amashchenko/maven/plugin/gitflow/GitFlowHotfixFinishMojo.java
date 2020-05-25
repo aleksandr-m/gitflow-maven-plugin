@@ -272,12 +272,12 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     }
                 } else if (!skipMergeDevBranch) {
                     GitFlowVersionInfo developVersionInfo = new GitFlowVersionInfo(
-                            currentVersion);
+                            currentVersion, getVersionPolicy());
                     if (notSameProdDevName()) {
                         // git checkout develop
                         gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
-                        developVersionInfo = new GitFlowVersionInfo(getCurrentProjectVersion());
+                        developVersionInfo = new GitFlowVersionInfo(getCurrentProjectVersion(), getVersionPolicy());
 
                         // set version to avoid merge conflict
                         mvnSetVersions(currentVersion);
@@ -291,7 +291,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
                         // which version to increment
                         GitFlowVersionInfo hotfixVersionInfo = new GitFlowVersionInfo(
-                                currentVersion);
+                                currentVersion, getVersionPolicy());
                         if (developVersionInfo
                                 .compareTo(hotfixVersionInfo) < 0) {
                             developVersionInfo = hotfixVersionInfo;

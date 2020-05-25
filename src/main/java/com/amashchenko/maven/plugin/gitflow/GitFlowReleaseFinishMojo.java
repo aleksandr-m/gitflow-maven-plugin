@@ -321,7 +321,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                     nextSnapshotVersion = developmentVersion;
                 } else {
                     GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(
-                            currentVersion);
+                            currentVersion, getVersionPolicy());
                     if (digitsOnlyDevVersion) {
                         versionInfo = versionInfo.digitsVersionInfo();
                     }

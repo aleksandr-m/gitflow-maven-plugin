@@ -257,6 +257,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.maven.release</groupId>
+            <artifactId>maven-release-oddeven-policy</artifactId>
+            <version>2.5.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>

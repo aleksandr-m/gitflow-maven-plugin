@@ -267,7 +267,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             nextSnapshotVersion = developmentVersion;
         } else {
             GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(
-                    currentVersion);
+                    currentVersion, getVersionPolicy());
             if (digitsOnlyDevVersion) {
                 versionInfo = versionInfo.digitsVersionInfo();
             }
@@ -292,7 +292,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             defaultVersion = currentVersion;
         } else {
             // get default release version
-            defaultVersion = new GitFlowVersionInfo(currentVersion)
+            defaultVersion = new GitFlowVersionInfo(currentVersion, getVersionPolicy())
                     .getReleaseVersionString();
         }
 
