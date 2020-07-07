@@ -94,8 +94,8 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
      *
      * @since 1.14.1
      */
-    @Parameter(property = "retainDevelopVersion", defaultValue = "false")
-    private boolean retainDevelopVersion = false;
+    @Parameter(property = "retainDevelopVersion", defaultValue = "true")
+    private boolean retainDevelopVersion = true;
 
     /** {@inheritDoc} */
     @Override
