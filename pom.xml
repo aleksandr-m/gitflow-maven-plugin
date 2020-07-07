@@ -21,7 +21,7 @@
     <artifactId>gitflow-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <name>gitflow-maven-plugin</name>
-    <version>1.14.1-SNAPSHOT</version>
+    <version>1.14.2</version>
 
     <description>The Git-Flow Maven Plugin supports various Git workflows, including Vincent Driessen's successful Git branching model and GitHub Flow. This plugin runs Git and Maven commands from the command line. Supports Eclipse Plugins build with Tycho.</description>
 
@@ -50,20 +50,22 @@
     </scm>
 
     <distributionManagement>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Nexus Release Repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
         <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <id>JGSNAP</id>
+            <url>https://mvn.jini.guru/artifactory/libs-snapshot</url>
         </snapshotRepository>
+        <repository>
+            <id>JGREL</id>
+            <url>https://mvn.jini.guru/artifactory/libs-release</url>
+        </repository>
+        <site>
+            <id>jg-arch-site</id>
+            <url>file://${main.basedir}/target</url>
+        </site>
     </distributionManagement>
 
     <properties>
-        <java.version>1.6</java.version>
+        <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scm.url>scm:git:git@github.com:aleksandr-m/gitflow-maven-plugin.git</scm.url>
         <url>https://github.com/aleksandr-m/gitflow-maven-plugin</url>
@@ -90,7 +92,7 @@
                     </reportSet>
                 </reportSets>
                 <configuration>
-                   <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
                 </configuration>
             </plugin>
         </plugins>
