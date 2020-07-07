@@ -30,7 +30,7 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
  * The git flow feature finish mojo.
- * 
+ *
  */
 @Mojo(name = "feature-finish", aggregator = true)
 public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
@@ -41,7 +41,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to skip calling Maven test goal before merging the branch.
-     * 
+     *
      * @since 1.0.5
      */
     @Parameter(property = "skipTestProject", defaultValue = "false")
@@ -50,7 +50,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     /**
      * Whether to squash feature branch commits into a single commit upon
      * merging.
-     * 
+     *
      * @since 1.2.3
      */
     @Parameter(property = "featureSquash", defaultValue = "false")
@@ -58,7 +58,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to push to the remote.
-     * 
+     *
      * @since 1.3.0
      */
     @Parameter(property = "pushRemote", defaultValue = "true")
@@ -66,7 +66,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Feature name to use in non-interactive mode.
-     * 
+     *
      * @since 1.9.0
      */
     @Parameter(property = "featureName")
@@ -89,6 +89,13 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "postFeatureFinishGoals")
     private String postFeatureFinishGoals;
 
+    /**
+     * Whether to always use the develop branch version when merging into it.
+     *
+     * @since 1.14.1
+     */
+    @Parameter(property = "retainDevelopVersion", defaultValue = "false")
+    private boolean retainDevelopVersion = false;
 
     /** {@inheritDoc} */
     @Override
@@ -125,10 +132,10 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
             }
 
+            // git checkout feature/...
+            gitCheckout(featureBranchName);
+            
             if (!skipTestProject) {
-                // git checkout feature/...
-                gitCheckout(featureBranchName);
-
                 // mvn clean test
                 mvnCleanTest();
             }
@@ -143,7 +150,16 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             final String featName = featureBranchName.replaceFirst(gitFlowConfig.getFeatureBranchPrefix(), "");
 
             if (currentFeatureVersion.contains("-" + featName)) {
-                final String version = currentFeatureVersion.replaceFirst("-" + featName, "");
+
+                final String version;
+                if (retainDevelopVersion) {
+                    gitCheckout(gitFlowConfig.getDevelopmentBranch());
+                    version = getCurrentProjectVersion();
+                    gitCheckout(featureBranchName);
+                    getLog().info("Will set this feature version to the develop branch version before merging: '" + version + "'.");
+                } else {
+                    version = currentFeatureVersion.replaceFirst("-" + featName, "");
+                }
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(version);
