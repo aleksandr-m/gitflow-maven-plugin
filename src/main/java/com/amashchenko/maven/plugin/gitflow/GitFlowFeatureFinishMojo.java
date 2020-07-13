@@ -90,6 +90,15 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     private String postFeatureFinishGoals;
 
 
+    /**
+     * Maven goals to increment the development version after merging a feature.
+     *
+     * @since 1.14.1
+     */
+    @Parameter(property = "incrementDevelopmentVersionAtFinish")
+    private boolean incrementDevelopmentVersionAtFinish = false;
+
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -171,6 +180,17 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             // maven goals after merge
             if (StringUtils.isNotBlank(postFeatureFinishGoals)) {
                 mvnRun(postFeatureFinishGoals);
+            }
+
+            if(incrementDevelopmentVersionAtFinish){
+                gitCheckout(gitFlowConfig.getDevelopmentBranch());
+                final String currentVersion = getCurrentProjectVersion();
+                GitFlowVersionInfo developVersionInfo = new GitFlowVersionInfo(currentVersion);
+                final String nextSnapshotVersion = developVersionInfo.nextSnapshotVersion();
+                mvnSetVersions(nextSnapshotVersion);
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("version", nextSnapshotVersion);
+                gitCommit(commitMessages.getHotfixFinishMessage(), properties);
             }
 
             if (installProject) {

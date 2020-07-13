@@ -297,6 +297,9 @@ E.g. `mvn gitflow:release-finish -DpostReleaseGoals=deploy` will run `mvn deploy
 
 The `gitflow:hotfix-finish` goal has `preHotfixGoals` and `postHotfixGoals` parameters which can be used to run defined Maven goals before and after the hotfix respectively.
 
+The `gitflow:feature-finish -DincrementDevelopmentVersionAtFinish=true` will increment the develop branch version after merging the feature.
+
+
 # Non-interactive Mode
 
 Maven can be run in non-interactive (batch) mode. By using non-interactive mode goals can be run in continuous integration environment.
