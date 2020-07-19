@@ -1,0 +1,14 @@
+import org.codehaus.plexus.util.FileUtils;
+
+try {
+    File logFile = new File(basedir, "build.log");
+    String log = FileUtils.fileRead(logFile, "UTF-8");
+    if (!log.contains("Feature name is blank.")) {
+        System.out.println("feature-start build.log doesn't contain error text.");
+        return false;
+    }
+} catch (Exception e) {
+    e.printStackTrace();
+    return false;
+}
+return true;

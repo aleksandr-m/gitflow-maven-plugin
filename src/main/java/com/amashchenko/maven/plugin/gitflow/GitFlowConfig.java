@@ -26,6 +26,8 @@ public class GitFlowConfig {
     private String developmentBranch;
     /** Prefix of the feature branch. */
     private String featureBranchPrefix;
+    /** Prefix of the bugfix branch. */
+    private String bugfixBranchPrefix;
     /** Prefix of the release branch. */
     private String releaseBranchPrefix;
     /** Prefix of the hotfix branch. */
@@ -44,6 +46,7 @@ public class GitFlowConfig {
         this.productionBranch = "master";
         this.developmentBranch = "develop";
         this.featureBranchPrefix = "feature/";
+        this.bugfixBranchPrefix = "bugfix/";
         this.releaseBranchPrefix = "release/";
         this.hotfixBranchPrefix = "hotfix/";
         this.supportBranchPrefix = "support/";
@@ -51,7 +54,10 @@ public class GitFlowConfig {
         this.origin = "origin";
     }
 
-    /**
+    
+ 
+
+	/**
      * @return the productionBranch
      */
     public String getProductionBranch() {
@@ -95,6 +101,22 @@ public class GitFlowConfig {
     public void setFeatureBranchPrefix(String featureBranchPrefix) {
         this.featureBranchPrefix = featureBranchPrefix;
     }
+    
+    /**
+     * @return bugfixBranchPrefix
+     */
+    public String getBugfixBranchPrefix() {
+		return bugfixBranchPrefix;
+	}
+    
+    
+    /**
+     * @parm the bugfixBranchPrefix
+     *  	the bugfixBranchPrefix to set
+     */
+	public void setBugfixBranchPrefix(String bugfixBranchPrefix) {
+		this.bugfixBranchPrefix = bugfixBranchPrefix;
+	}
 
     /**
      * @return the releaseBranchPrefix

@@ -6,6 +6,7 @@
 	release = release/
 	hotfix = hotfix/
 	support = support/
+	bugfix = bugfix/
 	versiontag = 
 [gitflow]
 	origin = origin

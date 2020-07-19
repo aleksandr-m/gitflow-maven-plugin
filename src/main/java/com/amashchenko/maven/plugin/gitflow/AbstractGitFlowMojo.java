@@ -391,6 +391,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
         gitSetConfig("gitflow.prefix.feature",
                 gitFlowConfig.getFeatureBranchPrefix());
+        gitSetConfig("gitflow.prefix.bugfix",
+                gitFlowConfig.getBugfixBranchPrefix());
         gitSetConfig("gitflow.prefix.release",
                 gitFlowConfig.getReleaseBranchPrefix());
         gitSetConfig("gitflow.prefix.hotfix",

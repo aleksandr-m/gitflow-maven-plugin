@@ -21,7 +21,7 @@
     <artifactId>gitflow-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <name>gitflow-maven-plugin</name>
-    <version>1.14.1-SNAPSHOT</version>
+    <version>1.15.0-SNAPSHOT</version>
 
     <description>The Git-Flow Maven Plugin supports various Git workflows, including Vincent Driessen's successful Git branching model and GitHub Flow. This plugin runs Git and Maven commands from the command line. Supports Eclipse Plugins build with Tycho.</description>
 
@@ -65,8 +65,8 @@
     <properties>
         <java.version>1.6</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scm.url>scm:git:git@github.com:aleksandr-m/gitflow-maven-plugin.git</scm.url>
-        <url>https://github.com/aleksandr-m/gitflow-maven-plugin</url>
+        <scm.url>scm:git:git@github.com:vconceicao/gitflow-maven-plugin.git</scm.url>
+        <url>https://github.com/vconceicao/gitflow-maven-plugin.git</url>
         <maven-plugin-plugin.version>3.6.0</maven-plugin-plugin.version>
     </properties>
 
