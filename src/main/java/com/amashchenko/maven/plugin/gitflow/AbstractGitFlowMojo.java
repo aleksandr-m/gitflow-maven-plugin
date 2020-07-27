@@ -15,6 +15,7 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
@@ -205,7 +207,15 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private void initExecutables() {
         if (StringUtils.isBlank(cmdMvn.getExecutable())) {
             if (StringUtils.isBlank(mvnExecutable)) {
-                mvnExecutable = "mvn";
+                if (SystemUtils.IS_OS_UNIX
+                        && new File(".", "mvnw").isFile()) {
+                    mvnExecutable = "./mvnw";
+                } else if (SystemUtils.IS_OS_WINDOWS
+                        && new File(".", "mvnw.cmd").isFile()) {
+                    mvnExecutable = "mvnw.cmd";
+                } else {
+                    mvnExecutable = "mvn";
+                }
             }
             cmdMvn.setExecutable(mvnExecutable);
         }
