@@ -140,6 +140,26 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private String argLine;
 
     /**
+     * Global setting file to pass to the underlying Maven commands.
+     * <br/>
+     * If not defined will default to global settings file of executing Maven command.
+     *
+     * @since 1.14.1
+     */
+    @Parameter(property = "gitflow.maven.settings.global")
+    private String globalSettings;
+
+    /**
+     * User setting file to pass to the underlying Maven commands.
+     * <br/>
+     * If not defined will default to user settings file of executing Maven command.
+     *
+     * @since 1.14.1
+     */
+    @Parameter(property = "gitflow.maven.settings.user")
+    private String userSettings;
+
+    /**
      * Whether to make a GPG-signed commit.
      * 
      * @since 1.9.0
@@ -294,6 +314,22 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                 gitExecutable = "git";
             }
             cmdGit.setExecutable(gitExecutable);
+        }
+    }
+
+    /**
+     * Initializes maven defaults.
+     */
+    private void initMavenDefaults() {
+        if (StringUtils.isBlank(this.globalSettings)) {
+            this.globalSettings = this.mavenSession.getRequest()
+                    .getGlobalSettingsFile()
+                    .getAbsolutePath();
+        }
+        if (StringUtils.isBlank(this.userSettings)) {
+            this.userSettings = this.mavenSession.getRequest()
+                    .getUserSettingsFile()
+                    .getAbsolutePath();
         }
     }
 
@@ -1320,7 +1356,26 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private void executeMvnCommand(final String... args)
             throws CommandLineException, MojoFailureException {
-        executeCommand(cmdMvn, true, argLine, args);
+
+        initMavenDefaults();
+
+        final List<String> argLines = new ArrayList<String>();
+
+        if (StringUtils.isBlank(this.argLine)
+                || !this.argLine.contains("-gs")) {
+            argLines.add("-gs");
+            argLines.add(this.globalSettings);
+        }
+        if (StringUtils.isBlank(this.argLine)
+                || !this.argLine.contains("-s")) {
+            argLines.add("-s");
+            argLines.add(this.userSettings);
+        }
+        if (StringUtils.isNotBlank(this.argLine)) {
+            argLines.add(this.argLine);
+        }
+
+        executeCommand(cmdMvn, true, StringUtils.join(argLines.toArray(), " "), args);
     }
 
     /**
