@@ -1,5 +1,6 @@
 # Git-Flow Maven Plugin
 
+![.github/workflows/build.yml](https://github.com/aleksandr-m/gitflow-maven-plugin/workflows/.github/workflows/build.yml/badge.svg)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.amashchenko.maven.plugin/gitflow-maven-plugin/badge.svg?subject=Maven%20Central)](https://maven-badges.herokuapp.com/maven-central/com.amashchenko.maven.plugin/gitflow-maven-plugin/)
 [![License](https://img.shields.io/badge/License-Apache%20License%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
