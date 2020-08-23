@@ -162,9 +162,8 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
             final String keptFeatureVersion = featureVersion;
 
+            final String version = keptFeatureVersion.replaceFirst("-" + featName, "");
             if (keptFeatureVersion.contains("-" + featName)) {
-                final String version = keptFeatureVersion.replaceFirst("-" + featName, "");
-
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(version);
 
@@ -184,8 +183,11 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 gitMergeSquash(featureBranchName);
                 gitCommit(featureBranchName);
             } else {
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("version", version);
+                properties.put("featureName", featName);
                 // git merge --no-ff feature/...
-                gitMergeNoff(featureBranchName, commitMessages.getFeatureFinishDevMergeMessage(), null);
+                gitMergeNoff(featureBranchName, commitMessages.getFeatureFinishDevMergeMessage(), properties);
             }
 
             // maven goals after merge
