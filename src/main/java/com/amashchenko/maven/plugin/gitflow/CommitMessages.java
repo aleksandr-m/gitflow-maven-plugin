@@ -53,6 +53,7 @@ public class CommitMessages {
     private String updateReleaseBackPreMergeStateMessage;
 
     private String updateFeatureBackMessage;
+    private String featureFinishIncrementVersionMessage;
 
     public CommitMessages() {
         featureStartMessage = "Update versions for feature branch";
@@ -81,6 +82,7 @@ public class CommitMessages {
         updateReleaseBackPreMergeStateMessage = "Update release version back to pre-merge state";
 
         updateFeatureBackMessage = "Update feature branch back to feature version";
+        featureFinishIncrementVersionMessage = "Increment feature version";
     }
 
     /**
@@ -405,5 +407,20 @@ public class CommitMessages {
      */
     public void setUpdateFeatureBackMessage(String updateFeatureBackMessage) {
         this.updateFeatureBackMessage = updateFeatureBackMessage;
+    }
+
+    /**
+     * @return the featureFinishIncrementVersionMessage
+     */
+    public String getFeatureFinishIncrementVersionMessage() {
+        return featureFinishIncrementVersionMessage;
+    }
+
+    /**
+     * @param featureFinishIncrementVersionMessage
+     *            the featureFinishIncrementVersionMessage to set
+     */
+    public void setFeatureFinishIncrementVersionMessage(String featureFinishIncrementVersionMessage) {
+        this.featureFinishIncrementVersionMessage = featureFinishIncrementVersionMessage;
     }
 }

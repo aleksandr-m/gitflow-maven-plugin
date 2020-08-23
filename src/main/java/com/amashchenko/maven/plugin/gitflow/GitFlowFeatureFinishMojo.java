@@ -89,6 +89,12 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "postFeatureFinishGoals")
     private String postFeatureFinishGoals;
 
+    /**
+     * Whether to increment the version during feature-finish goal.
+     *
+     */
+    @Parameter(property = "incrementVersionAtFinish", defaultValue = "false")
+    private boolean incrementVersionAtFinish;
 
     /** {@inheritDoc} */
     @Override
@@ -138,12 +144,26 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 mvnRun(preFeatureFinishGoals);
             }
 
-            final String currentFeatureVersion = getCurrentProjectVersion();
+            String featureVersion = getCurrentProjectVersion();
 
             final String featName = featureBranchName.replaceFirst(gitFlowConfig.getFeatureBranchPrefix(), "");
 
-            if (currentFeatureVersion.contains("-" + featName)) {
-                final String version = currentFeatureVersion.replaceFirst("-" + featName, "");
+            if (incrementVersionAtFinish) {
+                GitFlowVersionInfo developVersionInfo = new GitFlowVersionInfo(featureVersion);
+                featureVersion = developVersionInfo.nextSnapshotVersion();
+
+                mvnSetVersions(featureVersion);
+
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("version", featureVersion);
+                properties.put("featureName", featName);
+                gitCommit(commitMessages.getFeatureFinishIncrementVersionMessage(), properties);
+            }
+
+            final String keptFeatureVersion = featureVersion;
+
+            if (keptFeatureVersion.contains("-" + featName)) {
+                final String version = keptFeatureVersion.replaceFirst("-" + featName, "");
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(version);
@@ -181,10 +201,10 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             if (keepBranch) {
                 gitCheckout(featureBranchName);
 
-                mvnSetVersions(currentFeatureVersion);
+                mvnSetVersions(keptFeatureVersion);
 
                 Map<String, String> properties = new HashMap<String, String>();
-                properties.put("version", currentFeatureVersion);
+                properties.put("version", keptFeatureVersion);
                 properties.put("featureName", featName);
 
                 gitCommit(commitMessages.getUpdateFeatureBackMessage(), properties);
