@@ -24,3 +24,7 @@ jobs:
 
       - name: Maven verify
         run: mvn -B verify -Prun-its
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path: target
