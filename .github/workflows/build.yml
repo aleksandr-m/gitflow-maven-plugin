@@ -31,3 +31,7 @@ jobs:
 
       - name: Run integration test
         run: mvn verify --batch-mode -DskipTests -Prun-its
+
+      - name: Print failed integration test logs
+        if: ${{ failure() }}
+        run: cat target/it/*/build.log
