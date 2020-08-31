@@ -30,4 +30,4 @@ jobs:
         run: mvn test --batch-mode
 
       - name: Run integration test
-        run: mvn invoker:run --batch-mode --activate-profiles run-its
+        run: mvn verify --batch-mode -DskipTests -Prun-its
