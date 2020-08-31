@@ -1,9 +1,9 @@
 import org.codehaus.plexus.util.FileUtils;
 
 try {
-    File gitRef = new File(basedir, ".git/refs/heads/support/0.0.3");
+    File gitRef = new File(basedir, ".git/refs/heads/support/0.0.1");
     if (!gitRef.exists()) {
-        System.out.println("support-start .git/refs/heads/support/0.0.3 doesn't exist");
+        System.out.println("support-start .git/refs/heads/support/0.0.1 doesn't exist");
         return false;
     }
 
