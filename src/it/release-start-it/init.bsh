@@ -9,6 +9,15 @@ try {
     System.out.println("1: " + IOUtil.toString(p.getInputStream()));
     System.out.println("1.err: " + IOUtil.toString(p.getErrorStream()));
 
+
+    Process p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " config user.email 'a@a.aa'");
+    p.waitFor();
+    Process p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " config user.name 'a'");
+    p.waitFor();
+
+
+
+
     p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " add .");
     p.waitFor();
 
