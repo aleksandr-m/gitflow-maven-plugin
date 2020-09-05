@@ -4,6 +4,11 @@ try {
     Process p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " init");
     p.waitFor();
 
+    Process p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " config user.email 'a@a.aa'");
+    p.waitFor();
+    Process p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " config user.name 'a'");
+    p.waitFor();
+
     p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " add .");
     p.waitFor();
 
