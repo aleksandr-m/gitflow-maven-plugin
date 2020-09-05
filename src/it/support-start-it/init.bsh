@@ -1,4 +1,6 @@
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
+
 
 try {
     new File(basedir, "gitignorefile").renameTo(new File(basedir, ".gitignore"));
@@ -34,6 +36,15 @@ try {
 
     p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " checkout -b develop");
     p.waitFor();
+
+
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " for-each-ref --sort=-*authordate --count=1 --format=\"%(refname:short)\" refs/tags/");
+    p.waitFor();
+    System.out.println("1: " + IOUtil.toString(p.getInputStream()));
+    System.out.println("1.err: " + IOUtil.toString(p.getErrorStream()));
+
+
 
 } catch (Exception e) {
     e.printStackTrace();
