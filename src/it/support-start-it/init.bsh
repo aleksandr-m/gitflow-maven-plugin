@@ -60,8 +60,6 @@ try {
     p.waitFor();
     System.out.println("4: " + IOUtil.toString(p.getInputStream()));
     System.out.println("4.err: " + IOUtil.toString(p.getErrorStream()));
-
-
 } catch (Exception e) {
     e.printStackTrace();
     return false;
