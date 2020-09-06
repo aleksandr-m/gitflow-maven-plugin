@@ -25,6 +25,9 @@ jobs:
       - name: Maven verify
         run: mvn -B verify -Prun-its
 
+      - name: Print integration test logs
+        run: cat target/it/*/build.log
+
       - name: Print failed integration test logs
         if: failure()
         run: cat target/it/*/build.log
