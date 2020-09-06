@@ -501,8 +501,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws CommandLineException
      */
     protected String gitFindLastTag() throws MojoFailureException, CommandLineException {
-        String tag = executeGitCommandReturn("for-each-ref", "--sort=-*authordate", "--count=1",
-                "--format=\"%(refname:short)\"", "refs/tags/");
+        String tag = executeGitCommandReturn("for-each-ref", "--sort=\"-version:refname\"", "--sort=-taggerdate",
+                "--count=1", "--format=\"%(refname:short)\"", "refs/tags/");
         // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
         tag = removeQuotes(tag);
         tag = tag.replaceAll("\\r?\\n", "");
