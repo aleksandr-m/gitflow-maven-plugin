@@ -30,6 +30,9 @@ try {
 
     p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " commit -m next");
     p.waitFor();
+    
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " tag -a 0.0.21 -m 0.0.21");
+    p.waitFor();
 
     p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " tag -a 0.0.3 -m 0.0.3");
     p.waitFor();
