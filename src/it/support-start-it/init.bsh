@@ -39,10 +39,23 @@ try {
 
 
 
-    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " for-each-ref --sort=-*authordate --count=1 --format=\"%(refname:short)\" refs/tags/");
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " for-each-ref --sort=-*authordate --format=\"%(refname:short)\" refs/tags/");
     p.waitFor();
     System.out.println("1: " + IOUtil.toString(p.getInputStream()));
     System.out.println("1.err: " + IOUtil.toString(p.getErrorStream()));
+
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " for-each-ref --sort=-*authordate --count=1 --format=\"%(refname:short)\" refs/tags/");
+    p.waitFor();
+    System.out.println("2: " + IOUtil.toString(p.getInputStream()));
+    System.out.println("2.err: " + IOUtil.toString(p.getErrorStream()));
+
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " for-each-ref --sort=-*taggerdate --format=\"%(refname:short)\" refs/tags/");
+    p.waitFor();
+    System.out.println("3: " + IOUtil.toString(p.getInputStream()));
+    System.out.println("3.err: " + IOUtil.toString(p.getErrorStream()));
+
 
 
 
