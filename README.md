@@ -1,6 +1,6 @@
 # Git-Flow Maven Plugin
 
-![verify](https://github.com/aleksandr-m/gitflow-maven-plugin/workflows/verify/badge.svg)
+[![verify](https://github.com/aleksandr-m/gitflow-maven-plugin/workflows/verify/badge.svg)](https://github.com/aleksandr-m/gitflow-maven-plugin/actions)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.amashchenko.maven.plugin/gitflow-maven-plugin/badge.svg?subject=Maven%20Central)](https://maven-badges.herokuapp.com/maven-central/com.amashchenko.maven.plugin/gitflow-maven-plugin/)
 [![License](https://img.shields.io/badge/License-Apache%20License%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
