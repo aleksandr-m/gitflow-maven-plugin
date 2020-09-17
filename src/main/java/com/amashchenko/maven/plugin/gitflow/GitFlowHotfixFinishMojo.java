@@ -344,7 +344,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (!keepBranch) {
-                if (skipMergeProdBranch){
+                if (skipMergeProdBranch) {
                     //force delete as upstream merge is skipped
                     gitBranchDeleteForce(hotfixBranchName);
                 } else {

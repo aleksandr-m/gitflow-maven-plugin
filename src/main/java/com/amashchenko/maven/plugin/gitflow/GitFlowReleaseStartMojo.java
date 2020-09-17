@@ -186,7 +186,8 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             if (commitDevelopmentVersionAtStart && !notSameProdDevName()) {
                 getLog().warn(
-                        "The commitDevelopmentVersionAtStart will not have effect. It can be enabled only when there are separate branches for development and production.");
+                        "The commitDevelopmentVersionAtStart will not have effect. "
+                                + "It can be enabled only when there are separate branches for development and production.");
                 commitDevelopmentVersionAtStart = false;
             }
 
@@ -208,7 +209,8 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             if (useSnapshotInRelease && mavenSession.getUserProperties().get("useSnapshotInRelease") != null) {
                 getLog().warn(
-                        "The useSnapshotInRelease parameter is set from the command line. Don't forget to use it in the finish goal as well."
+                        "The useSnapshotInRelease parameter is set from the command line."
+                                + " Don't forget to use it in the finish goal as well."
                                 + " It is better to define it in the project's pom file.");
             }
 

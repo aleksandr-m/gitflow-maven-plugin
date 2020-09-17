@@ -227,7 +227,8 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
                 if (useSnapshotInHotfix && mavenSession.getUserProperties().get("useSnapshotInHotfix") != null) {
                     getLog().warn(
-                            "The useSnapshotInHotfix parameter is set from the command line. Don't forget to use it in the finish goal as well."
+                            "The useSnapshotInHotfix parameter is set from the command line."
+                                    + " Don't forget to use it in the finish goal as well."
                                     + " It is better to define it in the project's pom file.");
                 }
 

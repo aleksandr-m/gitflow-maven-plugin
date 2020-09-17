@@ -309,7 +309,8 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
             if (commitDevelopmentVersionAtStart && !notSameProdDevName()) {
                 getLog().warn(
-                        "The commitDevelopmentVersionAtStart will not have effect. It can be enabled only when there are separate branches for development and production.");
+                        "The commitDevelopmentVersionAtStart will not have effect. "
+                                + "It can be enabled only when there are separate branches for development and production.");
                 commitDevelopmentVersionAtStart = false;
             }
 

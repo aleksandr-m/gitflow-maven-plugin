@@ -254,8 +254,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private MavenProject reloadProject(MavenProject project) throws MojoFailureException {
         try {
-        	ProjectBuildingResult result = projectBuilder.build(project.getFile(), mavenSession.getProjectBuildingRequest());
-        	return result.getProject();
+            ProjectBuildingResult result = projectBuilder.build(project.getFile(), mavenSession.getProjectBuildingRequest());
+            return result.getProject();
         } catch (Exception e) {
             throw new MojoFailureException("Error re-loading project info", e);
         }
@@ -313,7 +313,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                 getLog().warn(s);
             }
             throw new MojoFailureException(
-                    "There is some SNAPSHOT dependencies in the project, see warnings above. Change them or ignore with `allowSnapshots` property.");
+                    "There is some SNAPSHOT dependencies in the project, see warnings above."
+                    + " Change them or ignore with `allowSnapshots` property.");
         }
     }
 
@@ -329,9 +330,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected boolean validBranchName(final String branchName)
             throws MojoFailureException, CommandLineException {
-        CommandResult r = executeGitCommandExitCode("check-ref-format",
+        CommandResult res = executeGitCommandExitCode("check-ref-format",
                 "--allow-onelevel", branchName);
-        return r.getExitCode() == SUCCESS_EXIT_CODE;
+        return res.getExitCode() == SUCCESS_EXIT_CODE;
     }
 
     /**
@@ -1000,11 +1001,11 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         getLog().info("Updating version(s) to '" + version + "'.");
 
         String newVersion = "-DnewVersion=" + version;
-        String g = "";
-        String a = "";
+        String grp = "";
+        String art = "";
         if (versionsForceUpdate) {
-            g = "-DgroupId=";
-            a = "-DartifactId=";
+            grp = "-DgroupId=";
+            art = "-DartifactId=";
         }
 
         if (tychoBuild) {
@@ -1017,7 +1018,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             executeMvnCommand(TYCHO_VERSIONS_PLUGIN_SET_GOAL, prop, newVersion, "-Dtycho.mode=maven");
         } else {
             if (!skipUpdateVersion) {
-                executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, g, a, newVersion, "-DgenerateBackupPoms=false");
+                executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, grp, art, newVersion, "-DgenerateBackupPoms=false");
             }
 
             if (StringUtils.isNotBlank(versionProperty)) {
