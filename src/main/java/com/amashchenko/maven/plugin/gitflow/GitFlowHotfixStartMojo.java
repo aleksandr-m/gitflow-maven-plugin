@@ -201,10 +201,6 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
             String hotfixBranchName = gitFlowConfig.getHotfixBranchPrefix()
                     + branchVersionPart;
-            if (!gitFlowConfig.getProductionBranch().equals(branchName)) {
-                hotfixBranchName = gitFlowConfig.getHotfixBranchPrefix()
-                        + branchName + "/" + branchVersionPart;
-            }
 
             // git for-each-ref refs/heads/hotfix/...
             final boolean hotfixBranchExists = gitCheckBranchExists(
