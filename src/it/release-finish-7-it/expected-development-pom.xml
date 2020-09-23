@@ -3,5 +3,5 @@
     <groupId>com.amashchenko.maven.plugin</groupId>
     <artifactId>gitflow-maven-test</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.1</version>
+    <version>0.0.4-SNAPSHOT</version>
 </project>

@@ -147,6 +147,13 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     @Parameter(property = "gpgSignTag", defaultValue = "false")
     private boolean gpgSignTag = false;
 
+    /**
+     * Whether to skip merging release into the production branch.
+     *
+     */
+    @Parameter(property = "skipReleaseMergeProdBranch", defaultValue = "false")
+    private boolean skipReleaseMergeProdBranch = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -259,7 +266,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 gitCommit(commitMessages.getReleaseStartMessage(), messageProperties);
             }
 
-            if (notSameProdDevName()) {
+            if (!skipReleaseMergeProdBranch && notSameProdDevName()) {
                 // git checkout master
                 gitCheckout(gitFlowConfig.getProductionBranch());
 
