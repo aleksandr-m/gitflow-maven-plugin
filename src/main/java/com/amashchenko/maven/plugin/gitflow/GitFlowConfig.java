@@ -20,6 +20,9 @@ package com.amashchenko.maven.plugin.gitflow;
  * 
  */
 public class GitFlowConfig {
+
+    public static final String PREFIX = "gitFlowConfig.";
+
     /** Name of the production branch. */
     private String productionBranch;
     /** Name of the development branch. */
@@ -41,14 +44,14 @@ public class GitFlowConfig {
      * Default constructor.
      */
     public GitFlowConfig() {
-        this.productionBranch = "master";
-        this.developmentBranch = "develop";
-        this.featureBranchPrefix = "feature/";
-        this.releaseBranchPrefix = "release/";
-        this.hotfixBranchPrefix = "hotfix/";
-        this.supportBranchPrefix = "support/";
-        this.versionTagPrefix = "";
-        this.origin = "origin";
+        this.productionBranch = System.getProperty(PREFIX + "productionBranch", "master");
+        this.developmentBranch = System.getProperty(PREFIX + "developmentBranch", "develop");
+        this.featureBranchPrefix = System.getProperty(PREFIX + "featureBranchPrefix", "feature/");
+        this.releaseBranchPrefix = System.getProperty(PREFIX + "releaseBranchPrefix", "release/");
+        this.hotfixBranchPrefix = System.getProperty(PREFIX + "hotfixBranchPrefix", "hotfix/");
+        this.supportBranchPrefix = System.getProperty(PREFIX + "supportBranchPrefix", "support/");
+        this.versionTagPrefix = System.getProperty(PREFIX + "versionTagPrefix", "");
+        this.origin = System.getProperty(PREFIX + "origin", "origin");
     }
 
     /**

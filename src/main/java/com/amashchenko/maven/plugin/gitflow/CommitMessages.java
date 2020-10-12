@@ -20,6 +20,9 @@ package com.amashchenko.maven.plugin.gitflow;
  *
  */
 public class CommitMessages {
+
+    public static final String PREFIX = "gitFlowConfig.";
+
     private String featureStartMessage;
     private String featureFinishMessage;
 
@@ -56,33 +59,47 @@ public class CommitMessages {
     private String featureFinishIncrementVersionMessage;
 
     public CommitMessages() {
-        featureStartMessage = "Update versions for feature branch";
-        featureFinishMessage = "Update versions for development branch";
+        featureStartMessage = System.getProperty(PREFIX + "featureStartMessage",
+                "Update versions for feature branch");
+        featureFinishMessage = System.getProperty(PREFIX + "featureFinishMessage",
+                "Update versions for development branch");
 
-        hotfixStartMessage = "Update versions for hotfix";
-        hotfixFinishMessage = "Update for next development version";
+        hotfixStartMessage = System.getProperty(PREFIX + "hotfixStartMessage",
+                "Update versions for hotfix");
+        hotfixFinishMessage = System.getProperty(PREFIX + "hotfixFinishMessage",
+                "Update for next development version");
 
-        hotfixVersionUpdateMessage = "Update to hotfix version";
+        hotfixVersionUpdateMessage = System.getProperty(PREFIX + "hotfixVersionUpdateMessage",
+                "Update to hotfix version");
 
-        releaseStartMessage = "Update versions for release";
-        releaseFinishMessage = "Update for next development version";
+        releaseStartMessage = System.getProperty(PREFIX + "releaseStartMessage",
+                "Update versions for release");
+        releaseFinishMessage = System.getProperty(PREFIX + "releaseFinishMessage",
+                "Update for next development version");
 
-        releaseVersionUpdateMessage = "Update for next development version";
+        releaseVersionUpdateMessage = System.getProperty(PREFIX + "releaseVersionUpdateMessage",
+                "Update for next development version");
 
-        releaseFinishMergeMessage = "";
-        releaseFinishDevMergeMessage = "";
+        releaseFinishMergeMessage = System.getProperty(PREFIX + "releaseFinishMergeMessage", "");
+        releaseFinishDevMergeMessage = System.getProperty(PREFIX + "releaseFinishDevMergeMessage", "");
 
-        tagHotfixMessage = "Tag hotfix";
-        tagReleaseMessage = "Tag release";
+        tagHotfixMessage = System.getProperty(PREFIX + "tagHotfixMessage", "Tag hotfix");
+        tagReleaseMessage = System.getProperty(PREFIX + "tagReleaseMessage", "Tag release");
 
-        updateDevToAvoidConflictsMessage = "Update develop to production version to avoid merge conflicts";
-        updateDevBackPreMergeStateMessage = "Update develop version back to pre-merge state";
+        updateDevToAvoidConflictsMessage = System.getProperty(PREFIX + "updateDevToAvoidConflictsMessage",
+                "Update develop to production version to avoid merge conflicts");
+        updateDevBackPreMergeStateMessage = System.getProperty(PREFIX + "updateDevBackPreMergeStateMessage",
+                "Update develop version back to pre-merge state");
 
-        updateReleaseToAvoidConflictsMessage = "Update release to hotfix version to avoid merge conflicts";
-        updateReleaseBackPreMergeStateMessage = "Update release version back to pre-merge state";
+        updateReleaseToAvoidConflictsMessage = System.getProperty(PREFIX + "updateReleaseToAvoidConflictsMessage",
+                "Update release to hotfix version to avoid merge conflicts");
+        updateReleaseBackPreMergeStateMessage = System.getProperty(PREFIX + "updateReleaseBackPreMergeStateMessage",
+                "Update release version back to pre-merge state");
 
-        updateFeatureBackMessage = "Update feature branch back to feature version";
-        featureFinishIncrementVersionMessage = "Increment feature version";
+        updateFeatureBackMessage = System.getProperty(PREFIX + "updateFeatureBackMessage",
+                "Update feature branch back to feature version");
+        featureFinishIncrementVersionMessage = System.getProperty(PREFIX + "featureFinishIncrementVersionMessage",
+                "Increment feature version");
     }
 
     /**
@@ -392,35 +409,5 @@ public class CommitMessages {
      */
     public void setFeatureFinishDevMergeMessage(String featureFinishDevMergeMessage) {
         this.featureFinishDevMergeMessage = featureFinishDevMergeMessage;
-    }
-
-    /**
-     * @return the updateFeatureBackMessage
-     */
-    public String getUpdateFeatureBackMessage() {
-        return updateFeatureBackMessage;
-    }
-
-    /**
-     * @param updateFeatureBackMessage
-     *            the updateFeatureBackMessage to set
-     */
-    public void setUpdateFeatureBackMessage(String updateFeatureBackMessage) {
-        this.updateFeatureBackMessage = updateFeatureBackMessage;
-    }
-
-    /**
-     * @return the featureFinishIncrementVersionMessage
-     */
-    public String getFeatureFinishIncrementVersionMessage() {
-        return featureFinishIncrementVersionMessage;
-    }
-
-    /**
-     * @param featureFinishIncrementVersionMessage
-     *            the featureFinishIncrementVersionMessage to set
-     */
-    public void setFeatureFinishIncrementVersionMessage(String featureFinishIncrementVersionMessage) {
-        this.featureFinishIncrementVersionMessage = featureFinishIncrementVersionMessage;
     }
 }
