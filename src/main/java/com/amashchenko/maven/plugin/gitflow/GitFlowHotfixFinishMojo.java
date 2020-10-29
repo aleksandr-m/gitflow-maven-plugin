@@ -15,6 +15,7 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -126,6 +127,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
         try {
             // check uncommitted changes
             checkUncommittedChanges();
+            gitPullAll();
 
             String hotfixBranchName = null;
             if (settings.isInteractiveMode()) {
@@ -368,7 +370,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
         }
 
         if (StringUtils.isBlank(hotfixBranches)) {
-            throw new MojoFailureException("There are no hotfix branches.");
+            throw new MojoFailureException("There are no hotfix branches locally - perhaps check out the branch first if its remote so it can be found locally");
         }
 
         String[] branches = hotfixBranches.split("\\r?\\n");

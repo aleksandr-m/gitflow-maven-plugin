@@ -33,11 +33,15 @@ import org.codehaus.plexus.util.StringUtils;
 @Mojo(name = "release-finish", aggregator = true)
 public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
-    /** Whether to skip tagging the release in Git. */
+    /**
+     * Whether to skip tagging the release in Git.
+     */
     @Parameter(property = "skipTag", defaultValue = "false")
     private boolean skipTag = false;
 
-    /** Whether to keep release branch after finish. */
+    /**
+     * Whether to keep release branch after finish.
+     */
     @Parameter(property = "keepBranch", defaultValue = "false")
     private boolean keepBranch = false;
 
@@ -58,8 +62,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     private boolean allowSnapshots = false;
 
     /**
-     * Whether to rebase branch or merge. If <code>true</code> then rebase will
-     * be performed.
+     * Whether to rebase branch or merge. If <code>true</code> then rebase will be performed.
      *
      * @since 1.2.3
      */
@@ -99,8 +102,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     private boolean digitsOnlyDevVersion = false;
 
     /**
-     * Development version to use instead of the default next development
-     * version in non interactive mode.
+     * Development version to use instead of the default next development version in non interactive mode.
      *
      * @since 1.6.0
      */
@@ -108,8 +110,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     private String developmentVersion = "";
 
     /**
-     * Which digit to increment in the next development version. Starts from
-     * zero.
+     * Which digit to increment in the next development version. Starts from zero.
      *
      * @since 1.6.0
      */
@@ -117,9 +118,8 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     private Integer versionDigitToIncrement;
 
     /**
-     * Whether to commit development version when starting the release (vs when
-     * finishing the release which is the default). Has effect only when there
-     * are separate development and production branches.
+     * Whether to commit development version when starting the release (vs when finishing the release which is the default). Has effect only when there are separate development and production
+     * branches.
      *
      * @since 1.7.0
      */
@@ -127,8 +127,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     private boolean commitDevelopmentVersionAtStart;
 
     /**
-     * Maven goals to execute in the release branch before merging into the
-     * production branch.
+     * Maven goals to execute in the release branch before merging into the production branch.
      *
      * @since 1.8.0
      */
@@ -159,7 +158,9 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "useSnapshotInRelease", defaultValue = "false")
     private boolean useSnapshotInRelease;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         validateConfiguration(preReleaseGoals, postReleaseGoals);
@@ -167,6 +168,10 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
         try {
             // check uncommitted changes
             checkUncommittedChanges();
+            
+            gitPullAll();
+            gitPrune();
+            
 
             // git for-each-ref --format='%(refname:short)' refs/heads/release/*
             String releaseBranch = gitFindBranches(gitFlowConfig.getReleaseBranchPrefix(), false).trim();
@@ -184,7 +189,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
                     if (StringUtils.countMatches(releaseBranch, gitFlowConfig.getReleaseBranchPrefix()) > 1) {
                         throw new MojoFailureException(
-                                "More than one remote release branch exists. Cannot finish release.");
+                                "More than one remote release branch exists. Cannot finish release. [" + gitFlowConfig.getReleaseBranchPrefix() + "] is found more than once in [" + releaseBranch + "]");
                     }
 
                     gitCreateAndCheckout(releaseBranch, gitFlowConfig.getOrigin() + "/" + releaseBranch);

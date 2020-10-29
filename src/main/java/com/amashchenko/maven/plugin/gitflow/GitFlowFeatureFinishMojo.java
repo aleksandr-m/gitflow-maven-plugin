@@ -237,7 +237,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
         final String currentBranch = gitCurrentBranch();
 
         if (StringUtils.isBlank(featureBranches)) {
-            throw new MojoFailureException("There are no feature branches.");
+            throw new MojoFailureException("There are no feature branches locally - perhaps check out the branch first if its remote so it can be found locally");
         }
 
         final String[] branches = featureBranches.split("\\r?\\n");

@@ -15,6 +15,7 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,23 +34,22 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
  * The git flow hotfix start mojo.
- * 
+ *
  */
 @Mojo(name = "hotfix-start", aggregator = true)
 public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to push to the remote.
-     * 
+     *
      * @since 1.6.0
      */
     @Parameter(property = "pushRemote", defaultValue = "false")
     private boolean pushRemote;
 
     /**
-     * Branch to start hotfix in non-interactive mode. Production branch or one of
-     * the support branches.
-     * 
+     * Branch to start hotfix in non-interactive mode. Production branch or one of the support branches.
+     *
      * @since 1.9.0
      */
     @Parameter(property = "fromBranch")
@@ -57,7 +57,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
     /**
      * Hotfix version to use in non-interactive mode.
-     * 
+     *
      * @since 1.9.0
      */
     @Parameter(property = "hotfixVersion")
@@ -65,13 +65,15 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to use snapshot in hotfix.
-     * 
+     *
      * @since 1.10.0
      */
     @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
     private boolean useSnapshotInHotfix;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         validateConfiguration();
@@ -172,7 +174,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
                         if (!"".equals(version)
                                 && (!GitFlowVersionInfo.isValidVersion(version)
-                                        || !validBranchName(version))) {
+                                || !validBranchName(version))) {
                             getLog().info("The version is not valid.");
                             version = null;
                         }
@@ -183,7 +185,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             } else {
                 if (StringUtils.isNotBlank(hotfixVersion)
                         && (!GitFlowVersionInfo.isValidVersion(hotfixVersion)
-                                || !validBranchName(hotfixVersion))) {
+                        || !validBranchName(hotfixVersion))) {
                     throw new MojoFailureException("The hotfix version '"
                             + hotfixVersion + "' is not valid.");
                 } else {
@@ -228,7 +230,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                 if (useSnapshotInHotfix && mavenSession.getUserProperties().get("useSnapshotInHotfix") != null) {
                     getLog().warn(
                             "The useSnapshotInHotfix parameter is set from the command line. Don't forget to use it in the finish goal as well."
-                                    + " It is better to define it in the project's pom file.");
+                            + " It is better to define it in the project's pom file.");
                 }
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false

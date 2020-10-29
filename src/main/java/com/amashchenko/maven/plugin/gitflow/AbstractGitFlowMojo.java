@@ -491,7 +491,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
         branches = removeQuotes(branches);
         branches = StringUtils.strip(branches);
-
+        getLog().info("Found branches: " + branches);
         return branches;
     }
 
@@ -961,6 +961,20 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
     }
 
+    protected void gitPrune()
+            throws MojoFailureException, CommandLineException {
+        getLog().info("Pruning detached branches");
+
+        executeGitCommand("remote", "prune", "origin");
+    }
+
+    protected void gitPullAll()
+            throws MojoFailureException, CommandLineException {
+        getLog().info("Pulling all branches");
+
+        executeGitCommand("pull", "--all");
+    }
+
     /**
      * Executes 'set' goal of versions-maven-plugin or 'set-version' of tycho-versions-plugin in case it is tycho build.
      *
@@ -1128,6 +1142,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
         final CommandLineUtils.StringStreamConsumer err = new CommandLineUtils.StringStreamConsumer();
 
+        getLog().debug("Running: " + cmd.toString());
         // execute
         final int exitCode = CommandLineUtils.executeCommandLine(cmd, out, err);
 
