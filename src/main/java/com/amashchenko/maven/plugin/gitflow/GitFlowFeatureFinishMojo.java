@@ -92,6 +92,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     /**
      * Whether to increment the version during feature-finish goal.
      *
+     * @since 1.15.0
      */
     @Parameter(property = "incrementVersionAtFinish", defaultValue = "false")
     private boolean incrementVersionAtFinish;

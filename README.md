@@ -23,7 +23,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.14.0</version>
+                <version>1.15.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -216,6 +216,8 @@ The default value is `false` (e.g. if the project version is `1.0.0-SNAPSHOT` an
 The `gitflow:feature-start` goal has `featureNamePattern` parameter which allows to enforce naming of the feature branches with a regular expression. Doesn't have effect if it isn't set or left blank.
 By default it isn't set.
 
+The `gitflow:feature-finish` goal has `incrementVersionAtFinish` parameter which if set to `true` will increment version number during feature finish. The default is `false`.
+
 All `-finish` goals have `keepBranch` parameter which controls whether created support branch will be kept in Git after the goal finishes.
 The default value is `false` (i.e. the supporting branch will be deleted). If the `pushRemote` parameter is set to `true` and `keepBranch` is `false` remote branch will be deleted as well.
 
@@ -251,12 +253,14 @@ The `gitflow:release-start` goal has `fromCommit` parameter which allows to star
 The `gitflow:release-start` and `gitflow:release-finish` goals have `useSnapshotInRelease` parameter which allows to start the release with SNAPSHOT version and finish it without this value in project version. By default the value is `false`.
 For example, if the release version  is `1.0.2` and `useSnapshotInRelease` is set to `true` and using `gitflow:release-start` goal then the release version will be `1.0.2-SNAPSHOT` and when finishing the release with `gitflow:release-finish` goal, the release version will be `1.0.2`
 
+The `gitflow:release` and `gitflow:release-start` goals have `skipReleaseMergeProdBranch` parameter which prevents merging the release branch into the production branch. The default value is `false`.
+
 The `gitflow:hotfix-start` and `gitflow:hotfix-finish` goals have `useSnapshotInHotfix` parameter which allows to start the hotfix with SNAPSHOT version and finish it without this value in the version. By default the value is `false`.
 For example, if the hotfix version  is `1.0.2.1` and `useSnapshotInHotfix` is set to `true` and using `gitflow:hotfix-start` goal then the hotfix version will be `1.0.2.1-SNAPSHOT` and when finishing the release with `gitflow:hotfix-finish` goal, the release version will be `1.0.2.1`
 
-The `gitflow:hotfix-finish` goal also supports the parameter `skipMergeDevBranch` which prevents merging the hotfix branch into the development branch. 
+The `gitflow:hotfix-finish` goal supports the parameter `skipMergeDevBranch` which prevents merging the hotfix branch into the development branch. 
 
-The `gitflow:hotfix-finish` goal also supports the parameter `skipMergeProdBranch` which prevents merging the hotfix branch into the production branch and deletes the hotfix branch leaving only the tagged commit. Useful, along with `skipMergeDevBranch`, to allow hotfixes to very old code that are not applicable to current development.
+The `gitflow:hotfix-finish` goal supports the parameter `skipMergeProdBranch` which prevents merging the hotfix branch into the production branch and deletes the hotfix branch leaving only the tagged commit. Useful, along with `skipMergeDevBranch`, to allow hotfixes to very old code that are not applicable to current development.
 
 Version update of all modules ignoring groupId and artifactId can be forced by setting `versionsForceUpdate` parameter to `true`. The default value is `false`.
 

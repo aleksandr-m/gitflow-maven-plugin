@@ -150,6 +150,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     /**
      * Whether to skip merging release into the production branch.
      *
+     * @since 1.15.0
      */
     @Parameter(property = "skipReleaseMergeProdBranch", defaultValue = "false")
     private boolean skipReleaseMergeProdBranch = false;

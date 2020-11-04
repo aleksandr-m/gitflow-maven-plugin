@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.15.0 (2020-11-04)
+
+* Updated java version to 1.7 - [#252](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/252)
+* Changed commit logic in `feature-finish` goal to avoid directly committing into the develop - [#226](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/226)
+* Fixed wrong development version after `hotfix-finish` - [#211](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/211)
+* Fixed failing `hotfix-finish` in fresh checkout - [#219](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/219)
+* Added ability to skip merging release into production branch - [#74](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/74)
+* Added ability to increment feature version during `feature-finish` goal - [#162](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/162)
+* Added current feature branch as the default choice for `feature-finish` - [#227](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/227)
+* Added properties to `featureFinishDevMergeMessage` message - [#247](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/247)
+
 ## v1.14.0 (2019-12-06)
 
 * Fixed snapshot dependencies check and improved version resolution - [#204](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/204)
