@@ -300,7 +300,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     }
 
                     // get next snapshot version
-                    final String nextSnapshotVersion = developVersionInfo.nextSnapshotVersion();
+                    final String nextSnapshotVersion = developVersionInfo.getSnapshotVersionString();
 
                     if (StringUtils.isBlank(nextSnapshotVersion)) {
                         throw new MojoFailureException(
