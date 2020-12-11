@@ -97,6 +97,14 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "incrementVersionAtFinish", defaultValue = "false")
     private boolean incrementVersionAtFinish;
 
+    /**
+     * Whether to increment the version during feature-finish goal.
+     *
+     * @since 1.16.0
+     */
+    @Parameter(property = "incrementVersionAtFinish", defaultValue = "false")
+    private boolean finishCurrentBranch;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -118,6 +126,16 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                             + "' doesn't exist. Cannot finish feature.");
                 }
                 featureBranchName = branch;
+            } else if (finishCurrentBranch) {
+                final String currentBranch = gitCurrentBranch();
+                if(!currentBranch.startsWith(gitFlowConfig.getFeatureBranchPrefix())) {
+                    throw new MojoFailureException("Current branch with name '"
+                            + currentBranch
+                            + "' is not a feature branch. It does not start with '"
+                            + gitFlowConfig.getFeatureBranchPrefix()
+                            + "'. Cannot finish feature.");
+                }
+                featureBranchName = currentBranch;
             }
 
             if (StringUtils.isBlank(featureBranchName)) {
