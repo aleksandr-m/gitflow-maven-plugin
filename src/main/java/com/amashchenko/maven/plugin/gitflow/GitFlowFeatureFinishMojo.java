@@ -102,7 +102,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
      *
      * @since 1.16.0
      */
-    @Parameter(property = "incrementVersionAtFinish", defaultValue = "false")
+    @Parameter(property = "finishCurrentBranch", defaultValue = "false")
     private boolean finishCurrentBranch;
 
     /** {@inheritDoc} */
