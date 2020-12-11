@@ -326,6 +326,8 @@ The `gitflow:release-finish` and `gitflow:release` goals have `developmentVersio
 
 The `gitflow:feature-start` and `gitflow:feature-finish` goals have `featureName` parameter which can be used to set a name of the feature in non-interactive mode.
 
+The `gitflow:feature-finish` goal additionally has the `finishCurrentBranch` parameter, which can be set to `true` to finish the current branch in non-interactive mode. Default is `false`.
+
 ## Non-interactive Hotfix
 
 The `gitflow:hotfix-start` goal has `fromBranch` parameter which can be used to set starting branch of the hotfix. It can be set to production branch or one of the support branches.
