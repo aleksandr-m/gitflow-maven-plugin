@@ -98,7 +98,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     private boolean incrementVersionAtFinish;
 
     /**
-     * Whether to increment the version during feature-finish goal.
+     * Whether to finish the current branch in non-interactive mode.
      *
      * @since 1.16.0
      */
