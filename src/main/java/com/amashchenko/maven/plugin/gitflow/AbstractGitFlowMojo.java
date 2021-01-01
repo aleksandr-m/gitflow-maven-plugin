@@ -1017,15 +1017,26 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
             executeMvnCommand(TYCHO_VERSIONS_PLUGIN_SET_GOAL, prop, newVersion, "-Dtycho.mode=maven");
         } else {
+            boolean runCommand = false;
+            List<String> args = new ArrayList<>();
+            args.add("-DgenerateBackupPoms=false");
+            args.add(newVersion);
             if (!skipUpdateVersion) {
-                executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_GOAL, grp, art, newVersion, "-DgenerateBackupPoms=false");
+                runCommand = true;
+                args.add(VERSIONS_MAVEN_PLUGIN_SET_GOAL);
+                args.add(grp);
+                args.add(art);
             }
 
             if (StringUtils.isNotBlank(versionProperty)) {
+                runCommand = true;
                 getLog().info("Updating property '" + versionProperty + "' to '" + version + "'.");
 
-                executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL, newVersion, "-Dproperty=" + versionProperty,
-                        "-DgenerateBackupPoms=false");
+                args.add(VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL);
+                args.add("-Dproperty=" + versionProperty);
+            }
+            if (runCommand) {
+                executeMvnCommand(args.toArray(new String[0]));
             }
         }
     }
