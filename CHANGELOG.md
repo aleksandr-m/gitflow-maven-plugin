@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.15.1 (2021-01-14)
+
+* Fixed `hotfix-finish` must not increment develop snapshot version [#267](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/267)
+
 ## v1.15.0 (2020-11-04)
 
 * Updated java version to 1.7 - [#252](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/252)
