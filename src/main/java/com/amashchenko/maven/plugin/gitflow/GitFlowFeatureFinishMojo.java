@@ -65,12 +65,21 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     private boolean pushRemote;
 
     /**
-     * Feature name to use in non-interactive mode.
+     * Feature name, without feature branch prefix, to use in non-interactive mode.
      * 
      * @since 1.9.0
      */
     @Parameter(property = "featureName")
     private String featureName;
+
+    /**
+     * Feature branch to use in non-interactive mode. Must start with feature branch
+     * prefix. The featureBranch parameter will be used instead of
+     * {@link #featureName} if both are set.
+     * 
+     */
+    @Parameter(property = "featureBranch")
+    private String featureBranch;
 
     /**
      * Maven goals to execute in the feature branch before merging into the
@@ -109,20 +118,25 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             String featureBranchName = null;
             if (settings.isInteractiveMode()) {
                 featureBranchName = promptBranchName();
+            } else if (StringUtils.isNotBlank(featureBranch)) {
+                if (!featureBranch.startsWith(gitFlowConfig.getFeatureBranchPrefix())) {
+                    throw new MojoFailureException("The featureBranch parameter doesn't start with feature branch prefix.");
+                }
+                if (!gitCheckBranchExists(featureBranch)) {
+                    throw new MojoFailureException(
+                            "Feature branch with name '" + featureBranch + "' doesn't exist. Cannot finish feature.");
+                }
+                featureBranchName = featureBranch;
             } else if (StringUtils.isNotBlank(featureName)) {
-                final String branch = gitFlowConfig.getFeatureBranchPrefix()
-                        + featureName;
+                final String branch = gitFlowConfig.getFeatureBranchPrefix() + featureName;
                 if (!gitCheckBranchExists(branch)) {
-                    throw new MojoFailureException("Feature branch with name '"
-                            + branch
-                            + "' doesn't exist. Cannot finish feature.");
+                    throw new MojoFailureException("Feature branch with name '" + branch + "' doesn't exist. Cannot finish feature.");
                 }
                 featureBranchName = branch;
             }
 
             if (StringUtils.isBlank(featureBranchName)) {
-                throw new MojoFailureException(
-                        "Feature branch name to finish is blank.");
+                throw new MojoFailureException("Feature branch name to finish is blank.");
             }
 
             // fetch and check remote
