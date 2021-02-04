@@ -49,6 +49,13 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "tagName")
     private String tagName;
 
+    /**
+     * Branch name to use instead of the default.
+     *
+     */
+    @Parameter(property = "supportBranchName")
+    private String supportBranchName;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -91,17 +98,20 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
                 throw new MojoFailureException("Tag is blank.");
             }
 
+            String branchName = tag;
+            if (StringUtils.isNotBlank(supportBranchName)) {
+                branchName = supportBranchName;
+            }
+
             // git for-each-ref refs/heads/support/...
-            final boolean supportBranchExists = gitCheckBranchExists(gitFlowConfig
-                    .getSupportBranchPrefix() + tag);
+            final boolean supportBranchExists = gitCheckBranchExists(gitFlowConfig.getSupportBranchPrefix() + branchName);
 
             if (supportBranchExists) {
-                throw new MojoFailureException(
-                        "Support branch with that name already exists.");
+                throw new MojoFailureException("Support branch with that name already exists.");
             }
 
             // git checkout -b ... tag
-            gitCreateAndCheckout(gitFlowConfig.getSupportBranchPrefix() + tag, tag);
+            gitCreateAndCheckout(gitFlowConfig.getSupportBranchPrefix() + branchName, tag);
 
             if (installProject) {
                 // mvn clean install
@@ -109,7 +119,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
             }
 
             if (pushRemote) {
-                gitPush(gitFlowConfig.getSupportBranchPrefix() + tag, false);
+                gitPush(gitFlowConfig.getSupportBranchPrefix() + branchName, false);
             }
         } catch (CommandLineException e) {
             throw new MojoFailureException("support-start", e);
