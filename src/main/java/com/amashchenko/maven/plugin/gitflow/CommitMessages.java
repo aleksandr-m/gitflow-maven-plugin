@@ -271,16 +271,6 @@ public class CommitMessages {
     }
 
     /**
-     * @param updateDevToAvoidConflitsMessage
-     *            the updateDevToAvoidConflitsMessage to set
-     * @deprecated Use the correctly spelt updateDevToAvoidConflictsMessage instead
-     */
-    @Deprecated
-    public void setUpdateDevToAvoidConflitsMessage(String updateDevToAvoidConflitsMessage) {
-        this.updateDevToAvoidConflictsMessage = updateDevToAvoidConflitsMessage;
-    }
-
-    /**
      * @return the updateDevBackPreMergeStateMessage
      */
     public String getUpdateDevBackPreMergeStateMessage() {
