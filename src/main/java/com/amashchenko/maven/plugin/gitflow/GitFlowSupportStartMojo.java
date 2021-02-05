@@ -16,7 +16,11 @@
 package com.amashchenko.maven.plugin.gitflow;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -55,6 +59,13 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
      */
     @Parameter(property = "supportBranchName")
     private String supportBranchName;
+
+    /**
+     * Whether to use snapshot in support.
+     * 
+     */
+    @Parameter(property = "useSnapshotInSupport", defaultValue = "false")
+    private boolean useSnapshotInSupport;
 
     /** {@inheritDoc} */
     @Override
@@ -112,6 +123,20 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
 
             // git checkout -b ... tag
             gitCreateAndCheckout(gitFlowConfig.getSupportBranchPrefix() + branchName, tag);
+
+            if (useSnapshotInSupport) {
+                String version = getCurrentProjectVersion();
+                if (!ArtifactUtils.isSnapshot(version)) {
+                    version = version + "-" + Artifact.SNAPSHOT_VERSION;
+                    
+                    mvnSetVersions(version);
+
+                    Map<String, String> properties = new HashMap<String, String>();
+                    properties.put("version", version);
+
+                    gitCommit(commitMessages.getSupportStartMessage(), properties);
+                }
+            }
 
             if (installProject) {
                 // mvn clean install

@@ -55,6 +55,8 @@ public class CommitMessages {
     private String updateFeatureBackMessage;
     private String featureFinishIncrementVersionMessage;
 
+    private String supportStartMessage;
+
     public CommitMessages() {
         featureStartMessage = "Update versions for feature branch";
         featureFinishMessage = "Update versions for development branch";
@@ -83,6 +85,8 @@ public class CommitMessages {
 
         updateFeatureBackMessage = "Update feature branch back to feature version";
         featureFinishIncrementVersionMessage = "Increment feature version";
+
+        supportStartMessage = "Update versions for support branch";
     }
 
     /**
@@ -422,5 +426,20 @@ public class CommitMessages {
      */
     public void setFeatureFinishIncrementVersionMessage(String featureFinishIncrementVersionMessage) {
         this.featureFinishIncrementVersionMessage = featureFinishIncrementVersionMessage;
+    }
+
+    /**
+     * @return the supportStartMessage
+     */
+    public String getSupportStartMessage() {
+        return supportStartMessage;
+    }
+
+    /**
+     * @param supportStartMessage
+     *            the supportStartMessage to set
+     */
+    public void setSupportStartMessage(String supportStartMessage) {
+        this.supportStartMessage = supportStartMessage;
     }
 }
