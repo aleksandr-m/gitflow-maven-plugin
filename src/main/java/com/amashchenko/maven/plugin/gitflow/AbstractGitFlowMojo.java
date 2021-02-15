@@ -15,12 +15,14 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
@@ -189,9 +191,48 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * 
      */
     private void initExecutables() {
+
+        boolean mainClassIsMavenWrapper = false;
+        for (final Map.Entry<Object, Object> p : this.mavenSession.getSystemProperties()
+                .entrySet()) {
+            mainClassIsMavenWrapper |= (String.valueOf(p.getKey()).startsWith("env.JAVA_MAIN_CLASS")
+                    && "org.apache.maven.wrapper.MavenWrapperMain".equals(p.getValue()));
+        }
+        // TechDebt Java 1.8+ version
+//        final boolean mainClassIsMavenWrapper = this.mavenSession.getSystemProperties().entrySet().stream()
+//                .filter(p -> String.valueOf(p.getKey()).startsWith("env.JAVA_MAIN_CLASS"))
+//                .filter(p -> "org.apache.maven.wrapper.MavenWrapperMain".equals(p.getValue()))
+//                .findAny()
+//                .isPresent();
+
+        boolean mavenHomeIsWrapperDists = false;
+        for (final Map.Entry<Object, Object> p : this.mavenSession.getSystemProperties()
+                .entrySet()) {
+            mavenHomeIsWrapperDists |= ("maven.home".equals(p.getKey())
+                    && String.valueOf(p.getValue()).contains("/wrapper/dists/"));
+        }
+        // TechDebt Java 1.8+ version
+//        final boolean mavenHomeIsWrapperDists = this.mavenSession.getSystemProperties().entrySet().stream()
+//                .filter(p -> "maven.home".equals(p.getKey()))
+//                .filter(p -> String.valueOf(p.getValue()).contains("/wrapper/dists/"))
+//                .findAny()
+//                .isPresent();
+
+        final boolean runningWithinMavenWrapper = mainClassIsMavenWrapper && mavenHomeIsWrapperDists;
+
         if (StringUtils.isBlank(cmdMvn.getExecutable())) {
             if (StringUtils.isBlank(mvnExecutable)) {
-                mvnExecutable = "mvn";
+                if (SystemUtils.IS_OS_UNIX
+                        && new File(".", "mvnw").isFile()
+                        && runningWithinMavenWrapper) {
+                    mvnExecutable = "./mvnw";
+                } else if (SystemUtils.IS_OS_WINDOWS
+                        && new File(".", "mvnw.cmd").isFile()
+                        && runningWithinMavenWrapper) {
+                    mvnExecutable = "mvnw.cmd";
+                } else {
+                    mvnExecutable = "mvn";
+                }
             }
             cmdMvn.setExecutable(mvnExecutable);
         }
