@@ -1,0 +1,5 @@
+build.log
+expected-pom.xml
+invoker.properties
+init.bsh
+verify.bsh
