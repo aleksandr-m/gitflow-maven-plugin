@@ -15,14 +15,20 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import com.google.common.base.Splitter;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import java.util.Map.Entry;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 /**
  * Git commit messages.
  *
  */
 public class CommitMessages {
-
-    private static final String PROPERTY_PREFIX = "commitMessages.";
-
     private String featureStartMessage;
     private String featureFinishMessage;
 
@@ -92,11 +98,18 @@ public class CommitMessages {
         supportStartMessage = "Update versions for support branch";
     }
 
+    public void set(String commitMessages) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
+        Map<String, String> values = Splitter.on(",").withKeyValueSeparator("=").split(commitMessages);
+        for(Entry<String, String> e : values.entrySet()) {
+            new PropertyDescriptor(e.getKey(), this.getClass()).getWriteMethod().invoke(this, e.getValue());
+        }
+    }
+
     /**
      * @return the featureStartMessage
      */
     public String getFeatureStartMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "featureStartMessage", featureStartMessage);
+        return featureStartMessage;
     }
 
     /**
@@ -111,7 +124,7 @@ public class CommitMessages {
      * @return the featureFinishMessage
      */
     public String getFeatureFinishMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "featureFinishMessage", featureFinishMessage);
+        return featureFinishMessage;
     }
 
     /**
@@ -126,7 +139,7 @@ public class CommitMessages {
      * @return the hotfixStartMessage
      */
     public String getHotfixStartMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "hotfixStartMessage", hotfixStartMessage);
+        return hotfixStartMessage;
     }
 
     /**
@@ -141,7 +154,7 @@ public class CommitMessages {
      * @return the hotfixFinishMessage
      */
     public String getHotfixFinishMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "hotfixFinishMessage", hotfixFinishMessage);
+        return hotfixFinishMessage;
     }
 
     /**
@@ -153,7 +166,7 @@ public class CommitMessages {
     }
 
     public String getHotfixVersionUpdateMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "hotfixVersionUpdateMessage", hotfixVersionUpdateMessage);
+        return hotfixVersionUpdateMessage;
     }
 
     public void setHotfixVersionUpdateMessage(String hotfixVersionUpdateMessage) {
@@ -164,7 +177,7 @@ public class CommitMessages {
      * @return the releaseStartMessage
      */
     public String getReleaseStartMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "releaseStartMessage", releaseStartMessage);
+        return releaseStartMessage;
     }
 
     /**
@@ -179,7 +192,7 @@ public class CommitMessages {
      * @return the releaseFinishMessage
      */
     public String getReleaseFinishMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "releaseFinishMessage", releaseFinishMessage);
+        return releaseFinishMessage;
     }
 
     /**
@@ -191,7 +204,7 @@ public class CommitMessages {
     }
 
     public String getReleaseVersionUpdateMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "releaseVersionUpdateMessage", releaseVersionUpdateMessage);
+        return releaseVersionUpdateMessage;
     }
 
     public void setReleaseVersionUpdateMessage(String releaseVersionUpdateMessage) {
@@ -202,7 +215,7 @@ public class CommitMessages {
      * @return the releaseFinishMergeMessage
      */
     public String getReleaseFinishMergeMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "releaseFinishMergeMessage", releaseFinishMergeMessage);
+        return releaseFinishMergeMessage;
     }
 
     /**
@@ -217,7 +230,7 @@ public class CommitMessages {
      * @return the releaseFinishDevMergeMessage
      */
     public String getReleaseFinishDevMergeMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "releaseFinishDevMergeMessage", releaseFinishDevMergeMessage);
+        return releaseFinishDevMergeMessage;
     }
 
     /**
@@ -232,7 +245,7 @@ public class CommitMessages {
      * @return the tagHotfixMessage
      */
     public String getTagHotfixMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "tagHotfixMessage", tagHotfixMessage);
+        return tagHotfixMessage;
     }
 
     /**
@@ -247,7 +260,7 @@ public class CommitMessages {
      * @return the tagReleaseMessage
      */
     public String getTagReleaseMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "tagReleaseMessage", tagReleaseMessage);
+        return tagReleaseMessage;
     }
 
     /**
@@ -262,7 +275,7 @@ public class CommitMessages {
      * @return the updateDevToAvoidConflictsMessage
      */
     public String getUpdateDevToAvoidConflictsMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "updateDevToAvoidConflictsMessage", updateDevToAvoidConflictsMessage);
+        return updateDevToAvoidConflictsMessage;
     }
 
     /**
@@ -277,7 +290,7 @@ public class CommitMessages {
      * @return the updateDevBackPreMergeStateMessage
      */
     public String getUpdateDevBackPreMergeStateMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "updateDevBackPreMergeStateMessage", updateDevBackPreMergeStateMessage);
+        return updateDevBackPreMergeStateMessage;
     }
 
     /**
@@ -292,7 +305,7 @@ public class CommitMessages {
      * @return the updateReleaseToAvoidConflictsMessage
      */
     public String getUpdateReleaseToAvoidConflictsMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "updateReleaseToAvoidConflictsMessage", updateReleaseToAvoidConflictsMessage);
+        return updateReleaseToAvoidConflictsMessage;
     }
 
     /**
@@ -306,7 +319,7 @@ public class CommitMessages {
      * @return the updateReleaseBackPreMergeStateMessage
      */
     public String getUpdateReleaseBackPreMergeStateMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "updateReleaseBackPreMergeStateMessage", updateReleaseBackPreMergeStateMessage);
+        return updateReleaseBackPreMergeStateMessage;
     }
 
     /**
@@ -320,7 +333,7 @@ public class CommitMessages {
      * @return the hotfixFinishMergeMessage
      */
     public String getHotfixFinishMergeMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "hotfixFinishMergeMessage", hotfixFinishMergeMessage);
+        return hotfixFinishMergeMessage;
     }
 
     /**
@@ -335,7 +348,7 @@ public class CommitMessages {
      * @return the hotfixFinishDevMergeMessage
      */
     public String getHotfixFinishDevMergeMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "hotfixFinishDevMergeMessage", hotfixFinishDevMergeMessage);
+        return hotfixFinishDevMergeMessage;
     }
 
     /**
@@ -350,7 +363,7 @@ public class CommitMessages {
      * @return the hotfixFinishReleaseMergeMessage
      */
     public String getHotfixFinishReleaseMergeMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "hotfixFinishReleaseMergeMessage", hotfixFinishReleaseMergeMessage);
+        return hotfixFinishReleaseMergeMessage;
     }
 
     /**
@@ -365,7 +378,7 @@ public class CommitMessages {
      * @return the hotfixFinishSupportMergeMessage
      */
     public String getHotfixFinishSupportMergeMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "hotfixFinishSupportMergeMessage", hotfixFinishSupportMergeMessage);
+        return hotfixFinishSupportMergeMessage;
     }
 
     /**
@@ -380,7 +393,7 @@ public class CommitMessages {
      * @return the featureFinishDevMergeMessage
      */
     public String getFeatureFinishDevMergeMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "featureFinishDevMergeMessage", featureFinishDevMergeMessage);
+        return featureFinishDevMergeMessage;
     }
 
     /**
@@ -395,7 +408,7 @@ public class CommitMessages {
      * @return the updateFeatureBackMessage
      */
     public String getUpdateFeatureBackMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "updateFeatureBackMessage", updateFeatureBackMessage);
+        return updateFeatureBackMessage;
     }
 
     /**
@@ -410,7 +423,7 @@ public class CommitMessages {
      * @return the featureFinishIncrementVersionMessage
      */
     public String getFeatureFinishIncrementVersionMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "featureFinishIncrementVersionMessage", featureFinishIncrementVersionMessage);
+        return featureFinishIncrementVersionMessage;
     }
 
     /**
@@ -425,7 +438,7 @@ public class CommitMessages {
      * @return the supportStartMessage
      */
     public String getSupportStartMessage() {
-        return System.getProperty(PROPERTY_PREFIX + "supportStartMessage", supportStartMessage);
+        return supportStartMessage;
     }
 
     /**

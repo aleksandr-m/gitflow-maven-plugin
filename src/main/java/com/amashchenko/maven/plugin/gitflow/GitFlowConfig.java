@@ -15,14 +15,18 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import com.google.common.base.Splitter;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import java.util.Map.Entry;
+
 /**
  * Git flow configuration.
  *
  */
 public class GitFlowConfig {
-
-    private static final String PROPERTY_PREFIX = "gitFlowConfig.";
-
     /** Name of the production branch. */
     private String productionBranch;
     /** Name of the development branch. */
@@ -54,11 +58,18 @@ public class GitFlowConfig {
         this.origin = "origin";
     }
 
+    public void set(String gitFlowConfig) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
+        Map<String, String> values = Splitter.on(",").withKeyValueSeparator("=").split(gitFlowConfig);
+        for(Entry<String, String> e : values.entrySet()) {
+            new PropertyDescriptor(e.getKey(), this.getClass()).getWriteMethod().invoke(this, e.getValue());
+        }
+    }
+
     /**
      * @return the productionBranch
      */
     public String getProductionBranch() {
-        return System.getProperty(PROPERTY_PREFIX + "productionBranch", productionBranch);
+        return productionBranch;
     }
 
     /**
@@ -73,7 +84,7 @@ public class GitFlowConfig {
      * @return the developmentBranch
      */
     public String getDevelopmentBranch() {
-        return System.getProperty(PROPERTY_PREFIX + "developmentBranch", developmentBranch);
+        return developmentBranch;
     }
 
     /**
@@ -88,7 +99,7 @@ public class GitFlowConfig {
      * @return the featureBranchPrefix
      */
     public String getFeatureBranchPrefix() {
-        return System.getProperty(PROPERTY_PREFIX + "featureBranchPrefix", featureBranchPrefix);
+        return featureBranchPrefix;
     }
 
     /**
@@ -103,7 +114,7 @@ public class GitFlowConfig {
      * @return the releaseBranchPrefix
      */
     public String getReleaseBranchPrefix() {
-        return System.getProperty(PROPERTY_PREFIX + "releaseBranchPrefix", releaseBranchPrefix);
+        return releaseBranchPrefix;
     }
 
     /**
@@ -118,7 +129,7 @@ public class GitFlowConfig {
      * @return the hotfixBranchPrefix
      */
     public String getHotfixBranchPrefix() {
-        return System.getProperty(PROPERTY_PREFIX + "hotfixBranchPrefix", hotfixBranchPrefix);
+        return hotfixBranchPrefix;
     }
 
     /**
@@ -133,7 +144,7 @@ public class GitFlowConfig {
      * @return the supportBranchPrefix
      */
     public String getSupportBranchPrefix() {
-        return System.getProperty(PROPERTY_PREFIX + "supportBranchPrefix", supportBranchPrefix);
+        return supportBranchPrefix;
     }
 
     /**
@@ -148,7 +159,7 @@ public class GitFlowConfig {
      * @return the versionTagPrefix
      */
     public String getVersionTagPrefix() {
-        return System.getProperty(PROPERTY_PREFIX + "versionTagPrefix", versionTagPrefix);
+        return versionTagPrefix;
     }
 
     /**
@@ -163,7 +174,7 @@ public class GitFlowConfig {
      * @return the origin
      */
     public String getOrigin() {
-        return System.getProperty(PROPERTY_PREFIX + "origin", origin);
+        return origin;
     }
 
     /**
