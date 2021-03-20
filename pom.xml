@@ -41,7 +41,7 @@
         </developer>
     </developers>
 
-    <url>https://github.com/aleksandr-m/gitflow-maven-plugin</url>
+    <url>https://github.com/vegegoku/gitflow-maven-plugin</url>
 
     <scm>
         <url>https://github.com/vegegoku/gitflow-maven-plugin</url>

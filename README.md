@@ -1,6 +1,6 @@
 # Git-Flow Maven Plugin
 
-[![verify](https://github.com/aleksandr-m/gitflow-maven-plugin/workflows/verify/badge.svg)](https://github.com/aleksandr-m/gitflow-maven-plugin/actions)
+[![verify](https://github.com/vegegoku/gitflow-maven-plugin/workflows/verify/badge.svg)](https://github.com/vegegoku/gitflow-maven-plugin/actions)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.amashchenko.maven.plugin/gitflow-maven-plugin/badge.svg?subject=Maven%20Central)](https://maven-badges.herokuapp.com/maven-central/com.amashchenko.maven.plugin/gitflow-maven-plugin/)
 [![License](https://img.shields.io/badge/License-Apache%20License%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
@@ -17,13 +17,13 @@ See what's changed - [CHANGELOG](CHANGELOG.md)
 # Installation
 
 The plugin is available from Maven Central.
-    
+
     <build>
         <plugins>
             <plugin>
-                <groupId>com.amashchenko.maven.plugin</groupId>
+                <groupId>org.dominokit</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.15.1</version>
+                <version>1.0.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -67,7 +67,7 @@ That's it!
 Since version `1.1.0` this plugin supports Eclipse plugin projects which are build with [Tycho](https://eclipse.org/tycho/).
 To enable this feature put `<tychoBuild>true</tychoBuild>` into `<configuration>` section of this plugin in your pom.xml file.
 
-### Features of `tychoBuild` 
+### Features of `tychoBuild`
 
 The [`tycho-versions-plugin`](https://eclipse.org/tycho/sitedocs/tycho-release/tycho-versions-plugin/plugin-info.html) Maven plugin will be used to set versions instead of [`versions-maven-plugin`](https://www.mojohaus.org/versions-maven-plugin/).
 
@@ -171,13 +171,13 @@ Since `1.2.1` commit messages can be changed in plugin's configuration section i
             <!-- Migration Note: This was called <updateDevToAvoidConflitsMessage> in version 1.11.0, but has been deprecated in favour of the correctly spelt one below. -->
             <updateDevToAvoidConflictsMessage>Update develop to production version to avoid merge conflicts</updateDevToAvoidConflictsMessage>
             <updateDevBackPreMergeStateMessage>Update develop version back to pre-merge state</updateDevBackPreMergeStateMessage>
-            
+
             <updateReleaseToAvoidConflictsMessage>Update release to hotfix version to avoid merge conflicts</updateReleaseToAvoidConflictsMessage>
             <updateReleaseBackPreMergeStateMessage>Update release version back to pre-merge state</updateReleaseBackPreMergeStateMessage>
         </commitMessages>
     </configuration>
 
-Maven properties can be used in commit messages. For example `<featureStartMessage>updating ${project.artifactId} project for feature branch</featureStartMessage>` will produce message where 
+Maven properties can be used in commit messages. For example `<featureStartMessage>updating ${project.artifactId} project for feature branch</featureStartMessage>` will produce message where
 `${project.artifactId}` will be substituted for projects `<artifactId>`.
 
 Note that although `${project.version}` can be used, any changes to version introduced by this goal won't be reflected in a commit message for this goal (see Custom properties).
@@ -192,7 +192,7 @@ Commit messages can be prefixed by using `commitMessagePrefix` parameter.
 
 ## Maven arguments
 
-The `argLine` parameter can be used to pass command line arguments to the underlying Maven commands. For example, `-DcreateChecksum` in `mvn gitflow:release-start -DargLine=-DcreateChecksum` 
+The `argLine` parameter can be used to pass command line arguments to the underlying Maven commands. For example, `-DcreateChecksum` in `mvn gitflow:release-start -DargLine=-DcreateChecksum`
 will be passed to all underlying Maven commands.
 
 ## Maven CI friendly versions
@@ -258,7 +258,7 @@ The `gitflow:release` and `gitflow:release-start` goals have `skipReleaseMergePr
 The `gitflow:hotfix-start` and `gitflow:hotfix-finish` goals have `useSnapshotInHotfix` parameter which allows to start the hotfix with SNAPSHOT version and finish it without this value in the version. By default the value is `false`.
 For example, if the hotfix version  is `1.0.2.1` and `useSnapshotInHotfix` is set to `true` and using `gitflow:hotfix-start` goal then the hotfix version will be `1.0.2.1-SNAPSHOT` and when finishing the release with `gitflow:hotfix-finish` goal, the release version will be `1.0.2.1`
 
-The `gitflow:hotfix-finish` goal supports the parameter `skipMergeDevBranch` which prevents merging the hotfix branch into the development branch. 
+The `gitflow:hotfix-finish` goal supports the parameter `skipMergeDevBranch` which prevents merging the hotfix branch into the development branch.
 
 The `gitflow:hotfix-finish` goal supports the parameter `skipMergeProdBranch` which prevents merging the hotfix branch into the production branch and deletes the hotfix branch leaving only the tagged commit. Useful, along with `skipMergeDevBranch`, to allow hotfixes to very old code that are not applicable to current development.
 
@@ -313,7 +313,7 @@ Releases could be performed without prompting for the release version during `gi
 The `releaseVersion` parameter can be used to set the release version in non-interactive mode. If `releaseVersion` parameter is not set then the default release version will be used.
 
     mvn -B gitflow:release-start gitflow:release-finish
-    
+
 To release w/o creating separate release branch use `gitflow:release` goal.
 
     mvn -B gitflow:release

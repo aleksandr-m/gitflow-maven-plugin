@@ -21,7 +21,7 @@
            <leftColumnClass>span3</leftColumnClass>
            <bodyColumnClass>span9</bodyColumnClass>
            <gitHub>
-               <projectId>aleksandr-m/gitflow-maven-plugin</projectId>
+               <projectId>vegegoku/gitflow-maven-plugin</projectId>
                <ribbonOrientation>right</ribbonOrientation>
                <ribbonColor>red</ribbonColor>
             </gitHub>
