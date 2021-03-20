@@ -41,12 +41,12 @@
         </developer>
     </developers>
 
-    <url>https://github.com/vegegoku/gitflow-maven-plugin</url>
+    <url>https://github.com/Dominokit/gitflow-maven-plugin</url>
 
     <scm>
-        <url>https://github.com/vegegoku/gitflow-maven-plugin</url>
-        <connection>scm:git:git@github.com:vegegoku/gitflow-maven-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:vegegoku/gitflow-maven-plugin.git</developerConnection>
+        <url>https://github.com/DominoKit/gitflow-maven-plugin</url>
+        <connection>scm:git:git@github.com:DominoKit/gitflow-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:DominoKit/gitflow-maven-plugin.git</developerConnection>
     </scm>
 
     <distributionManagement>
