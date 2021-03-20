@@ -193,7 +193,6 @@
                                     </gpgArguments>
                                 </configuration>
                             </execution>
-
                         </executions>
                     </plugin>
                 </plugins>
