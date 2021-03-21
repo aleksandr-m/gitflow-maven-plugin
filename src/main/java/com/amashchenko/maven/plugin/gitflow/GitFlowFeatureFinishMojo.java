@@ -164,8 +164,12 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             final String featName = featureBranchName.replaceFirst(gitFlowConfig.getFeatureBranchPrefix(), "");
 
             if (incrementVersionAtFinish) {
-                GitFlowVersionInfo developVersionInfo = new GitFlowVersionInfo(featureVersion);
-                featureVersion = developVersionInfo.nextSnapshotVersion();
+                // prevent incrementing feature name which can hold numbers
+                String ver = featureVersion.replaceFirst("-" + featName, "");
+                GitFlowVersionInfo nextVersionInfo = new GitFlowVersionInfo(ver);
+                ver = nextVersionInfo.nextSnapshotVersion();
+                GitFlowVersionInfo featureVersionInfo = new GitFlowVersionInfo(ver);
+                featureVersion = featureVersionInfo.featureVersion(featName);
 
                 mvnSetVersions(featureVersion);
 
