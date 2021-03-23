@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.16.0 (2021-03-23)
+
+* Fixed wrong incrementing of feature name - [#288](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/288)
+* Fixed wrong version property update - [#272](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/272)
+* Added support for updating `project.build.outputTimestamp` property to support [Maven reproducible builds](https://maven.apache.org/guides/mini/guide-reproducible-builds.html) - [#286](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/286)
+* Removed deprecated wrong spelling of commit message parameter
+* Added ability to use snapshot version in support branch - [#250](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/250)
+* Added ability to change support branch name - [#276](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/276)
+* Added ability to use full branch name in feature and hotfix finish goals - [#270](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/270)
+
 ## v1.15.1 (2021-01-14)
 
 * Fixed `hotfix-finish` must not increment develop snapshot version [#267](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/267)

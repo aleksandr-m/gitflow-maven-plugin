@@ -56,6 +56,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
     /**
      * Branch name to use instead of the default.
      *
+     * @since 1.16.0
      */
     @Parameter(property = "supportBranchName")
     private String supportBranchName;
@@ -63,6 +64,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
     /**
      * Whether to use snapshot in support.
      * 
+     * @since 1.16.0
      */
     @Parameter(property = "useSnapshotInSupport", defaultValue = "false")
     private boolean useSnapshotInSupport;

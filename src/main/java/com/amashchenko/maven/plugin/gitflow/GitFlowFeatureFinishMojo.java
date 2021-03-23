@@ -77,6 +77,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
      * prefix. The featureBranch parameter will be used instead of
      * {@link #featureName} if both are set.
      * 
+     * @since 1.16.0
      */
     @Parameter(property = "featureBranch")
     private String featureBranch;
