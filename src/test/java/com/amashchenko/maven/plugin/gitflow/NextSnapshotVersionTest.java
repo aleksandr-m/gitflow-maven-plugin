@@ -67,6 +67,6 @@ public class NextSnapshotVersionTest {
     @Test
     public void testNextSnapshotVersion() throws Exception {
         Assert.assertEquals(expectedVersion,
-                new GitFlowVersionInfo(version).nextSnapshotVersion(index));
+                new GitFlowVersionInfo(version, null).nextSnapshotVersion(index));
     }
 }
