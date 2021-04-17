@@ -107,6 +107,14 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "incrementVersionAtFinish", defaultValue = "false")
     private boolean incrementVersionAtFinish;
 
+    /**
+     * Commit message to use after squash. Has effect only if {@link #featureSquash}
+     * parameter is set to <code>true</code>.
+     *
+     */
+    @Parameter(property = "featureSquashMessage")
+    private String featureSquashMessage;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -201,7 +209,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             if (featureSquash) {
                 // git merge --squash feature/...
                 gitMergeSquash(featureBranchName);
-                gitCommit(featureBranchName);
+                gitCommit(StringUtils.isBlank(featureSquashMessage) ? featureBranchName : featureSquashMessage);
             } else {
                 Map<String, String> properties = new HashMap<String, String>();
                 properties.put("version", version);
