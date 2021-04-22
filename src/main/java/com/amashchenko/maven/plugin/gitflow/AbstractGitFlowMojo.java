@@ -814,6 +814,21 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Executes git merge <tagName>
+     *
+     * @param tagName
+     *        Name of the tag.
+     * @throws MojoFailureException
+     * @throws CommandLineException
+     */
+    protected void gitMergeTag(final String tagName)
+            throws MojoFailureException, CommandLineException {
+        getLog().info("Merging '" + tagName + "' tag.");
+
+        executeGitCommand("merge", tagName);
+    }
+
+    /**
      * Executes git branch -d.
      * 
      * @param branchName

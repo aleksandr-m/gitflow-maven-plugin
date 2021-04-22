@@ -37,6 +37,10 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipTag", defaultValue = "false")
     private boolean skipTag = false;
 
+    /** Whether to push the release tag to develop. */
+    @Parameter(property = "tagDevelop", defaultValue = "false")
+    private boolean tagDevelop = false;
+
     /** Whether to keep release branch after finish. */
     @Parameter(property = "keepBranch", defaultValue = "false")
     private boolean keepBranch = false;
@@ -270,6 +274,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
+            String releaseTag = null;
 
             if (!skipTag) {
                 String tagVersion = currentVersion;
@@ -283,6 +288,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 // git tag -a ...
                 gitTag(gitFlowConfig.getVersionTagPrefix() + tagVersion,
                         commitMessages.getTagReleaseMessage(), gpgSignTag, messageProperties);
+                releaseTag = gitFlowConfig.getVersionTagPrefix() + tagVersion;
             }
 
             // maven goals after merge
@@ -307,6 +313,10 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 // merge branch master into develop
                 gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, false,
                         commitMessages.getReleaseFinishDevMergeMessage(), messageProperties);
+
+                if (tagDevelop && StringUtils.isNotBlank(releaseTag)) {
+                    gitMergeTag(releaseTag);
+                }
 
                 if (commitDevelopmentVersionAtStart && useSnapshotInRelease) {
                     // updating develop poms version back to pre merge state
