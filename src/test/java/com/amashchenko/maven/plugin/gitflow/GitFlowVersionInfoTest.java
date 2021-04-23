@@ -51,28 +51,28 @@ public class GitFlowVersionInfoTest {
     public void testHotfixVersion() throws Exception {
         GitFlowVersionInfo info = new GitFlowVersionInfo("0.9");
         Assert.assertNotNull(info);
-        Assert.assertEquals("0.10", info.hotfixVersion(false));
+        Assert.assertEquals("0.10", info.hotfixVersion(false, null));
     }
 
     @Test
     public void testHotfixVersion2() throws Exception {
         GitFlowVersionInfo info = new GitFlowVersionInfo("0.9-SNAPSHOT");
         Assert.assertNotNull(info);
-        Assert.assertEquals("0.10", info.hotfixVersion(false));
+        Assert.assertEquals("0.10", info.hotfixVersion(false, null));
     }
 
     @Test
     public void testHotfixVersion3() throws Exception {
         GitFlowVersionInfo info = new GitFlowVersionInfo("0.9");
         Assert.assertNotNull(info);
-        Assert.assertEquals("0.10", info.hotfixVersion(true));
+        Assert.assertEquals("0.10", info.hotfixVersion(true, null));
     }
 
     @Test
     public void testHotfixVersion4() throws Exception {
         GitFlowVersionInfo info = new GitFlowVersionInfo("0.9-SNAPSHOT");
         Assert.assertNotNull(info);
-        Assert.assertEquals("0.10-SNAPSHOT", info.hotfixVersion(true));
+        Assert.assertEquals("0.10-SNAPSHOT", info.hotfixVersion(true, null));
     }
 
     @Test

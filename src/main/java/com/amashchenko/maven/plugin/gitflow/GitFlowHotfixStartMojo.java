@@ -71,6 +71,13 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
     private boolean useSnapshotInHotfix;
 
+    /**
+     * Which digit to increment in the next hotfix version. Starts from zero.
+     *
+     */
+    @Parameter(property = "hotfixVersionDigitToIncrement")
+    private Integer hotfixVersionDigitToIncrement;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -154,8 +161,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             final String currentVersion = getCurrentProjectVersion();
 
             // get default hotfix version
-            final String defaultVersion = new GitFlowVersionInfo(currentVersion)
-                    .hotfixVersion(tychoBuild);
+            final String defaultVersion = new GitFlowVersionInfo(currentVersion).hotfixVersion(tychoBuild, hotfixVersionDigitToIncrement);
 
             if (defaultVersion == null) {
                 throw new MojoFailureException(

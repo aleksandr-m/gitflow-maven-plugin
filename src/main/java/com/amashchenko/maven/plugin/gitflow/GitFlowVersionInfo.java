@@ -68,14 +68,27 @@ public class GitFlowVersionInfo extends DefaultVersionInfo {
     }
 
     /**
-     * Gets next SNAPSHOT version. If index is <code>null</code> or not valid
-     * then it delegates to {@link #getNextVersion()} method.
+     * Gets next SNAPSHOT version.
      * 
      * @param index
      *            Which part of version to increment.
      * @return Next SNAPSHOT version.
      */
     public String nextSnapshotVersion(final Integer index) {
+        return nextVersion(index, true);
+    }
+
+    /**
+     * Gets next version. If index is <code>null</code> or not valid then it
+     * delegates to {@link #getNextVersion()} method.
+     * 
+     * @param index
+     *            Which part of version to increment.
+     * @param snapshot
+     *            Whether to use SNAPSHOT version.
+     * @return Next version.
+     */
+    private String nextVersion(final Integer index, boolean snapshot) {
         List<String> digits = getDigits();
 
         String nextVersion = null;
@@ -83,20 +96,18 @@ public class GitFlowVersionInfo extends DefaultVersionInfo {
         if (digits != null) {
             if (index != null && index >= 0 && index < digits.size()) {
                 int origDigitsLength = joinDigitString(digits).length();
-                digits.set(index,
-                        incrementVersionString((String) digits.get(index)));
+                digits.set(index, incrementVersionString((String) digits.get(index)));
                 for (int i = index + 1; i < digits.size(); i++) {
                     digits.set(i, "0");
                 }
                 String digitsStr = joinDigitString(digits);
-                nextVersion = digitsStr
-                        + getSnapshotVersionString()
-                                .substring(origDigitsLength);
+                nextVersion = digitsStr + (snapshot ? getSnapshotVersionString().substring(origDigitsLength)
+                        : getReleaseVersionString().substring(origDigitsLength));
             } else {
-                nextVersion = getNextVersion().getSnapshotVersionString();
+                nextVersion = snapshot ? getNextVersion().getSnapshotVersionString() : getNextVersion().getReleaseVersionString();
             }
         } else {
-            nextVersion = getSnapshotVersionString();
+            nextVersion = snapshot ? getSnapshotVersionString() : getReleaseVersionString();
         }
         return nextVersion;
     }
@@ -122,11 +133,11 @@ public class GitFlowVersionInfo extends DefaultVersionInfo {
      * 
      * @param preserveSnapshot
      *            Whether to preserve SNAPSHOT in the version.
+     * @param index
+     *            Which part of version to increment.
      * @return Next version.
      */
-    public String hotfixVersion(boolean preserveSnapshot) {
-        return (preserveSnapshot && isSnapshot()) ? getNextVersion()
-                .getSnapshotVersionString() : getNextVersion()
-                .getReleaseVersionString();
+    public String hotfixVersion(boolean preserveSnapshot, final Integer index) {
+        return nextVersion(index, (preserveSnapshot && isSnapshot()));
     }
 }
