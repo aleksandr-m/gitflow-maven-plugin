@@ -211,8 +211,7 @@ For example, `-DversionProperty=revision` will update the `<revision>` property 
 
 The `skipUpdateVersion` parameter can be used to skip updating `<version>` in the pom.xml. The default value is `false` (i.e. the version will be updated).
 
-To support [CI friendly versioning](https://maven.apache.org/maven-ci-friendly.html) in projects which use `<version>${revision}</version>` (e.g. [spring-boot](https://github.com/spring-projects/spring-boot/blob/master/pom.xml))
-set `versionProperty` to `revision` and `skipUpdateVersion` to `true`.
+To support [CI friendly versioning](https://maven.apache.org/maven-ci-friendly.html) in projects which use `<version>${revision}</version>` set `versionProperty` to `revision` and `skipUpdateVersion` to `true`.
 
 ## Additional goal parameters
 
