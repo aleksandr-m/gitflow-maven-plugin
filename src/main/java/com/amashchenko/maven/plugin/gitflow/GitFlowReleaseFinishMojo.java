@@ -257,7 +257,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
                 messageProperties.put("version", commitVersion);
 
-                gitCommit(commitMessages.getReleaseFinishMessage(), messageProperties);
+                gitCommit(commitMessages.getReleaseStartMessage(), messageProperties);
             }
 
             if (!skipReleaseMergeProdBranch) {
