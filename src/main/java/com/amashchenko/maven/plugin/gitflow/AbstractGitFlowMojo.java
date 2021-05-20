@@ -686,7 +686,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected void gitCommit(String message, Map<String, String> messageProperties)
             throws MojoFailureException, CommandLineException {
         if (StringUtils.isNotBlank(commitMessagePrefix)) {
-            message = commitMessagePrefix + " " + message;
+            message = commitMessagePrefix + message;
         }
 
         message = replaceProperties(message, messageProperties);
@@ -731,7 +731,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         String msg = "";
         if (StringUtils.isNotBlank(message)) {
             if (StringUtils.isNotBlank(commitMessagePrefix)) {
-                message = commitMessagePrefix + " " + message;
+                message = commitMessagePrefix + message;
             }
 
             msgParam = "-m";
