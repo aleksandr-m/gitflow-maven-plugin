@@ -191,7 +191,7 @@ Maven properties can be used in commit messages. For example `<featureStartMessa
 
 Note that although `${project.version}` can be used, any changes to version introduced by this goal won't be reflected in a commit message for this goal (see Custom properties).
 
-Commit messages can be prefixed by using `commitMessagePrefix` parameter.
+Commit messages can be prefixed by using `commitMessagePrefix` parameter. Leading or trailing whitespaces can be preserved by using `xml:space="preserve"` attribute e.g. `<commitMessagePrefix xml:space="preserve">[gitflow] </commitMessagePrefix>`.
 
 ### Custom properties in commit messages
 
