@@ -15,9 +15,16 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import com.google.common.base.Splitter;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import java.util.Map.Entry;
+
 /**
  * Git flow configuration.
- * 
+ *
  */
 public class GitFlowConfig {
     /** Name of the production branch. */
@@ -49,6 +56,13 @@ public class GitFlowConfig {
         this.supportBranchPrefix = "support/";
         this.versionTagPrefix = "";
         this.origin = "origin";
+    }
+
+    public void set(String gitFlowConfig) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
+        Map<String, String> values = Splitter.on(",").withKeyValueSeparator("=").split(gitFlowConfig);
+        for(Entry<String, String> e : values.entrySet()) {
+            new PropertyDescriptor(e.getKey(), this.getClass()).getWriteMethod().invoke(this, e.getValue());
+        }
     }
 
     /**
