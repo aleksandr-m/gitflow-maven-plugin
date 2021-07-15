@@ -16,6 +16,7 @@
 package com.amashchenko.maven.plugin.gitflow;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -241,13 +242,13 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (pushRemote) {
-                gitPush(gitFlowConfig.getDevelopmentBranch(), false);
-
+                List<String> branchesToPush = Arrays.asList(gitFlowConfig.getDevelopmentBranch());
                 if (keepBranch) {
-                    gitPush(featureBranchName, false);
+                    branchesToPush.add(featureBranchName);
                 } else {
-                    gitPushDelete(featureBranchName);
+                    branchesToPush.add(":" + featureBranchName);
                 }
+                gitPush(false, branchesToPush.toArray(new String[0]));
             }
 
             if (!keepBranch) {

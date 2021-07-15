@@ -332,9 +332,10 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             }
 
             if (pushRemote) {
-                gitPush(gitFlowConfig.getProductionBranch(), !skipTag);
                 if (notSameProdDevName()) {
-                    gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
+                    gitPush(!skipTag, gitFlowConfig.getDevelopmentBranch(),gitFlowConfig.getProductionBranch());
+                }else{
+                    gitPush(!skipTag, gitFlowConfig.getProductionBranch());
                 }
             }
         } catch (Exception e) {

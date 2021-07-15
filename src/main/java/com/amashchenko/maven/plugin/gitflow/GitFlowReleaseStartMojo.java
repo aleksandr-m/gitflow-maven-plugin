@@ -218,7 +218,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 // mvn versions:set ...
                 // git commit -a -m ...
                 commitProjectVersion(projectVersion,
-                        commitMessages.getReleaseStartMessage()); 
+                        commitMessages.getReleaseStartMessage());
 
                 // git branch release/... develop
                 gitCreateBranch(fullBranchName, startPoint);
@@ -249,10 +249,11 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             if (pushRemote) {
                 if (commitDevelopmentVersionAtStart) {
-                    gitPush(gitFlowConfig.getDevelopmentBranch(), false);
+                    gitPush(false, gitFlowConfig.getDevelopmentBranch(), fullBranchName);
                 }
-
-                gitPush(fullBranchName, false);
+                else {
+                    gitPush( false, fullBranchName);
+                }
             }
         } catch (CommandLineException e) {
             throw new MojoFailureException("release-start", e);

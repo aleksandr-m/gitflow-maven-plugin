@@ -341,22 +341,24 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (pushRemote) {
+                List<String> branchesToPush = new ArrayList<>();
                 if (supportBranchName != null) {
-                    gitPush(supportBranchName, !skipTag);
+                    branchesToPush.add(supportBranchName);
                 } else {
-                    gitPush(gitFlowConfig.getProductionBranch(), !skipTag);
+                    branchesToPush.add(gitFlowConfig.getProductionBranch());
 
                     if (StringUtils.isNotBlank(releaseBranch)) {
-                        gitPush(releaseBranch, !skipTag);
+                        branchesToPush.add(releaseBranch);
                     } else if (StringUtils.isBlank(releaseBranch)
                             && notSameProdDevName()) { // if no release branch
-                        gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
+                        branchesToPush.add(gitFlowConfig.getDevelopmentBranch());
                     }
                 }
 
                 if (!keepBranch) {
-                    gitPushDelete(hotfixBranchName);
+                    branchesToPush.add(":" + hotfixBranchName);
                 }
+                gitPush(!skipTag, branchesToPush.toArray(new String[0]));
             }
 
             if (!keepBranch) {

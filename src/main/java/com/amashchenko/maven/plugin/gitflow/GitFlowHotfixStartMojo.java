@@ -254,7 +254,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             }
 
             if (pushRemote) {
-                gitPush(hotfixBranchName, false);
+                gitPush(false, hotfixBranchName);
             }
         } catch (CommandLineException e) {
             throw new MojoFailureException("hotfix-start", e);

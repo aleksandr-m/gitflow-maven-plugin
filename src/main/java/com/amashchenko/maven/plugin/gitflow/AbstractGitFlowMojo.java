@@ -18,6 +18,8 @@ package com.amashchenko.maven.plugin.gitflow;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +78,14 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected GitFlowConfig gitFlowConfig;
 
     /**
+     * Whether to use --atomic option on push.
+     *
+     * @since 1.6.1
+     */
+    @Parameter(property = "verbose", defaultValue = "false")
+    private boolean atomicPush = false;
+    
+    /**
      * Git commit messages.
      * 
      * @since 1.2.1
@@ -93,7 +103,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     
     /**
      * Whether to call Maven install goal during the mojo execution.
-     * 
+     *
      * @since 1.0.5
      */
     @Parameter(property = "installProject", defaultValue = "false")
@@ -190,6 +200,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(defaultValue = "${settings}", readonly = true)
     protected Settings settings;
 
+    
+    
     /**
      * Initializes command line executables.
      * 
@@ -965,28 +977,31 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /**
      * Executes git push, optionally with the <code>--follow-tags</code>
      * argument.
-     * 
-     * @param branchName
-     *            Branch name to push.
+     *
+     * @param branchNames
+     *            Branch names to push. Names proceeded by : will be deleted
      * @param pushTags
      *            If <code>true</code> adds <code>--follow-tags</code> argument
      *            to the git <code>push</code> command.
      * @throws MojoFailureException
      * @throws CommandLineException
      */
-    protected void gitPush(final String branchName, boolean pushTags)
+    protected void gitPush(boolean pushTags, final String... branchNames)
             throws MojoFailureException, CommandLineException {
         getLog().info(
-                "Pushing '" + branchName + "' branch" + " to '"
+                "Pushing '" + Arrays.toString(branchNames) + "' branch" + " to '"
                         + gitFlowConfig.getOrigin() + "'.");
 
-        if (pushTags) {
-            executeGitCommand("push", "--quiet", "-u", "--follow-tags",
-                    gitFlowConfig.getOrigin(), branchName);
-        } else {
-            executeGitCommand("push", "--quiet", "-u",
-                    gitFlowConfig.getOrigin(), branchName);
+        List<String> argsList = Arrays.asList("push", "--quiet", "-u", gitFlowConfig.getOrigin());
+        if(atomicPush){
+            argsList.add("--atomic");
         }
+        Collections.addAll(argsList, branchNames);
+        if (pushTags) {
+            argsList.add("--follow-tags");
+        }
+        String[] argsArray = argsList.toArray(new String[0]);
+        executeGitCommand(argsArray);
     }
 
     protected void gitPushDelete(final String branchName)
