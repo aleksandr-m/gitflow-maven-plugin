@@ -90,19 +90,17 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                 try {
                     while (StringUtils.isBlank(featureBranchName)) {
                         featureBranchName = prompter
-                                .prompt("What is a name of feature branch? "
-                                        + gitFlowConfig
-                                                .getFeatureBranchPrefix());
+                                .prompt("What is a name of feature branch? " + gitFlowConfig.getFeatureBranchPrefix());
 
-                        if (!validateBranchName(featureBranchName,
-                                featureNamePattern)) {
+                        if (!validateBranchName(featureBranchName, featureNamePattern, false)) {
                             featureBranchName = null;
                         }
                     }
                 } catch (PrompterException e) {
                     throw new MojoFailureException("feature-start", e);
                 }
-            } else if (validateBranchName(featureName, featureNamePattern)) {
+            } else {
+                validateBranchName(featureName, featureNamePattern, true);
                 featureBranchName = featureName;
             }
 
@@ -164,18 +162,27 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
         }
     }
 
-    private boolean validateBranchName(String name, String pattern)
+    private boolean validateBranchName(String name, String pattern, boolean failOnError)
             throws MojoFailureException, CommandLineException {
         boolean valid = true;
         if (StringUtils.isNotBlank(name) && validBranchName(name)) {
             if (StringUtils.isNotBlank(pattern) && !name.matches(pattern)) {
-                getLog().warn("The name of the branch doesn't match '" + pattern
-                        + "'.");
+                final String error = "The name of the branch doesn't match '" + pattern + "' pattern.";
+                getLog().warn(error);
                 valid = false;
+
+                if (failOnError) {
+                    throw new MojoFailureException(error);
+                }
             }
         } else {
-            getLog().warn("The name of the branch is not valid.");
+            final String error = "The name of the branch is not valid.";
+            getLog().warn(error);
             valid = false;
+
+            if (failOnError) {
+                throw new MojoFailureException(error);
+            }
         }
         return valid;
     }
