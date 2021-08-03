@@ -3,7 +3,7 @@ import org.codehaus.plexus.util.FileUtils;
 try {
     File logFile = new File(basedir, "build.log");
     String log = FileUtils.fileRead(logFile, "UTF-8");
-    if (!log.contains("Feature name is blank.")) {
+    if (!log.contains("The name of the branch is not valid or blank.")) {
         System.out.println("feature-start build.log doesn't contain error text.");
         return false;
     }

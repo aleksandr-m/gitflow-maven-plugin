@@ -176,7 +176,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                 }
             }
         } else {
-            final String error = "The name of the branch is not valid.";
+            final String error = "The name of the branch is not valid or blank.";
             getLog().warn(error);
             valid = false;
 
