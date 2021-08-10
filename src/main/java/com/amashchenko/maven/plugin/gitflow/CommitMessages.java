@@ -15,20 +15,11 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
-import com.google.common.base.Splitter;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-import java.util.Map.Entry;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 /**
  * Git commit messages.
  *
  */
-public class CommitMessages {
+public class CommitMessages extends CommandLineSettable {
     private String featureStartMessage;
     private String featureFinishMessage;
 
@@ -96,13 +87,6 @@ public class CommitMessages {
         featureFinishIncrementVersionMessage = "Increment feature version";
 
         supportStartMessage = "Update versions for support branch";
-    }
-
-    public void set(String commitMessages) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
-        Map<String, String> values = Splitter.on(",").withKeyValueSeparator("=").split(commitMessages);
-        for(Entry<String, String> e : values.entrySet()) {
-            new PropertyDescriptor(e.getKey(), this.getClass()).getWriteMethod().invoke(this, e.getValue());
-        }
     }
 
     /**
