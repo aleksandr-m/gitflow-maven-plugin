@@ -23,7 +23,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.15.1</version>
+                <version>1.16.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -99,6 +99,15 @@ The `gitflow:release`, `gitflow:release-finish` and `gitflow:hotfix-finish` goal
 ### Signing Commits
 
 All goals have `gpgSignCommit` parameter. Set it to `true` to sign commits with configured personal key. The default value is `false`.
+
+
+# Support for Reproducible Builds
+
+[Reproducible builds](https://reproducible-builds.org/) are a set of software development practices that create an independently-verifiable path from source to binary code.
+
+To configure your Maven build to support reproducible builds follow [official guide](https://maven.apache.org/guides/mini/guide-reproducible-builds.html).
+
+If your project has `project.build.outputTimestamp` property this plugin will update its value whenever the versions are updated. 
 
 
 # Plugin Common Parameters
@@ -182,7 +191,7 @@ Maven properties can be used in commit messages. For example `<featureStartMessa
 
 Note that although `${project.version}` can be used, any changes to version introduced by this goal won't be reflected in a commit message for this goal (see Custom properties).
 
-Commit messages can be prefixed by using `commitMessagePrefix` parameter.
+Commit messages can be prefixed by using `commitMessagePrefix` parameter. Leading or trailing whitespaces can be preserved by using `xml:space="preserve"` attribute e.g. `<commitMessagePrefix xml:space="preserve">[gitflow] </commitMessagePrefix>`.
 
 ### Custom properties in commit messages
 
@@ -202,8 +211,7 @@ For example, `-DversionProperty=revision` will update the `<revision>` property 
 
 The `skipUpdateVersion` parameter can be used to skip updating `<version>` in the pom.xml. The default value is `false` (i.e. the version will be updated).
 
-To support [CI friendly versioning](https://maven.apache.org/maven-ci-friendly.html) in projects which use `<version>${revision}</version>` (e.g. [spring-boot](https://github.com/spring-projects/spring-boot/blob/master/pom.xml))
-set `versionProperty` to `revision` and `skipUpdateVersion` to `true`.
+To support [CI friendly versioning](https://maven.apache.org/maven-ci-friendly.html) in projects which use `<version>${revision}</version>` set `versionProperty` to `revision` and `skipUpdateVersion` to `true`.
 
 ## Additional goal parameters
 
@@ -326,6 +334,8 @@ The `gitflow:release-finish` and `gitflow:release` goals have `developmentVersio
 
 The `gitflow:feature-start` and `gitflow:feature-finish` goals have `featureName` parameter which can be used to set a name of the feature in non-interactive mode.
 
+The `gitflow:feature-finish` goal has `featureBranch` parameter which can be used to set feature branch name in non-interactive mode. It must start with the feature branch prefix. The `featureBranch` will be used instead of `featureName` if both are set.
+
 ## Non-interactive Hotfix
 
 The `gitflow:hotfix-start` goal has `fromBranch` parameter which can be used to set starting branch of the hotfix. It can be set to production branch or one of the support branches.
@@ -334,7 +344,13 @@ If it is left blank then hotfix will be started from the production branch.
 The `gitflow:hotfix-start` and `gitflow:hotfix-finish` goals have `hotfixVersion` parameter which can be used to set version of the hotfix.
 If it is left blank in `gitflow:hotfix-start` goal then the default version will be used.
 
+The `gitflow:hotfix-finish` goal has `hotfixBranch` parameter which can be used to set hotfix branch name in non-interactive mode. It must start with the hotfix branch prefix. The `hotfixBranch` will be used instead of `hotfixVersion` if both are set.
+
 ## Non-interactive Support
 
 The `gitflow:support-start` goal can be run in non-interactive mode. Use `tagName` parameter to set tag from which supporting branch will be started.
 If `tagName` is not set but the goal is running in non-interactive mode then the last tag will be used.
+
+The `gitflow:support-start` goal has `supportBranchName` parameter which can be used to set branch name to use instead of the default.
+
+The `gitflow:support-start` goal has `useSnapshotInSupport` parameter which allows to start the support with SNAPSHOT version.

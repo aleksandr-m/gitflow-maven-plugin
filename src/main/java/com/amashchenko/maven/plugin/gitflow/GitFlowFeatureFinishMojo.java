@@ -77,6 +77,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
      * prefix. The featureBranch parameter will be used instead of
      * {@link #featureName} if both are set.
      * 
+     * @since 1.16.0
      */
     @Parameter(property = "featureBranch")
     private String featureBranch;
@@ -105,6 +106,14 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
      */
     @Parameter(property = "incrementVersionAtFinish", defaultValue = "false")
     private boolean incrementVersionAtFinish;
+
+    /**
+     * Commit message to use after squash. Has effect only if {@link #featureSquash}
+     * parameter is set to <code>true</code>.
+     *
+     */
+    @Parameter(property = "featureSquashMessage")
+    private String featureSquashMessage;
 
     /** {@inheritDoc} */
     @Override
@@ -164,8 +173,12 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             final String featName = featureBranchName.replaceFirst(gitFlowConfig.getFeatureBranchPrefix(), "");
 
             if (incrementVersionAtFinish) {
-                GitFlowVersionInfo developVersionInfo = new GitFlowVersionInfo(featureVersion);
-                featureVersion = developVersionInfo.nextSnapshotVersion();
+                // prevent incrementing feature name which can hold numbers
+                String ver = featureVersion.replaceFirst("-" + featName, "");
+                GitFlowVersionInfo nextVersionInfo = new GitFlowVersionInfo(ver);
+                ver = nextVersionInfo.nextSnapshotVersion();
+                GitFlowVersionInfo featureVersionInfo = new GitFlowVersionInfo(ver);
+                featureVersion = featureVersionInfo.featureVersion(featName);
 
                 mvnSetVersions(featureVersion);
 
@@ -196,7 +209,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             if (featureSquash) {
                 // git merge --squash feature/...
                 gitMergeSquash(featureBranchName);
-                gitCommit(featureBranchName);
+                gitCommit(StringUtils.isBlank(featureSquashMessage) ? featureBranchName : featureSquashMessage);
             } else {
                 Map<String, String> properties = new HashMap<String, String>();
                 properties.put("version", version);

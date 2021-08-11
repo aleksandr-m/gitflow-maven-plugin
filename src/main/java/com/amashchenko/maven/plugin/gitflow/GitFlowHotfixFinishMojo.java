@@ -91,6 +91,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
      * prefix. The hotfixBranch parameter will be used instead of
      * {@link #hotfixVersion} if both are set.
      *
+     * @since 1.16.0
      */
     @Parameter(property = "hotfixBranch")
     private String hotfixBranch;
