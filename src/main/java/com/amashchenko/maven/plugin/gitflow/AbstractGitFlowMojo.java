@@ -180,6 +180,14 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(defaultValue = "${session}", readonly = true)
     protected MavenSession mavenSession;
 
+    /**
+     * Whether to update the <code>project.build.outputTimestamp</code>> property automatically or not.
+     *
+     * @since 1.16.1
+     */
+    @Parameter(property = "updateOutputTimestamp")
+    private boolean updateOutputTimestamp = true;
+
     @Component
     protected ProjectBuilder projectBuilder;
     
@@ -1057,7 +1065,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                 executeMvnCommand(args.toArray(new String[0]));
 
                 String timestamp = getCurrentProjectOutputTimestamp();
-                if (timestamp != null && timestamp.length() > 1) {
+                if (timestamp != null && timestamp.length() > 1 && updateOutputTimestamp) {
                     if (StringUtils.isNumeric(timestamp)) {
                         // int representing seconds since the epoch
                         timestamp = String.valueOf(System.currentTimeMillis() / 1000l);
