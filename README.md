@@ -109,6 +109,8 @@ To configure your Maven build to support reproducible builds follow [official gu
 
 If your project has `project.build.outputTimestamp` property this plugin will update its value whenever the versions are updated. 
 
+This can be disabled by setting the configuration parameter `updateOutputTimestamp` to `false`.
+
 
 # Plugin Common Parameters
 
