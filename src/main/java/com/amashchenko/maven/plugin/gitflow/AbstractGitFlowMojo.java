@@ -180,6 +180,14 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(defaultValue = "${session}", readonly = true)
     protected MavenSession mavenSession;
 
+    /**
+     * Whether to update the <code>project.build.outputTimestamp</code> property automatically or not.
+     *
+     * @since 1.16.1
+     */
+    @Parameter(property = "updateOutputTimestamp", defaultValue = "true")
+    private boolean updateOutputTimestamp = true;
+
     @Component
     protected ProjectBuilder projectBuilder;
     
@@ -1056,22 +1064,24 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             if (runCommand) {
                 executeMvnCommand(args.toArray(new String[0]));
 
-                String timestamp = getCurrentProjectOutputTimestamp();
-                if (timestamp != null && timestamp.length() > 1) {
-                    if (StringUtils.isNumeric(timestamp)) {
-                        // int representing seconds since the epoch
-                        timestamp = String.valueOf(System.currentTimeMillis() / 1000l);
-                    } else {
-                        // ISO-8601
-                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                        timestamp = df.format(new Date());
+                if (updateOutputTimestamp) {
+                    String timestamp = getCurrentProjectOutputTimestamp();
+                    if (timestamp != null && timestamp.length() > 1) {
+                        if (StringUtils.isNumeric(timestamp)) {
+                            // int representing seconds since the epoch
+                            timestamp = String.valueOf(System.currentTimeMillis() / 1000l);
+                        } else {
+                            // ISO-8601
+                            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            timestamp = df.format(new Date());
+                        }
+
+                        getLog().info("Updating property '" + REPRODUCIBLE_BUILDS_PROPERTY + "' to '" + timestamp + "'.");
+
+                        executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL, "-DgenerateBackupPoms=false",
+                                "-Dproperty=" + REPRODUCIBLE_BUILDS_PROPERTY, "-DnewVersion=" + timestamp);
                     }
-
-                    getLog().info("Updating property '" + REPRODUCIBLE_BUILDS_PROPERTY + "' to '" + timestamp + "'.");
-
-                    executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL, "-DgenerateBackupPoms=false",
-                            "-Dproperty=" + REPRODUCIBLE_BUILDS_PROPERTY, "-DnewVersion=" + timestamp);
                 }
             }
         }
