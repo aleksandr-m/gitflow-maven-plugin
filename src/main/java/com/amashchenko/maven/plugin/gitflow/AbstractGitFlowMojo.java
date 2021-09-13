@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
@@ -205,7 +206,14 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private void initExecutables() {
         if (StringUtils.isBlank(cmdMvn.getExecutable())) {
             if (StringUtils.isBlank(mvnExecutable)) {
-                mvnExecutable = "mvn";
+                final String javaCommand = mavenSession.getSystemProperties().getProperty("sun.java.command", "");
+                final boolean wrapper = javaCommand.startsWith("org.apache.maven.wrapper.MavenWrapperMain");
+
+                if (wrapper) {
+                    mvnExecutable = "." + SystemUtils.FILE_SEPARATOR + "mvnw";
+                } else {
+                    mvnExecutable = "mvn";
+                }
             }
             cmdMvn.setExecutable(mvnExecutable);
         }
