@@ -58,35 +58,42 @@ public class CommitMessages {
     private String supportStartMessage;
 
     public CommitMessages() {
-        featureStartMessage = "Update versions for feature branch";
-        featureFinishMessage = "Update versions for development branch";
+        featureStartMessage = System.getProperty("commitMessages.featureStartMessage", "Update versions for feature branch");
+        featureFinishMessage = System.getProperty("commitMessages.featureFinishMessage", "Update versions for development branch");
 
-        hotfixStartMessage = "Update versions for hotfix";
-        hotfixFinishMessage = "Update for next development version";
+        hotfixStartMessage = System.getProperty("commitMessages.hotfixStartMessage", "Update versions for hotfix");
+        hotfixFinishMessage = System.getProperty("commitMessages.hotfixFinishMessage", "Update for next development version");
 
-        hotfixVersionUpdateMessage = "Update to hotfix version";
+        hotfixVersionUpdateMessage = System.getProperty("commitMessages.hotfixVersionUpdateMessage", "Update to hotfix version");
 
-        releaseStartMessage = "Update versions for release";
-        releaseFinishMessage = "Update for next development version";
+        releaseStartMessage = System.getProperty("commitMessages.releaseStartMessage", "Update versions for release");
+        releaseFinishMessage = System.getProperty("commitMessages.releaseFinishMessage", "Update for next development version");
 
-        releaseVersionUpdateMessage = "Update for next development version";
+        releaseVersionUpdateMessage = System.getProperty("commitMessages.releaseVersionUpdateMessage",
+                "Update for next development version");
 
-        releaseFinishMergeMessage = "";
-        releaseFinishDevMergeMessage = "";
+        releaseFinishMergeMessage = System.getProperty("commitMessages.releaseFinishMergeMessage", "");
+        releaseFinishDevMergeMessage = System.getProperty("commitMessages.releaseFinishDevMergeMessage", "");
 
-        tagHotfixMessage = "Tag hotfix";
-        tagReleaseMessage = "Tag release";
+        tagHotfixMessage = System.getProperty("commitMessages.tagHotfixMessage", "Tag hotfix");
+        tagReleaseMessage = System.getProperty("commitMessages.tagReleaseMessage", "Tag release");
 
-        updateDevToAvoidConflictsMessage = "Update develop to production version to avoid merge conflicts";
-        updateDevBackPreMergeStateMessage = "Update develop version back to pre-merge state";
+        updateDevToAvoidConflictsMessage = System.getProperty("commitMessages.updateDevToAvoidConflictsMessage",
+                "Update develop to production version to avoid merge conflicts");
+        updateDevBackPreMergeStateMessage = System.getProperty("commitMessages.updateDevBackPreMergeStateMessage",
+                "Update develop version back to pre-merge state");
 
-        updateReleaseToAvoidConflictsMessage = "Update release to hotfix version to avoid merge conflicts";
-        updateReleaseBackPreMergeStateMessage = "Update release version back to pre-merge state";
+        updateReleaseToAvoidConflictsMessage = System.getProperty("commitMessages.updateReleaseToAvoidConflictsMessage",
+                "Update release to hotfix version to avoid merge conflicts");
+        updateReleaseBackPreMergeStateMessage = System.getProperty("commitMessages.updateReleaseBackPreMergeStateMessage",
+                "Update release version back to pre-merge state");
 
-        updateFeatureBackMessage = "Update feature branch back to feature version";
-        featureFinishIncrementVersionMessage = "Increment feature version";
+        updateFeatureBackMessage = System.getProperty("commitMessages.updateFeatureBackMessage",
+                "Update feature branch back to feature version");
+        featureFinishIncrementVersionMessage = System.getProperty("commitMessages.featureFinishIncrementVersionMessage",
+                "Increment feature version");
 
-        supportStartMessage = "Update versions for support branch";
+        supportStartMessage = System.getProperty("commitMessages.supportStartMessage", "Update versions for support branch");
     }
 
     /**

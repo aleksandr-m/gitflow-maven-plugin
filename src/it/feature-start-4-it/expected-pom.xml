@@ -1,0 +1,20 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.amashchenko.maven.plugin</groupId>
+    <artifactId>gitflow-maven-test</artifactId>
+    <packaging>pom</packaging>
+    <version>0.0.3-test-SNAPSHOT</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.amashchenko.maven.plugin</groupId>
+                <artifactId>gitflow-maven-plugin</artifactId>
+                <configuration>
+                    <gitFlowConfig>
+                        <featureBranchPrefix>improve/</featureBranchPrefix>
+                    </gitFlowConfig>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
