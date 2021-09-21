@@ -192,7 +192,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout hotfix/...
-            gitCheckout(hotfixBranchName);
+            checkoutAndSetConfigForBranch(BranchType.HOTFIX, hotfixBranchName);
 
             if (!skipTestProject) {
                 // mvn clean test
@@ -220,12 +220,12 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (supportBranchName != null) {
-                gitCheckout(supportBranchName);
+                checkoutAndSetConfigForBranch(BranchType.SUPPORT, supportBranchName);
                 // git merge --no-ff hotfix/...
                 gitMergeNoff(hotfixBranchName, commitMessages.getHotfixFinishSupportMergeMessage(), messageProperties);
             } else if (!skipMergeProdBranch) {
                 // git checkout master
-                gitCheckout(gitFlowConfig.getProductionBranch());
+                checkoutAndSetConfigForBranch(BranchType.PRODUCTION, gitFlowConfig.getProductionBranch());
                 // git merge --no-ff hotfix/...
                 gitMergeNoff(hotfixBranchName, commitMessages.getHotfixFinishMergeMessage(), messageProperties);
             }
@@ -249,7 +249,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
             if (skipMergeProdBranch && (supportBranchName == null)) {
                 // switch to production branch so hotfix branch can be deleted
-                gitCheckout(gitFlowConfig.getProductionBranch());
+                checkoutAndSetConfigForBranch(BranchType.PRODUCTION, gitFlowConfig.getProductionBranch());
             }
 
             // maven goals after merge
@@ -267,7 +267,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 // if release branch exists merge hotfix changes into it
                 if (StringUtils.isNotBlank(releaseBranch)) {
                     // git checkout release
-                    gitCheckout(releaseBranch);
+                    checkoutAndSetConfigForBranch(BranchType.RELEASE, releaseBranch);
                     String releaseBranchVersion = getCurrentProjectVersion();
 
                     if (!currentVersion.equals(releaseBranchVersion)) {
@@ -291,7 +291,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                             currentVersion);
                     if (notSameProdDevName()) {
                         // git checkout develop
-                        gitCheckout(gitFlowConfig.getDevelopmentBranch());
+                        checkoutAndSetConfigForBranch(BranchType.DEVELOPMENT, gitFlowConfig.getDevelopmentBranch());
 
                         developVersionInfo = new GitFlowVersionInfo(getCurrentProjectVersion());
 

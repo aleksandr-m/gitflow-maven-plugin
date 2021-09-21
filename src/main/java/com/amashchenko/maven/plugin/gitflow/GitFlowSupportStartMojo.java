@@ -124,7 +124,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout -b ... tag
-            gitCreateAndCheckout(gitFlowConfig.getSupportBranchPrefix() + branchName, tag);
+            createAndCheckoutAndSetConfigForBranch(BranchType.SUPPORT, gitFlowConfig.getSupportBranchPrefix() + branchName, tag);
 
             if (useSnapshotInSupport) {
                 String version = getCurrentProjectVersion();

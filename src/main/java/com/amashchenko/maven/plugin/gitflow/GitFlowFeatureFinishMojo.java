@@ -149,7 +149,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
             if (!skipTestProject) {
                 // git checkout feature/...
-                gitCheckout(featureBranchName);
+                checkoutAndSetConfigForBranch(BranchType.FEATURE, featureBranchName);
 
                 // mvn clean test
                 mvnCleanTest();
@@ -196,7 +196,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout develop
-            gitCheckout(gitFlowConfig.getDevelopmentBranch());
+            checkoutAndSetConfigForBranch(BranchType.DEVELOPMENT, gitFlowConfig.getDevelopmentBranch());
 
             if (featureSquash) {
                 // git merge --squash feature/...
@@ -222,7 +222,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (keepBranch) {
-                gitCheckout(featureBranchName);
+                checkoutAndSetConfigForBranch(BranchType.FEATURE, featureBranchName);
 
                 mvnSetVersions(keptFeatureVersion);
 
