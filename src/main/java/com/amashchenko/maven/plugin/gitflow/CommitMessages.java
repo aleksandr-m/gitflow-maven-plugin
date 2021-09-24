@@ -37,6 +37,7 @@ public class CommitMessages {
     private String releaseFinishDevMergeMessage;
 
     private String featureFinishDevMergeMessage;
+    private String featureSquashMessage;
 
     private String hotfixFinishMergeMessage;
     private String hotfixFinishDevMergeMessage;
@@ -75,6 +76,7 @@ public class CommitMessages {
         releaseFinishMergeMessage = System.getProperty("commitMessages.releaseFinishMergeMessage", "");
         releaseFinishDevMergeMessage = System.getProperty("commitMessages.releaseFinishDevMergeMessage", "");
 
+        featureSquashMessage = System.getProperty("commitMessages.featureSquashMessage", "");
         tagHotfixMessage = System.getProperty("commitMessages.tagHotfixMessage", "Tag hotfix");
         tagReleaseMessage = System.getProperty("commitMessages.tagReleaseMessage", "Tag release");
 
@@ -393,6 +395,21 @@ public class CommitMessages {
      */
     public void setFeatureFinishDevMergeMessage(String featureFinishDevMergeMessage) {
         this.featureFinishDevMergeMessage = featureFinishDevMergeMessage;
+    }
+
+    /**
+     * @return the featureSquashMessage
+     */
+    public String getFeatureSquashMessage() {
+        return featureSquashMessage;
+    }
+
+    /**
+     * @param featureSquashMessage
+     *            the featureSquashMessage to set
+     */
+    public void setFeatureSquashMessage(String featureSquashMessage) {
+        this.featureSquashMessage = featureSquashMessage;
     }
 
     /**
