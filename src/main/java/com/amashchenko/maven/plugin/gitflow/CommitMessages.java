@@ -76,7 +76,14 @@ public class CommitMessages {
         releaseFinishMergeMessage = System.getProperty("commitMessages.releaseFinishMergeMessage", "");
         releaseFinishDevMergeMessage = System.getProperty("commitMessages.releaseFinishDevMergeMessage", "");
 
+        featureFinishDevMergeMessage = System.getProperty("commitMessages.featureFinishDevMergeMessage", "");
         featureSquashMessage = System.getProperty("commitMessages.featureSquashMessage", "");
+
+        hotfixFinishMergeMessage = System.getProperty("commitMessages.hotfixFinishMergeMessage", "");
+        hotfixFinishDevMergeMessage = System.getProperty("commitMessages.hotfixFinishDevMergeMessage", "");
+        hotfixFinishReleaseMergeMessage = System.getProperty("commitMessages.hotfixFinishReleaseMergeMessage", "");
+        hotfixFinishSupportMergeMessage = System.getProperty("commitMessages.hotfixFinishSupportMergeMessage", "");
+
         tagHotfixMessage = System.getProperty("commitMessages.tagHotfixMessage", "Tag hotfix");
         tagReleaseMessage = System.getProperty("commitMessages.tagReleaseMessage", "Tag release");
 
