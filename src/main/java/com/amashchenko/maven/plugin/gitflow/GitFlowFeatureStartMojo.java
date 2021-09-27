@@ -152,8 +152,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             }
 
             if (pushRemote) {
-                gitPush(gitFlowConfig.getFeatureBranchPrefix()
-                        + featureBranchName, false);
+                gitPush(false, gitFlowConfig.getFeatureBranchPrefix() + featureBranchName);
             }
         } catch (CommandLineException e) {
             throw new MojoFailureException("feature-start", e);

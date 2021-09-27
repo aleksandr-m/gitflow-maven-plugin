@@ -146,7 +146,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
             }
 
             if (pushRemote) {
-                gitPush(gitFlowConfig.getSupportBranchPrefix() + branchName, false);
+                gitPush(false, gitFlowConfig.getSupportBranchPrefix() + branchName);
             }
         } catch (CommandLineException e) {
             throw new MojoFailureException("support-start", e);

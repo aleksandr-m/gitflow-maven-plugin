@@ -15,7 +15,9 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
@@ -361,14 +363,15 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (pushRemote) {
-                gitPush(gitFlowConfig.getProductionBranch(), !skipTag);
+                List<String> branchesToPush = Arrays.asList(gitFlowConfig.getProductionBranch());
                 if (notSameProdDevName()) {
-                    gitPush(gitFlowConfig.getDevelopmentBranch(), !skipTag);
+                    branchesToPush.add(gitFlowConfig.getDevelopmentBranch());
                 }
 
                 if (!keepBranch) {
-                    gitPushDelete(releaseBranch);
+                    branchesToPush.add(":" + releaseBranch);
                 }
+                gitPush(!skipTag, branchesToPush.toArray(new String[0]));
             }
 
             if (!keepBranch) {
