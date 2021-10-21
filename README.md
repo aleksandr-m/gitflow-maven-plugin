@@ -252,6 +252,12 @@ Then the development branch is set to the next development version.
 This allows the development branch to continue immediately with a new version and helps avoid any future merge conflicts related to project versioning.
 Has effect only when there are separate development and production branches.
 
+The `gitflow:release-finish` goal has `mergeDevelopmentVersion` parameter which controls whether the release version or next development version will be merged from release branch into develop branch.
+By default the value is `false` which means that the next development version is set on the development branch after the release branch has been merged onto the development branch when finishing the release.
+If the value is `true` then the released version from release branch is merged to master branch and then is the next development version set on the release branch and merged into develop branch.
+This preserve ability to continue immediately with a new version in the development branch and any future merge conflicts related to project versioning are still avoided. Moreover no release version is committed to develop branch so continuous build and deploy tools can save work on development branch. 
+Has effect only when there are separate development and production branches and the `commitDevelopmentVersionAtStart` parameter is not set to true. 
+
 The `gitflow:release-start` goal has `sameBranchName` parameter which can be used to use the same name for the release branch. The default value is `false`.
 By itself the default `releaseBranchPrefix` is not a valid branch name. You must change it when setting `sameBranchName` to `true`.
 Will have no effect if the `branchName` parameter is set.
