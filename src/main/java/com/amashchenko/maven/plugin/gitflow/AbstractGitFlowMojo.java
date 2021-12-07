@@ -167,6 +167,15 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private String commitMessagePrefix;
 
     /**
+     * Whether to update the <code>project.build.outputTimestamp</code> property
+     * automatically or not.
+     *
+     * @since 1.17.0
+     */
+    @Parameter(property = "updateOutputTimestamp", defaultValue = "true")
+    private boolean updateOutputTimestamp = true;
+
+    /**
      * The path to the Maven executable. Defaults to "mvn".
      */
     @Parameter(property = "mvnExecutable")
@@ -180,14 +189,6 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** Maven session. */
     @Parameter(defaultValue = "${session}", readonly = true)
     protected MavenSession mavenSession;
-
-    /**
-     * Whether to update the <code>project.build.outputTimestamp</code> property automatically or not.
-     *
-     * @since 1.16.1
-     */
-    @Parameter(property = "updateOutputTimestamp", defaultValue = "true")
-    private boolean updateOutputTimestamp = true;
 
     @Component
     protected ProjectBuilder projectBuilder;

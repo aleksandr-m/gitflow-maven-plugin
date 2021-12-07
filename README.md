@@ -23,7 +23,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.16.0</version>
+                <version>1.17.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -61,6 +61,9 @@ To configure this plugin to use single branch model, such as GitHub Flow, just s
 
 That's it!
 
+# Maven Wrapper support
+
+The plugin will automatically use Maven Wrapper for internal Maven goals if plugin is started with the wrapper.
 
 # Eclipse Plugins build with Tycho
 
@@ -168,6 +171,7 @@ Since `1.2.1` commit messages can be changed in plugin's configuration section i
             <releaseFinishDevMergeMessage></releaseFinishDevMergeMessage>
 
             <featureFinishDevMergeMessage></featureFinishDevMergeMessage>
+            <featureSquashMessage></featureSquashMessage>
 
             <hotfixFinishMergeMessage></hotfixFinishMergeMessage>
             <hotfixFinishDevMergeMessage></hotfixFinishDevMergeMessage>
@@ -271,6 +275,8 @@ For example, if the hotfix version  is `1.0.2.1` and `useSnapshotInHotfix` is se
 The `gitflow:hotfix-finish` goal supports the parameter `skipMergeDevBranch` which prevents merging the hotfix branch into the development branch. 
 
 The `gitflow:hotfix-finish` goal supports the parameter `skipMergeProdBranch` which prevents merging the hotfix branch into the production branch and deletes the hotfix branch leaving only the tagged commit. Useful, along with `skipMergeDevBranch`, to allow hotfixes to very old code that are not applicable to current development.
+
+The `gitflow:hotfix-start` goal has `hotfixVersionDigitToIncrement` parameter which controls which digit to increment in the hotfix version. Starts from zero.
 
 Version update of all modules ignoring groupId and artifactId can be forced by setting `versionsForceUpdate` parameter to `true`. The default value is `false`.
 

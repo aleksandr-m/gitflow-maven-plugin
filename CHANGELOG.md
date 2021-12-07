@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.17.0 (2021-12-07)
+
+* Fixed and improved error messages in `feature-start` goal - [#306](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/306)
+* Added ability to use different commit message on feature squash - [#287](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/287)
+* Added ability to increment different digit in hotfix version - [#186](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/186)
+* Added ability to disable update of `project.build.outputTimestamp` property - [#310](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/310)
+* Added support to automatically use Maven wrapper for internal commands - [#246](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/246)
+* Added ability to use `gitFlowConfig` and `commitMessages` properties from the command line - [#284](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/284)
+
 ## v1.16.0 (2021-03-23)
 
 * Fixed wrong incrementing of feature name - [#288](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/288)

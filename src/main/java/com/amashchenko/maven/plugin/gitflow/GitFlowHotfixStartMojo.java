@@ -74,6 +74,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
     /**
      * Which digit to increment in the next hotfix version. Starts from zero.
      *
+     * @since 1.17.0
      */
     @Parameter(property = "hotfixVersionDigitToIncrement")
     private Integer hotfixVersionDigitToIncrement;
