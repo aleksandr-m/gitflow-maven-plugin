@@ -39,6 +39,7 @@ public class GitFlowVersionInfo extends DefaultVersionInfo {
      * 
      * @return Digits only GitFlowVersionInfo instance.
      * @throws VersionParseException
+     *             If version parsing fails.
      */
     public GitFlowVersionInfo digitsVersionInfo() throws VersionParseException {
         return new GitFlowVersionInfo(joinDigitString(getDigits()));
