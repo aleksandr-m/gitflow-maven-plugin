@@ -136,7 +136,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                     // -DgenerateBackupPoms=false
                     mvnSetVersions(version);
 
-                    Map<String, String> properties = new HashMap<String, String>();
+                    Map<String, String> properties = new HashMap<>();
                     properties.put("version", version);
                     properties.put("featureName", featureBranchName);
 

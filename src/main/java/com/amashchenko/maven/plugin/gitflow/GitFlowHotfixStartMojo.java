@@ -113,7 +113,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                     branches[supportBranches.length] = gitFlowConfig
                             .getProductionBranch();
 
-                    List<String> numberedList = new ArrayList<String>();
+                    List<String> numberedList = new ArrayList<>();
                     StringBuilder str = new StringBuilder("Branches:")
                             .append(LS);
                     for (int i = 0; i < branches.length; i++) {
@@ -242,7 +242,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(projectVersion);
 
-                Map<String, String> properties = new HashMap<String, String>();
+                Map<String, String> properties = new HashMap<>();
                 properties.put("version", projectVersion);
 
                 // git commit -a -m updating versions for hotfix

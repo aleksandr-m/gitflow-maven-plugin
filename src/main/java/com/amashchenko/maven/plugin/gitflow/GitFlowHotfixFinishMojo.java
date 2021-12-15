@@ -206,7 +206,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
             String currentHotfixVersion = getCurrentProjectVersion();
 
-            Map<String, String> messageProperties = new HashMap<String, String>();
+            Map<String, String> messageProperties = new HashMap<>();
             messageProperties.put("version", currentHotfixVersion);
 
             if (useSnapshotInHotfix && ArtifactUtils.isSnapshot(currentHotfixVersion)) {
@@ -239,7 +239,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                             .replace("-" + Artifact.SNAPSHOT_VERSION, "");
                 }
 
-                Map<String, String> properties = new HashMap<String, String>();
+                Map<String, String> properties = new HashMap<>();
                 properties.put("version", tagVersion);
 
                 // git tag -a ...
@@ -326,7 +326,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     // -DgenerateBackupPoms=false
                     mvnSetVersions(nextSnapshotVersion);
 
-                    Map<String, String> properties = new HashMap<String, String>();
+                    Map<String, String> properties = new HashMap<>();
                     properties.put("version", nextSnapshotVersion);
 
                     // git commit -a -m updating for next development version
@@ -389,7 +389,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
         String[] branches = hotfixBranches.split("\\r?\\n");
 
-        List<String> numberedList = new ArrayList<String>();
+        List<String> numberedList = new ArrayList<>();
         StringBuilder str = new StringBuilder("Hotfix branches:").append(LS);
         for (int i = 0; i < branches.length; i++) {
             str.append((i + 1) + ". " + branches[i] + LS);

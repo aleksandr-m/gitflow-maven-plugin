@@ -339,7 +339,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
             mvnSetVersions(version);
 
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             properties.put("version", version);
 
             // git commit -a -m commitMessage

@@ -247,7 +247,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
             String currentReleaseVersion = getCurrentProjectVersion();
 
-            Map<String, String> messageProperties = new HashMap<String, String>();
+            Map<String, String> messageProperties = new HashMap<>();
             messageProperties.put("version", currentReleaseVersion);
 
             if (useSnapshotInRelease && ArtifactUtils.isSnapshot(currentReleaseVersion)) {

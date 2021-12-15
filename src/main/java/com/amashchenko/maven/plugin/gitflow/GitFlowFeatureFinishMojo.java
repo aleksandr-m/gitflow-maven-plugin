@@ -174,7 +174,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
                 mvnSetVersions(featureVersion);
 
-                Map<String, String> properties = new HashMap<String, String>();
+                Map<String, String> properties = new HashMap<>();
                 properties.put("version", featureVersion);
                 properties.put("featureName", featName);
                 gitCommit(commitMessages.getFeatureFinishIncrementVersionMessage(), properties);
@@ -187,7 +187,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(version);
 
-                Map<String, String> properties = new HashMap<String, String>();
+                Map<String, String> properties = new HashMap<>();
                 properties.put("version", version);
                 properties.put("featureName", featName);
 
@@ -204,7 +204,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 gitCommit(StringUtils.isBlank(commitMessages.getFeatureSquashMessage()) ? featureBranchName
                         : commitMessages.getFeatureSquashMessage());
             } else {
-                Map<String, String> properties = new HashMap<String, String>();
+                Map<String, String> properties = new HashMap<>();
                 properties.put("version", version);
                 properties.put("featureName", featName);
                 // git merge --no-ff feature/...
@@ -226,7 +226,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
                 mvnSetVersions(keptFeatureVersion);
 
-                Map<String, String> properties = new HashMap<String, String>();
+                Map<String, String> properties = new HashMap<>();
                 properties.put("version", keptFeatureVersion);
                 properties.put("featureName", featName);
 
@@ -269,7 +269,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
         final String[] branches = featureBranches.split("\\r?\\n");
 
-        List<String> numberedList = new ArrayList<String>();
+        List<String> numberedList = new ArrayList<>();
         String defaultChoice = null;
         StringBuilder str = new StringBuilder("Feature branches:").append(LS);
         for (int i = 0; i < branches.length; i++) {

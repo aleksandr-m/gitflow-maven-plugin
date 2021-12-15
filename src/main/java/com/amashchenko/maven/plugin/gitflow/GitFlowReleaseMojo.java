@@ -255,7 +255,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 mvnRun(preReleaseGoals);
             }
 
-            Map<String, String> messageProperties = new HashMap<String, String>();
+            Map<String, String> messageProperties = new HashMap<>();
             messageProperties.put("version", version);
 
             // execute if version changed

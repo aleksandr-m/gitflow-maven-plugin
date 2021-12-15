@@ -330,8 +330,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected void checkSnapshotDependencies() throws MojoFailureException {
         getLog().info("Checking for SNAPSHOT versions in dependencies.");
 
-        List<String> snapshots = new ArrayList<String>();
-        List<String> builtArtifacts = new ArrayList<String>();
+        List<String> snapshots = new ArrayList<>();
+        List<String> builtArtifacts = new ArrayList<>();
 
         List<MavenProject> projects = mavenSession.getProjects();
         for (MavenProject project : projects) {

@@ -133,7 +133,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
                     
                     mvnSetVersions(version);
 
-                    Map<String, String> properties = new HashMap<String, String>();
+                    Map<String, String> properties = new HashMap<>();
                     properties.put("version", version);
 
                     gitCommit(commitMessages.getSupportStartMessage(), properties);
