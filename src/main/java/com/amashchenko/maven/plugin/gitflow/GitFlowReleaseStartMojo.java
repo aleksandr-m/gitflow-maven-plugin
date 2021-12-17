@@ -254,9 +254,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
                 gitPush(fullBranchName, false);
             }
-        } catch (CommandLineException e) {
-            throw new MojoFailureException("release-start", e);
-        } catch (VersionParseException e) {
+        } catch (CommandLineException | VersionParseException e) {
             throw new MojoFailureException("release-start", e);
         }
     }

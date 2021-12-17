@@ -951,16 +951,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                     "--left-right", "--count", branchName + "..."
                             + gitFlowConfig.getOrigin() + "/" + branchName);
 
-            String[] counts = org.apache.commons.lang3.StringUtils.split(
-                    revlistout, '\t');
-            if (counts != null && counts.length > 1) {
-                if (!"0".equals(org.apache.commons.lang3.StringUtils
-                        .deleteWhitespace(counts[1]))) {
-                    throw new MojoFailureException("Remote branch '"
-                            + gitFlowConfig.getOrigin() + "/" + branchName
-                            + "' is ahead of the local branch '" + branchName
-                            + "'. Execute git pull.");
-                }
+            String[] counts = org.apache.commons.lang3.StringUtils.split(revlistout, '\t');
+            if (counts != null && counts.length > 1 && !"0".equals(org.apache.commons.lang3.StringUtils.deleteWhitespace(counts[1]))) {
+                throw new MojoFailureException("Remote branch '" + gitFlowConfig.getOrigin() + "/" + branchName
+                        + "' is ahead of the local branch '" + branchName + "'. Execute git pull.");
             }
         }
     }
