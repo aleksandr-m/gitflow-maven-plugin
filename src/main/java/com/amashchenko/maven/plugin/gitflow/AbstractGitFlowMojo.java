@@ -573,10 +573,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @return String without quotes.
      */
     private String removeQuotes(String str) {
-        if (str != null && !str.isEmpty()) {
-            str = str.replaceAll("\"", "");
-        }
-        return str;
+        return StringUtils.replace(str, "\"", "");
     }
 
     /**
