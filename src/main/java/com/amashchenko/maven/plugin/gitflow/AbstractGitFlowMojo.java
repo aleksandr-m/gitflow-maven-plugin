@@ -176,6 +176,15 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private boolean updateOutputTimestamp = true;
 
     /**
+     * Options to pass to Git push command using <code>--push-option</code>.
+     * Multiple options can be added separated with a space e.g.
+     * <code>-DgitPushOptions="merge_request.create merge_request.target=develop
+     * merge_request.label='Super feature'"</code>
+     */
+    @Parameter(property = "gitPushOptions")
+    private String gitPushOptions;
+
+    /**
      * The path to the Maven executable. Defaults to "mvn".
      */
     @Parameter(property = "mvnExecutable")
@@ -1042,19 +1051,33 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws CommandLineException
      *             If command line execution fails.
      */
-    protected void gitPush(final String branchName, boolean pushTags)
-            throws MojoFailureException, CommandLineException {
-        getLog().info(
-                "Pushing '" + branchName + "' branch" + " to '"
-                        + gitFlowConfig.getOrigin() + "'.");
+    protected void gitPush(final String branchName, boolean pushTags) throws MojoFailureException, CommandLineException {
+        getLog().info("Pushing '" + branchName + "' branch to '" + gitFlowConfig.getOrigin() + "'.");
+
+        List<String> args = new ArrayList<>();
+        args.add("push");
+        args.add("--quiet");
+        args.add("-u");
 
         if (pushTags) {
-            executeGitCommand("push", "--quiet", "-u", "--follow-tags",
-                    gitFlowConfig.getOrigin(), branchName);
-        } else {
-            executeGitCommand("push", "--quiet", "-u",
-                    gitFlowConfig.getOrigin(), branchName);
+            args.add("--follow-tags");
         }
+
+        if (StringUtils.isNotBlank(gitPushOptions)) {
+            try {
+                String[] opts = CommandLineUtils.translateCommandline(gitPushOptions);
+                for (String opt : opts) {
+                    args.add("--push-option=" + opt);
+                }
+            } catch (Exception e) {
+                throw new CommandLineException(e.getMessage(), e);
+            }
+        }
+
+        args.add(gitFlowConfig.getOrigin());
+        args.add(branchName);
+
+        executeGitCommand(args.toArray(new String[0]));
     }
 
     protected void gitPushDelete(final String branchName)
