@@ -82,6 +82,10 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
 
             // fetch and check remote
             if (fetchRemote) {
+                // checkout from remote if doesn't exist
+                gitFetchRemoteAndCreate(gitFlowConfig.getDevelopmentBranch());
+
+                // fetch and check remote
                 gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
             }
 
