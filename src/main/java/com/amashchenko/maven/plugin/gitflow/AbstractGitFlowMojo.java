@@ -202,7 +202,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * If a policy is set other parameters controlling the generation of version are ignored
      * (digitsOnlyDevVersion, versionDigitToIncrement).
      *
-     * @since 1.15.0
+     * @since 1.18.0
      */
     @Parameter(property="projectVersionPolicyId")
     private String projectVersionPolicyId;
