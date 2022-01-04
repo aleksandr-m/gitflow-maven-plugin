@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 Aleksandr Mashchenko.
+ * Copyright 2014-2022 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -186,7 +186,8 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             if (commitDevelopmentVersionAtStart && !notSameProdDevName()) {
                 getLog().warn(
-                        "The commitDevelopmentVersionAtStart will not have effect. It can be enabled only when there are separate branches for development and production.");
+                        "The commitDevelopmentVersionAtStart will not have effect. "
+                                + "It can be enabled only when there are separate branches for development and production.");
                 commitDevelopmentVersionAtStart = false;
             }
 
@@ -208,7 +209,8 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             if (useSnapshotInRelease && mavenSession.getUserProperties().get("useSnapshotInRelease") != null) {
                 getLog().warn(
-                        "The useSnapshotInRelease parameter is set from the command line. Don't forget to use it in the finish goal as well."
+                        "The useSnapshotInRelease parameter is set from the command line."
+                                + " Don't forget to use it in the finish goal as well."
                                 + " It is better to define it in the project's pom file.");
             }
 
@@ -252,9 +254,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
                 gitPush(fullBranchName, false);
             }
-        } catch (CommandLineException e) {
-            throw new MojoFailureException("release-start", e);
-        } catch (VersionParseException e) {
+        } catch (CommandLineException | VersionParseException e) {
             throw new MojoFailureException("release-start", e);
         }
     }
@@ -337,7 +337,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
             mvnSetVersions(version);
 
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             properties.put("version", version);
 
             // git commit -a -m commitMessage

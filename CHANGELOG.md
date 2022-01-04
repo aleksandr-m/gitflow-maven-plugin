@@ -1,5 +1,39 @@
 # Changelog
 
+## v1.17.0 (2021-12-07)
+
+* Fixed and improved error messages in `feature-start` goal - [#306](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/306)
+* Added ability to use different commit message on feature squash - [#287](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/287)
+* Added ability to increment different digit in hotfix version - [#186](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/186)
+* Added ability to disable update of `project.build.outputTimestamp` property - [#310](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/310)
+* Added support to automatically use Maven wrapper for internal commands - [#246](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/246)
+* Added ability to use `gitFlowConfig` and `commitMessages` properties from the command line - [#284](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/284)
+
+## v1.16.0 (2021-03-23)
+
+* Fixed wrong incrementing of feature name - [#288](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/288)
+* Fixed wrong version property update - [#272](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/272)
+* Added support for updating `project.build.outputTimestamp` property to support [Maven reproducible builds](https://maven.apache.org/guides/mini/guide-reproducible-builds.html) - [#286](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/286)
+* Removed deprecated wrong spelling of commit message parameter
+* Added ability to use snapshot version in support branch - [#250](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/250)
+* Added ability to change support branch name - [#276](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/276)
+* Added ability to use full branch name in feature and hotfix finish goals - [#270](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/270)
+
+## v1.15.1 (2021-01-14)
+
+* Fixed `hotfix-finish` must not increment develop snapshot version [#267](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/267)
+
+## v1.15.0 (2020-11-04)
+
+* Updated java version to 1.7 - [#252](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/252)
+* Changed commit logic in `feature-finish` goal to avoid directly committing into the develop - [#226](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/226)
+* Fixed wrong development version after `hotfix-finish` - [#211](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/211)
+* Fixed failing `hotfix-finish` in fresh checkout - [#219](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/219)
+* Added ability to skip merging release into production branch - [#74](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/74)
+* Added ability to increment feature version during `feature-finish` goal - [#162](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/162)
+* Added current feature branch as the default choice for `feature-finish` - [#227](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/227)
+* Added properties to `featureFinishDevMergeMessage` message - [#247](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/247)
+
 ## v1.14.0 (2019-12-06)
 
 * Fixed snapshot dependencies check and improved version resolution - [#204](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/204)

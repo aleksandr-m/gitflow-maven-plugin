@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 Aleksandr Mashchenko.
+ * Copyright 2014-2022 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 package com.amashchenko.maven.plugin.gitflow;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -48,6 +52,22 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
      */
     @Parameter(property = "tagName")
     private String tagName;
+
+    /**
+     * Branch name to use instead of the default.
+     *
+     * @since 1.16.0
+     */
+    @Parameter(property = "supportBranchName")
+    private String supportBranchName;
+
+    /**
+     * Whether to use snapshot in support.
+     * 
+     * @since 1.16.0
+     */
+    @Parameter(property = "useSnapshotInSupport", defaultValue = "false")
+    private boolean useSnapshotInSupport;
 
     /** {@inheritDoc} */
     @Override
@@ -91,17 +111,34 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
                 throw new MojoFailureException("Tag is blank.");
             }
 
+            String branchName = tag;
+            if (StringUtils.isNotBlank(supportBranchName)) {
+                branchName = supportBranchName;
+            }
+
             // git for-each-ref refs/heads/support/...
-            final boolean supportBranchExists = gitCheckBranchExists(gitFlowConfig
-                    .getSupportBranchPrefix() + tag);
+            final boolean supportBranchExists = gitCheckBranchExists(gitFlowConfig.getSupportBranchPrefix() + branchName);
 
             if (supportBranchExists) {
-                throw new MojoFailureException(
-                        "Support branch with that name already exists.");
+                throw new MojoFailureException("Support branch with that name already exists.");
             }
 
             // git checkout -b ... tag
-            gitCreateAndCheckout(gitFlowConfig.getSupportBranchPrefix() + tag, tag);
+            gitCreateAndCheckout(gitFlowConfig.getSupportBranchPrefix() + branchName, tag);
+
+            if (useSnapshotInSupport) {
+                String version = getCurrentProjectVersion();
+                if (!ArtifactUtils.isSnapshot(version)) {
+                    version = version + "-" + Artifact.SNAPSHOT_VERSION;
+                    
+                    mvnSetVersions(version);
+
+                    Map<String, String> properties = new HashMap<>();
+                    properties.put("version", version);
+
+                    gitCommit(commitMessages.getSupportStartMessage(), properties);
+                }
+            }
 
             if (installProject) {
                 // mvn clean install
@@ -109,7 +146,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
             }
 
             if (pushRemote) {
-                gitPush(gitFlowConfig.getSupportBranchPrefix() + tag, false);
+                gitPush(gitFlowConfig.getSupportBranchPrefix() + branchName, false);
             }
         } catch (CommandLineException e) {
             throw new MojoFailureException("support-start", e);

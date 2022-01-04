@@ -1,6 +1,6 @@
 <!-- 
 /*
- * Copyright 2014-2020 Aleksandr Mashchenko.
+ * Copyright 2014-2022 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
     <artifactId>gitflow-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <name>gitflow-maven-plugin</name>
-    <version>1.14.1-SNAPSHOT</version>
+    <version>1.17.1-SNAPSHOT</version>
 
     <description>The Git-Flow Maven Plugin supports various Git workflows, including Vincent Driessen's successful Git branching model and GitHub Flow. This plugin runs Git and Maven commands from the command line. Supports Eclipse Plugins build with Tycho.</description>
 
@@ -41,12 +41,12 @@
         </developer>
     </developers>
 
-    <url>${url}</url>
+    <url>https://github.com/aleksandr-m/gitflow-maven-plugin</url>
 
     <scm>
-        <url>${url}</url>
-        <connection>${scm.url}</connection>
-        <developerConnection>${scm.url}</developerConnection>
+        <url>https://github.com/aleksandr-m/gitflow-maven-plugin</url>
+        <connection>scm:git:git@github.com:aleksandr-m/gitflow-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:aleksandr-m/gitflow-maven-plugin.git</developerConnection>
     </scm>
 
     <distributionManagement>
@@ -63,10 +63,8 @@
     </distributionManagement>
 
     <properties>
-        <java.version>1.6</java.version>
+        <java.version>1.7</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scm.url>scm:git:git@github.com:aleksandr-m/gitflow-maven-plugin.git</scm.url>
-        <url>https://github.com/aleksandr-m/gitflow-maven-plugin</url>
         <maven-plugin-plugin.version>3.6.0</maven-plugin-plugin.version>
     </properties>
 
@@ -265,7 +263,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

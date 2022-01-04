@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 Aleksandr Mashchenko.
+ * Copyright 2014-2022 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ public class GitFlowVersionInfo extends DefaultVersionInfo {
      * 
      * @return Digits only GitFlowVersionInfo instance.
      * @throws VersionParseException
+     *             If version parsing fails.
      */
     public GitFlowVersionInfo digitsVersionInfo() throws VersionParseException {
         return new GitFlowVersionInfo(joinDigitString(getDigits()), versionPolicy);
@@ -88,18 +89,36 @@ public class GitFlowVersionInfo extends DefaultVersionInfo {
     }
 
     /**
-     * Gets next SNAPSHOT version. If index is <code>null</code> or not valid
-     * then it delegates to {@link #getNextVersion()} method.
+     * Gets next SNAPSHOT version.
      * 
      * @param index
      *            Which part of version to increment.
      * @return Next SNAPSHOT version.
      */
     public String nextSnapshotVersion(final Integer index) {
+        return nextVersion(index, true);
+    }
+
+    /**
+     * Gets next version. If index is <code>null</code> or not valid then it
+     * delegates to {@link #getNextVersion()} method.
+     * 
+     * @param index
+     *            Which part of version to increment.
+     * @param snapshot
+     *            Whether to use SNAPSHOT version.
+     * @return Next version.
+     */
+    private String nextVersion(final Integer index, boolean snapshot) {
         if (versionPolicy != null) {
             try {
                 VersionPolicyRequest request = new VersionPolicyRequest().setVersion(this.toString());
-                return versionPolicy.getDevelopmentVersion(request).getVersion();
+                if (snapshot) {
+                    return versionPolicy.getDevelopmentVersion(request).getVersion();
+                }
+                else {
+                    return versionPolicy.getReleaseVersion(request).getVersion();
+                }
             } catch (PolicyException ex) {
                 throw new RuntimeException("Unable to get development version from policy.", ex);
             } catch (VersionParseException ex) {
@@ -114,20 +133,18 @@ public class GitFlowVersionInfo extends DefaultVersionInfo {
         if (digits != null) {
             if (index != null && index >= 0 && index < digits.size()) {
                 int origDigitsLength = joinDigitString(digits).length();
-                digits.set(index,
-                        incrementVersionString((String) digits.get(index)));
+                digits.set(index, incrementVersionString(digits.get(index)));
                 for (int i = index + 1; i < digits.size(); i++) {
                     digits.set(i, "0");
                 }
                 String digitsStr = joinDigitString(digits);
-                nextVersion = digitsStr
-                        + getSnapshotVersionString()
-                                .substring(origDigitsLength);
+                nextVersion = digitsStr + (snapshot ? getSnapshotVersionString().substring(origDigitsLength)
+                        : getReleaseVersionString().substring(origDigitsLength));
             } else {
-                nextVersion = getNextVersion().getSnapshotVersionString();
+                nextVersion = snapshot ? getNextVersion().getSnapshotVersionString() : getNextVersion().getReleaseVersionString();
             }
         } else {
-            nextVersion = getSnapshotVersionString();
+            nextVersion = snapshot ? getSnapshotVersionString() : getReleaseVersionString();
         }
         return nextVersion;
     }
@@ -153,11 +170,11 @@ public class GitFlowVersionInfo extends DefaultVersionInfo {
      * 
      * @param preserveSnapshot
      *            Whether to preserve SNAPSHOT in the version.
+     * @param index
+     *            Which part of version to increment.
      * @return Next version.
      */
-    public String hotfixVersion(boolean preserveSnapshot) {
-        return (preserveSnapshot && isSnapshot()) ? getNextVersion()
-                .getSnapshotVersionString() : getNextVersion()
-                .getReleaseVersionString();
+    public String hotfixVersion(boolean preserveSnapshot, final Integer index) {
+        return nextVersion(index, (preserveSnapshot && isSnapshot()));
     }
 }

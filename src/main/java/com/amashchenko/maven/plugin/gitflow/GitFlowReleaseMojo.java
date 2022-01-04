@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 Aleksandr Mashchenko.
+ * Copyright 2014-2022 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,6 +147,14 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     @Parameter(property = "gpgSignTag", defaultValue = "false")
     private boolean gpgSignTag = false;
 
+    /**
+     * Whether to skip merging release into the production branch.
+     *
+     * @since 1.15.0
+     */
+    @Parameter(property = "skipReleaseMergeProdBranch", defaultValue = "false")
+    private boolean skipReleaseMergeProdBranch = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -247,7 +255,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 mvnRun(preReleaseGoals);
             }
 
-            Map<String, String> messageProperties = new HashMap<String, String>();
+            Map<String, String> messageProperties = new HashMap<>();
             messageProperties.put("version", version);
 
             // execute if version changed
@@ -259,7 +267,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 gitCommit(commitMessages.getReleaseStartMessage(), messageProperties);
             }
 
-            if (notSameProdDevName()) {
+            if (!skipReleaseMergeProdBranch && notSameProdDevName()) {
                 // git checkout master
                 gitCheckout(gitFlowConfig.getProductionBranch());
 

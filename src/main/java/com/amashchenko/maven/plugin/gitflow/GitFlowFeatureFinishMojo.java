@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 Aleksandr Mashchenko.
+ * Copyright 2014-2022 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,12 +65,22 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     private boolean pushRemote;
 
     /**
-     * Feature name to use in non-interactive mode.
+     * Feature name, without feature branch prefix, to use in non-interactive mode.
      * 
      * @since 1.9.0
      */
     @Parameter(property = "featureName")
     private String featureName;
+
+    /**
+     * Feature branch to use in non-interactive mode. Must start with feature branch
+     * prefix. The featureBranch parameter will be used instead of
+     * {@link #featureName} if both are set.
+     * 
+     * @since 1.16.0
+     */
+    @Parameter(property = "featureBranch")
+    private String featureBranch;
 
     /**
      * Maven goals to execute in the feature branch before merging into the
@@ -89,6 +99,13 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "postFeatureFinishGoals")
     private String postFeatureFinishGoals;
 
+    /**
+     * Whether to increment the version during feature-finish goal.
+     *
+     * @since 1.15.0
+     */
+    @Parameter(property = "incrementVersionAtFinish", defaultValue = "false")
+    private boolean incrementVersionAtFinish;
 
     /** {@inheritDoc} */
     @Override
@@ -102,20 +119,25 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             String featureBranchName = null;
             if (settings.isInteractiveMode()) {
                 featureBranchName = promptBranchName();
+            } else if (StringUtils.isNotBlank(featureBranch)) {
+                if (!featureBranch.startsWith(gitFlowConfig.getFeatureBranchPrefix())) {
+                    throw new MojoFailureException("The featureBranch parameter doesn't start with feature branch prefix.");
+                }
+                if (!gitCheckBranchExists(featureBranch)) {
+                    throw new MojoFailureException(
+                            "Feature branch with name '" + featureBranch + "' doesn't exist. Cannot finish feature.");
+                }
+                featureBranchName = featureBranch;
             } else if (StringUtils.isNotBlank(featureName)) {
-                final String branch = gitFlowConfig.getFeatureBranchPrefix()
-                        + featureName;
+                final String branch = gitFlowConfig.getFeatureBranchPrefix() + featureName;
                 if (!gitCheckBranchExists(branch)) {
-                    throw new MojoFailureException("Feature branch with name '"
-                            + branch
-                            + "' doesn't exist. Cannot finish feature.");
+                    throw new MojoFailureException("Feature branch with name '" + branch + "' doesn't exist. Cannot finish feature.");
                 }
                 featureBranchName = branch;
             }
 
             if (StringUtils.isBlank(featureBranchName)) {
-                throw new MojoFailureException(
-                        "Feature branch name to finish is blank.");
+                throw new MojoFailureException("Feature branch name to finish is blank.");
             }
 
             // fetch and check remote
@@ -138,17 +160,34 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 mvnRun(preFeatureFinishGoals);
             }
 
-            final String currentFeatureVersion = getCurrentProjectVersion();
+            String featureVersion = getCurrentProjectVersion();
 
             final String featName = featureBranchName.replaceFirst(gitFlowConfig.getFeatureBranchPrefix(), "");
 
-            if (currentFeatureVersion.contains("-" + featName)) {
-                final String version = currentFeatureVersion.replaceFirst("-" + featName, "");
+            if (incrementVersionAtFinish) {
+                // prevent incrementing feature name which can hold numbers
+                String ver = featureVersion.replaceFirst("-" + featName, "");
+                GitFlowVersionInfo nextVersionInfo = new GitFlowVersionInfo(ver);
+                ver = nextVersionInfo.nextSnapshotVersion();
+                GitFlowVersionInfo featureVersionInfo = new GitFlowVersionInfo(ver);
+                featureVersion = featureVersionInfo.featureVersion(featName);
 
+                mvnSetVersions(featureVersion);
+
+                Map<String, String> properties = new HashMap<>();
+                properties.put("version", featureVersion);
+                properties.put("featureName", featName);
+                gitCommit(commitMessages.getFeatureFinishIncrementVersionMessage(), properties);
+            }
+
+            final String keptFeatureVersion = featureVersion;
+
+            final String version = keptFeatureVersion.replaceFirst("-" + featName, "");
+            if (keptFeatureVersion.contains("-" + featName)) {
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(version);
 
-                Map<String, String> properties = new HashMap<String, String>();
+                Map<String, String> properties = new HashMap<>();
                 properties.put("version", version);
                 properties.put("featureName", featName);
 
@@ -162,10 +201,14 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             if (featureSquash) {
                 // git merge --squash feature/...
                 gitMergeSquash(featureBranchName);
-                gitCommit(featureBranchName);
+                gitCommit(StringUtils.isBlank(commitMessages.getFeatureSquashMessage()) ? featureBranchName
+                        : commitMessages.getFeatureSquashMessage());
             } else {
+                Map<String, String> properties = new HashMap<>();
+                properties.put("version", version);
+                properties.put("featureName", featName);
                 // git merge --no-ff feature/...
-                gitMergeNoff(featureBranchName, commitMessages.getFeatureFinishDevMergeMessage(), null);
+                gitMergeNoff(featureBranchName, commitMessages.getFeatureFinishDevMergeMessage(), properties);
             }
 
             // maven goals after merge
@@ -181,10 +224,10 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             if (keepBranch) {
                 gitCheckout(featureBranchName);
 
-                mvnSetVersions(currentFeatureVersion);
+                mvnSetVersions(keptFeatureVersion);
 
-                Map<String, String> properties = new HashMap<String, String>();
-                properties.put("version", currentFeatureVersion);
+                Map<String, String> properties = new HashMap<>();
+                properties.put("version", keptFeatureVersion);
                 properties.put("featureName", featName);
 
                 gitCommit(commitMessages.getUpdateFeatureBackMessage(), properties);
@@ -226,7 +269,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
         final String[] branches = featureBranches.split("\\r?\\n");
 
-        List<String> numberedList = new ArrayList<String>();
+        List<String> numberedList = new ArrayList<>();
         String defaultChoice = null;
         StringBuilder str = new StringBuilder("Feature branches:").append(LS);
         for (int i = 0; i < branches.length; i++) {

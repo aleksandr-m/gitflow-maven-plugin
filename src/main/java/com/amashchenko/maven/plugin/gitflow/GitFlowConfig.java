@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 Aleksandr Mashchenko.
+ * Copyright 2014-2022 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,14 +41,14 @@ public class GitFlowConfig {
      * Default constructor.
      */
     public GitFlowConfig() {
-        this.productionBranch = "master";
-        this.developmentBranch = "develop";
-        this.featureBranchPrefix = "feature/";
-        this.releaseBranchPrefix = "release/";
-        this.hotfixBranchPrefix = "hotfix/";
-        this.supportBranchPrefix = "support/";
-        this.versionTagPrefix = "";
-        this.origin = "origin";
+        this.productionBranch = System.getProperty("gitFlowConfig.productionBranch", "master");
+        this.developmentBranch = System.getProperty("gitFlowConfig.developmentBranch", "develop");
+        this.featureBranchPrefix = System.getProperty("gitFlowConfig.featureBranchPrefix", "feature/");
+        this.releaseBranchPrefix = System.getProperty("gitFlowConfig.releaseBranchPrefix", "release/");
+        this.hotfixBranchPrefix = System.getProperty("gitFlowConfig.hotfixBranchPrefix", "hotfix/");
+        this.supportBranchPrefix = System.getProperty("gitFlowConfig.supportBranchPrefix", "support/");
+        this.versionTagPrefix = System.getProperty("gitFlowConfig.versionTagPrefix", "");
+        this.origin = System.getProperty("gitFlowConfig.origin", "origin");
     }
 
     /**

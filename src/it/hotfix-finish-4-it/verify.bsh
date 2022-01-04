@@ -1,0 +1,38 @@
+import org.codehaus.plexus.util.FileUtils;
+
+try {
+    File gitRef = new File(basedir, ".git/refs/heads/hotfix/0.0.4");
+    if (gitRef.exists()) {
+        System.out.println("hotfix-finish .git/refs/heads/hotfix/0.0.4 exists");
+        return false;
+    }
+
+    File file = new File(basedir, "pom.xml");
+    File expectedFile = new File(basedir, "expected-development-pom.xml");
+
+    String actual = FileUtils.fileRead(file, "UTF-8");
+    String expected = FileUtils.fileRead(expectedFile, "UTF-8");
+
+    if (!expected.equals(actual)) {
+        System.out.println("hotfix-finish development pom expected: " + expected + " actual was:" + actual);
+        return false;
+    }
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " checkout master");
+    p.waitFor();
+
+    file = new File(basedir, "pom.xml");
+    expectedFile = new File(basedir, "expected-production-pom.xml");
+
+    actual = FileUtils.fileRead(file, "UTF-8");
+    expected = FileUtils.fileRead(expectedFile, "UTF-8");
+
+    if (!expected.equals(actual)) {
+        System.out.println("hotfix-finish production pom expected: " + expected + " actual was:" + actual);
+        return false;
+    }
+} catch (Exception e) {
+    e.printStackTrace();
+    return false;
+}
+return true;

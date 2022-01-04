@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 Aleksandr Mashchenko.
+ * Copyright 2014-2022 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,6 +71,14 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
     @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
     private boolean useSnapshotInHotfix;
 
+    /**
+     * Which digit to increment in the next hotfix version. Starts from zero.
+     *
+     * @since 1.17.0
+     */
+    @Parameter(property = "hotfixVersionDigitToIncrement")
+    private Integer hotfixVersionDigitToIncrement;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -105,7 +113,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                     branches[supportBranches.length] = gitFlowConfig
                             .getProductionBranch();
 
-                    List<String> numberedList = new ArrayList<String>();
+                    List<String> numberedList = new ArrayList<>();
                     StringBuilder str = new StringBuilder("Branches:")
                             .append(LS);
                     for (int i = 0; i < branches.length; i++) {
@@ -154,8 +162,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             final String currentVersion = getCurrentProjectVersion();
 
             // get default hotfix version
-            final String defaultVersion = new GitFlowVersionInfo(currentVersion, getVersionPolicy())
-                    .hotfixVersion(tychoBuild);
+            final String defaultVersion = new GitFlowVersionInfo(currentVersion, getVersionPolicy()).hotfixVersion(tychoBuild, hotfixVersionDigitToIncrement);
 
             if (defaultVersion == null) {
                 throw new MojoFailureException(
@@ -227,14 +234,15 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
                 if (useSnapshotInHotfix && mavenSession.getUserProperties().get("useSnapshotInHotfix") != null) {
                     getLog().warn(
-                            "The useSnapshotInHotfix parameter is set from the command line. Don't forget to use it in the finish goal as well."
+                            "The useSnapshotInHotfix parameter is set from the command line."
+                                    + " Don't forget to use it in the finish goal as well."
                                     + " It is better to define it in the project's pom file.");
                 }
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(projectVersion);
 
-                Map<String, String> properties = new HashMap<String, String>();
+                Map<String, String> properties = new HashMap<>();
                 properties.put("version", projectVersion);
 
                 // git commit -a -m updating versions for hotfix
@@ -249,9 +257,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             if (pushRemote) {
                 gitPush(hotfixBranchName, false);
             }
-        } catch (CommandLineException e) {
-            throw new MojoFailureException("hotfix-start", e);
-        } catch (VersionParseException e) {
+        } catch (CommandLineException | VersionParseException e) {
             throw new MojoFailureException("hotfix-start", e);
         }
     }

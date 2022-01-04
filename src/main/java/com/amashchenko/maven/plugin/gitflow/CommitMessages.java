@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 Aleksandr Mashchenko.
+ * Copyright 2014-2022 Aleksandr Mashchenko.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ public class CommitMessages {
     private String releaseFinishDevMergeMessage;
 
     private String featureFinishDevMergeMessage;
+    private String featureSquashMessage;
 
     private String hotfixFinishMergeMessage;
     private String hotfixFinishDevMergeMessage;
@@ -53,34 +54,55 @@ public class CommitMessages {
     private String updateReleaseBackPreMergeStateMessage;
 
     private String updateFeatureBackMessage;
+    private String featureFinishIncrementVersionMessage;
+
+    private String supportStartMessage;
 
     public CommitMessages() {
-        featureStartMessage = "Update versions for feature branch";
-        featureFinishMessage = "Update versions for development branch";
+        featureStartMessage = System.getProperty("commitMessages.featureStartMessage", "Update versions for feature branch");
+        featureFinishMessage = System.getProperty("commitMessages.featureFinishMessage", "Update versions for development branch");
 
-        hotfixStartMessage = "Update versions for hotfix";
-        hotfixFinishMessage = "Update for next development version";
+        hotfixStartMessage = System.getProperty("commitMessages.hotfixStartMessage", "Update versions for hotfix");
+        hotfixFinishMessage = System.getProperty("commitMessages.hotfixFinishMessage", "Update for next development version");
 
-        hotfixVersionUpdateMessage = "Update to hotfix version";
+        hotfixVersionUpdateMessage = System.getProperty("commitMessages.hotfixVersionUpdateMessage", "Update to hotfix version");
 
-        releaseStartMessage = "Update versions for release";
-        releaseFinishMessage = "Update for next development version";
+        releaseStartMessage = System.getProperty("commitMessages.releaseStartMessage", "Update versions for release");
+        releaseFinishMessage = System.getProperty("commitMessages.releaseFinishMessage", "Update for next development version");
 
-        releaseVersionUpdateMessage = "Update for next development version";
+        releaseVersionUpdateMessage = System.getProperty("commitMessages.releaseVersionUpdateMessage",
+                "Update for next development version");
 
-        releaseFinishMergeMessage = "";
-        releaseFinishDevMergeMessage = "";
+        releaseFinishMergeMessage = System.getProperty("commitMessages.releaseFinishMergeMessage", "");
+        releaseFinishDevMergeMessage = System.getProperty("commitMessages.releaseFinishDevMergeMessage", "");
 
-        tagHotfixMessage = "Tag hotfix";
-        tagReleaseMessage = "Tag release";
+        featureFinishDevMergeMessage = System.getProperty("commitMessages.featureFinishDevMergeMessage", "");
+        featureSquashMessage = System.getProperty("commitMessages.featureSquashMessage", "");
 
-        updateDevToAvoidConflictsMessage = "Update develop to production version to avoid merge conflicts";
-        updateDevBackPreMergeStateMessage = "Update develop version back to pre-merge state";
+        hotfixFinishMergeMessage = System.getProperty("commitMessages.hotfixFinishMergeMessage", "");
+        hotfixFinishDevMergeMessage = System.getProperty("commitMessages.hotfixFinishDevMergeMessage", "");
+        hotfixFinishReleaseMergeMessage = System.getProperty("commitMessages.hotfixFinishReleaseMergeMessage", "");
+        hotfixFinishSupportMergeMessage = System.getProperty("commitMessages.hotfixFinishSupportMergeMessage", "");
 
-        updateReleaseToAvoidConflictsMessage = "Update release to hotfix version to avoid merge conflicts";
-        updateReleaseBackPreMergeStateMessage = "Update release version back to pre-merge state";
+        tagHotfixMessage = System.getProperty("commitMessages.tagHotfixMessage", "Tag hotfix");
+        tagReleaseMessage = System.getProperty("commitMessages.tagReleaseMessage", "Tag release");
 
-        updateFeatureBackMessage = "Update feature branch back to feature version";
+        updateDevToAvoidConflictsMessage = System.getProperty("commitMessages.updateDevToAvoidConflictsMessage",
+                "Update develop to production version to avoid merge conflicts");
+        updateDevBackPreMergeStateMessage = System.getProperty("commitMessages.updateDevBackPreMergeStateMessage",
+                "Update develop version back to pre-merge state");
+
+        updateReleaseToAvoidConflictsMessage = System.getProperty("commitMessages.updateReleaseToAvoidConflictsMessage",
+                "Update release to hotfix version to avoid merge conflicts");
+        updateReleaseBackPreMergeStateMessage = System.getProperty("commitMessages.updateReleaseBackPreMergeStateMessage",
+                "Update release version back to pre-merge state");
+
+        updateFeatureBackMessage = System.getProperty("commitMessages.updateFeatureBackMessage",
+                "Update feature branch back to feature version");
+        featureFinishIncrementVersionMessage = System.getProperty("commitMessages.featureFinishIncrementVersionMessage",
+                "Increment feature version");
+
+        supportStartMessage = System.getProperty("commitMessages.supportStartMessage", "Update versions for support branch");
     }
 
     /**
@@ -265,16 +287,6 @@ public class CommitMessages {
     }
 
     /**
-     * @param updateDevToAvoidConflitsMessage
-     *            the updateDevToAvoidConflitsMessage to set
-     * @deprecated Use the correctly spelt updateDevToAvoidConflictsMessage instead
-     */
-    @Deprecated
-    public void setUpdateDevToAvoidConflitsMessage(String updateDevToAvoidConflitsMessage) {
-        this.updateDevToAvoidConflictsMessage = updateDevToAvoidConflitsMessage;
-    }
-
-    /**
      * @return the updateDevBackPreMergeStateMessage
      */
     public String getUpdateDevBackPreMergeStateMessage() {
@@ -393,6 +405,21 @@ public class CommitMessages {
     }
 
     /**
+     * @return the featureSquashMessage
+     */
+    public String getFeatureSquashMessage() {
+        return featureSquashMessage;
+    }
+
+    /**
+     * @param featureSquashMessage
+     *            the featureSquashMessage to set
+     */
+    public void setFeatureSquashMessage(String featureSquashMessage) {
+        this.featureSquashMessage = featureSquashMessage;
+    }
+
+    /**
      * @return the updateFeatureBackMessage
      */
     public String getUpdateFeatureBackMessage() {
@@ -405,5 +432,35 @@ public class CommitMessages {
      */
     public void setUpdateFeatureBackMessage(String updateFeatureBackMessage) {
         this.updateFeatureBackMessage = updateFeatureBackMessage;
+    }
+
+    /**
+     * @return the featureFinishIncrementVersionMessage
+     */
+    public String getFeatureFinishIncrementVersionMessage() {
+        return featureFinishIncrementVersionMessage;
+    }
+
+    /**
+     * @param featureFinishIncrementVersionMessage
+     *            the featureFinishIncrementVersionMessage to set
+     */
+    public void setFeatureFinishIncrementVersionMessage(String featureFinishIncrementVersionMessage) {
+        this.featureFinishIncrementVersionMessage = featureFinishIncrementVersionMessage;
+    }
+
+    /**
+     * @return the supportStartMessage
+     */
+    public String getSupportStartMessage() {
+        return supportStartMessage;
+    }
+
+    /**
+     * @param supportStartMessage
+     *            the supportStartMessage to set
+     */
+    public void setSupportStartMessage(String supportStartMessage) {
+        this.supportStartMessage = supportStartMessage;
     }
 }

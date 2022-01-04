@@ -1,5 +1,6 @@
 # Git-Flow Maven Plugin
 
+[![verify](https://github.com/aleksandr-m/gitflow-maven-plugin/workflows/verify/badge.svg)](https://github.com/aleksandr-m/gitflow-maven-plugin/actions)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.amashchenko.maven.plugin/gitflow-maven-plugin/badge.svg?subject=Maven%20Central)](https://maven-badges.herokuapp.com/maven-central/com.amashchenko.maven.plugin/gitflow-maven-plugin/)
 [![License](https://img.shields.io/badge/License-Apache%20License%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
@@ -22,7 +23,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.14.0</version>
+                <version>1.17.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -60,6 +61,9 @@ To configure this plugin to use single branch model, such as GitHub Flow, just s
 
 That's it!
 
+# Maven Wrapper support
+
+The plugin will automatically use Maven Wrapper for internal Maven goals if plugin is started with the wrapper.
 
 # Eclipse Plugins build with Tycho
 
@@ -98,6 +102,17 @@ The `gitflow:release`, `gitflow:release-finish` and `gitflow:hotfix-finish` goal
 ### Signing Commits
 
 All goals have `gpgSignCommit` parameter. Set it to `true` to sign commits with configured personal key. The default value is `false`.
+
+
+# Support for Reproducible Builds
+
+[Reproducible builds](https://reproducible-builds.org/) are a set of software development practices that create an independently-verifiable path from source to binary code.
+
+To configure your Maven build to support reproducible builds follow [official guide](https://maven.apache.org/guides/mini/guide-reproducible-builds.html).
+
+If your project has `project.build.outputTimestamp` property this plugin will update its value whenever the versions are updated. 
+
+This can be disabled by setting the configuration parameter `updateOutputTimestamp` to `false`.
 
 
 # Plugin Common Parameters
@@ -156,6 +171,7 @@ Since `1.2.1` commit messages can be changed in plugin's configuration section i
             <releaseFinishDevMergeMessage></releaseFinishDevMergeMessage>
 
             <featureFinishDevMergeMessage></featureFinishDevMergeMessage>
+            <featureSquashMessage></featureSquashMessage>
 
             <hotfixFinishMergeMessage></hotfixFinishMergeMessage>
             <hotfixFinishDevMergeMessage></hotfixFinishDevMergeMessage>
@@ -181,7 +197,7 @@ Maven properties can be used in commit messages. For example `<featureStartMessa
 
 Note that although `${project.version}` can be used, any changes to version introduced by this goal won't be reflected in a commit message for this goal (see Custom properties).
 
-Commit messages can be prefixed by using `commitMessagePrefix` parameter.
+Commit messages can be prefixed by using `commitMessagePrefix` parameter. Leading or trailing whitespaces can be preserved by using `xml:space="preserve"` attribute e.g. `<commitMessagePrefix xml:space="preserve">[gitflow] </commitMessagePrefix>`.
 
 ### Custom properties in commit messages
 
@@ -201,8 +217,7 @@ For example, `-DversionProperty=revision` will update the `<revision>` property 
 
 The `skipUpdateVersion` parameter can be used to skip updating `<version>` in the pom.xml. The default value is `false` (i.e. the version will be updated).
 
-To support [CI friendly versioning](https://maven.apache.org/maven-ci-friendly.html) in projects which use `<version>${revision}</version>` (e.g. [spring-boot](https://github.com/spring-projects/spring-boot/blob/master/pom.xml))
-set `versionProperty` to `revision` and `skipUpdateVersion` to `true`.
+To support [CI friendly versioning](https://maven.apache.org/maven-ci-friendly.html) in projects which use `<version>${revision}</version>` set `versionProperty` to `revision` and `skipUpdateVersion` to `true`.
 
 ## Additional goal parameters
 
@@ -214,6 +229,8 @@ The default value is `false` (e.g. if the project version is `1.0.0-SNAPSHOT` an
 
 The `gitflow:feature-start` goal has `featureNamePattern` parameter which allows to enforce naming of the feature branches with a regular expression. Doesn't have effect if it isn't set or left blank.
 By default it isn't set.
+
+The `gitflow:feature-finish` goal has `incrementVersionAtFinish` parameter which if set to `true` will increment version number during feature finish. The default is `false`.
 
 All `-finish` goals have `keepBranch` parameter which controls whether created support branch will be kept in Git after the goal finishes.
 The default value is `false` (i.e. the supporting branch will be deleted). If the `pushRemote` parameter is set to `true` and `keepBranch` is `false` remote branch will be deleted as well.
@@ -250,12 +267,16 @@ The `gitflow:release-start` goal has `fromCommit` parameter which allows to star
 The `gitflow:release-start` and `gitflow:release-finish` goals have `useSnapshotInRelease` parameter which allows to start the release with SNAPSHOT version and finish it without this value in project version. By default the value is `false`.
 For example, if the release version  is `1.0.2` and `useSnapshotInRelease` is set to `true` and using `gitflow:release-start` goal then the release version will be `1.0.2-SNAPSHOT` and when finishing the release with `gitflow:release-finish` goal, the release version will be `1.0.2`
 
+The `gitflow:release` and `gitflow:release-start` goals have `skipReleaseMergeProdBranch` parameter which prevents merging the release branch into the production branch. The default value is `false`.
+
 The `gitflow:hotfix-start` and `gitflow:hotfix-finish` goals have `useSnapshotInHotfix` parameter which allows to start the hotfix with SNAPSHOT version and finish it without this value in the version. By default the value is `false`.
 For example, if the hotfix version  is `1.0.2.1` and `useSnapshotInHotfix` is set to `true` and using `gitflow:hotfix-start` goal then the hotfix version will be `1.0.2.1-SNAPSHOT` and when finishing the release with `gitflow:hotfix-finish` goal, the release version will be `1.0.2.1`
 
-The `gitflow:hotfix-finish` goal also supports the parameter `skipMergeDevBranch` which prevents merging the hotfix branch into the development branch. 
+The `gitflow:hotfix-finish` goal supports the parameter `skipMergeDevBranch` which prevents merging the hotfix branch into the development branch. 
 
-The `gitflow:hotfix-finish` goal also supports the parameter `skipMergeProdBranch` which prevents merging the hotfix branch into the production branch and deletes the hotfix branch leaving only the tagged commit. Useful, along with `skipMergeDevBranch`, to allow hotfixes to very old code that are not applicable to current development.
+The `gitflow:hotfix-finish` goal supports the parameter `skipMergeProdBranch` which prevents merging the hotfix branch into the production branch and deletes the hotfix branch leaving only the tagged commit. Useful, along with `skipMergeDevBranch`, to allow hotfixes to very old code that are not applicable to current development.
+
+The `gitflow:hotfix-start` goal has `hotfixVersionDigitToIncrement` parameter which controls which digit to increment in the hotfix version. Starts from zero.
 
 Version update of all modules ignoring groupId and artifactId can be forced by setting `versionsForceUpdate` parameter to `true`. The default value is `false`.
 
@@ -321,6 +342,8 @@ The `gitflow:release-finish` and `gitflow:release` goals have `developmentVersio
 
 The `gitflow:feature-start` and `gitflow:feature-finish` goals have `featureName` parameter which can be used to set a name of the feature in non-interactive mode.
 
+The `gitflow:feature-finish` goal has `featureBranch` parameter which can be used to set feature branch name in non-interactive mode. It must start with the feature branch prefix. The `featureBranch` will be used instead of `featureName` if both are set.
+
 ## Non-interactive Hotfix
 
 The `gitflow:hotfix-start` goal has `fromBranch` parameter which can be used to set starting branch of the hotfix. It can be set to production branch or one of the support branches.
@@ -329,7 +352,13 @@ If it is left blank then hotfix will be started from the production branch.
 The `gitflow:hotfix-start` and `gitflow:hotfix-finish` goals have `hotfixVersion` parameter which can be used to set version of the hotfix.
 If it is left blank in `gitflow:hotfix-start` goal then the default version will be used.
 
+The `gitflow:hotfix-finish` goal has `hotfixBranch` parameter which can be used to set hotfix branch name in non-interactive mode. It must start with the hotfix branch prefix. The `hotfixBranch` will be used instead of `hotfixVersion` if both are set.
+
 ## Non-interactive Support
 
 The `gitflow:support-start` goal can be run in non-interactive mode. Use `tagName` parameter to set tag from which supporting branch will be started.
 If `tagName` is not set but the goal is running in non-interactive mode then the last tag will be used.
+
+The `gitflow:support-start` goal has `supportBranchName` parameter which can be used to set branch name to use instead of the default.
+
+The `gitflow:support-start` goal has `useSnapshotInSupport` parameter which allows to start the support with SNAPSHOT version.
