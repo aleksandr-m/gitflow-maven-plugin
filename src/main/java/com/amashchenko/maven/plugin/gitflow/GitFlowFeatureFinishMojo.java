@@ -167,9 +167,9 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             if (incrementVersionAtFinish) {
                 // prevent incrementing feature name which can hold numbers
                 String ver = featureVersion.replaceFirst("-" + featName, "");
-                GitFlowVersionInfo nextVersionInfo = new GitFlowVersionInfo(ver);
+                GitFlowVersionInfo nextVersionInfo = new GitFlowVersionInfo(ver, getVersionPolicy());
                 ver = nextVersionInfo.nextSnapshotVersion();
-                GitFlowVersionInfo featureVersionInfo = new GitFlowVersionInfo(ver);
+                GitFlowVersionInfo featureVersionInfo = new GitFlowVersionInfo(ver, getVersionPolicy());
                 featureVersion = featureVersionInfo.featureVersion(featName);
 
                 mvnSetVersions(featureVersion);

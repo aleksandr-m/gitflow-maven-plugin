@@ -63,6 +63,6 @@ public class NextHotfixVersionTest {
 
     @Test
     public void testNextSnapshotVersion() throws Exception {
-        Assert.assertEquals(expectedVersion, new GitFlowVersionInfo(version).hotfixVersion(false, index));
+        Assert.assertEquals(expectedVersion, new GitFlowVersionInfo(version, null).hotfixVersion(false, index));
     }
 }
