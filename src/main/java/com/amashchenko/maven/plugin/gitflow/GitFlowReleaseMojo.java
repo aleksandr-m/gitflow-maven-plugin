@@ -196,7 +196,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             // need to be in develop to check snapshots and to get correct
             // project version
             // git checkout develop
-            gitCheckout(gitFlowConfig.getDevelopmentBranch());
+            checkoutAndSetConfigForBranch(BranchType.DEVELOPMENT, gitFlowConfig.getDevelopmentBranch());
 
             // check snapshots dependencies
             if (!allowSnapshots) {
@@ -269,7 +269,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
             if (!skipReleaseMergeProdBranch && notSameProdDevName()) {
                 // git checkout master
-                gitCheckout(gitFlowConfig.getProductionBranch());
+                checkoutAndSetConfigForBranch(BranchType.PRODUCTION, gitFlowConfig.getProductionBranch());
 
                 gitMerge(gitFlowConfig.getDevelopmentBranch(), releaseRebase,
                         releaseMergeNoFF, releaseMergeFFOnly, commitMessages.getReleaseFinishMergeMessage(),
@@ -295,7 +295,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
             if (notSameProdDevName()) {
                 // git checkout develop
-                gitCheckout(gitFlowConfig.getDevelopmentBranch());
+                checkoutAndSetConfigForBranch(BranchType.DEVELOPMENT, gitFlowConfig.getDevelopmentBranch());
             }
 
             // get next snapshot version

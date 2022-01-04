@@ -195,7 +195,9 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                                 "More than one remote release branch exists. Cannot finish release.");
                     }
 
-                    gitCreateAndCheckout(releaseBranch, gitFlowConfig.getOrigin() + "/" + releaseBranch);
+                    createAndCheckoutAndSetConfigForBranch(
+                            BranchType.RELEASE, releaseBranch,
+                            gitFlowConfig.getOrigin() + "/" + releaseBranch);
                 } else {
                     throw new MojoFailureException("There is no release branch.");
                 }
@@ -207,7 +209,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
             // check snapshots dependencies
             if (!allowSnapshots) {
-                gitCheckout(releaseBranch);
+                checkoutAndSetConfigForBranch(BranchType.RELEASE, releaseBranch);
 
                 checkSnapshotDependencies();
             }
@@ -233,7 +235,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout release/...
-            gitCheckout(releaseBranch);
+            checkoutAndSetConfigForBranch(BranchType.RELEASE, releaseBranch);
 
             if (!skipTestProject) {
                 // mvn clean test
@@ -262,7 +264,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
             if (!skipReleaseMergeProdBranch) {
                 // git checkout master
-                gitCheckout(gitFlowConfig.getProductionBranch());
+                checkoutAndSetConfigForBranch(BranchType.PRODUCTION, gitFlowConfig.getProductionBranch());
 
                 gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, releaseMergeFFOnly, commitMessages.getReleaseFinishMergeMessage(),
                         messageProperties);
@@ -292,7 +294,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
             if (notSameProdDevName()) {
                 // git checkout develop
-                gitCheckout(gitFlowConfig.getDevelopmentBranch());
+                checkoutAndSetConfigForBranch(BranchType.DEVELOPMENT, gitFlowConfig.getDevelopmentBranch());
 
                 // get develop version
                 final String developReleaseVersion = getCurrentProjectVersion();

@@ -177,7 +177,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             // need to be in develop to check snapshots and to get
             // correct project version
-            gitCheckout(startPoint);
+            checkoutAndSetConfigForBranch(BranchType.DEVELOPMENT, startPoint);
 
             // check snapshots dependencies
             if (!allowSnapshots) {
@@ -231,10 +231,10 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                 commitProjectVersion(nextSnapshotVersion, commitMessages.getReleaseVersionUpdateMessage());
 
                 // git checkout release/...
-                gitCheckout(fullBranchName);
+                checkoutAndSetConfigForBranch(BranchType.RELEASE, fullBranchName);
             } else {
                 // git checkout -b release/... develop
-                gitCreateAndCheckout(fullBranchName, startPoint);
+                createAndCheckoutAndSetConfigForBranch(BranchType.RELEASE, fullBranchName, startPoint);
 
                 // mvn versions:set ...
                 // git commit -a -m ...

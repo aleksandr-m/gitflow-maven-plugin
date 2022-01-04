@@ -92,6 +92,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             checkUncommittedChanges();
 
             String branchName = gitFlowConfig.getProductionBranch();
+            BranchType branchType = BranchType.PRODUCTION;
 
             // find support branches
             final String supportBranchesStr = gitFindBranches(gitFlowConfig.getSupportBranchPrefix(), false);
@@ -135,6 +136,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                     if (branchNumber != null) {
                         int num = Integer.parseInt(branchNumber);
                         branchName = branches[num - 1];
+                        branchType = BranchType.SUPPORT;
                     }
 
                     if (StringUtils.isBlank(branchName)) {
@@ -142,8 +144,12 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                     }
                 }
             } else if (StringUtils.isNotBlank(fromBranch)) {
-                if (fromBranch.equals(gitFlowConfig.getProductionBranch()) || contains(supportBranches, fromBranch)) {
+                if (fromBranch.equals(gitFlowConfig.getProductionBranch())) {
                     branchName = fromBranch;
+                    branchType = BranchType.PRODUCTION;
+                } else if (contains(supportBranches, fromBranch)) {
+                    branchName = fromBranch;
+                    branchType = BranchType.SUPPORT;
                 } else {
                     throw new MojoFailureException("The fromBranch is not production or support branch.");
                 }
@@ -151,7 +157,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
             // need to be in master to get correct project version
             // git checkout master
-            gitCheckout(branchName);
+            checkoutAndSetConfigForBranch(branchType, branchName);
 
             // fetch and check remote
             if (fetchRemote) {
@@ -223,7 +229,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             }
 
             // git checkout -b hotfix/... master
-            gitCreateAndCheckout(hotfixBranchName, branchName);
+            createAndCheckoutAndSetConfigForBranch(BranchType.HOTFIX, hotfixBranchName, branchName);
 
             // execute if version changed
             if (!version.equals(currentVersion)) {

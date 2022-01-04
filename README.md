@@ -219,6 +219,18 @@ The `skipUpdateVersion` parameter can be used to skip updating `<version>` in th
 
 To support [CI friendly versioning](https://maven.apache.org/maven-ci-friendly.html) in projects which use `<version>${revision}</version>` set `versionProperty` to `revision` and `skipUpdateVersion` to `true`.
 
+### CI friendly in dependencies/multi module
+
+Projects which additionally use the `changelist` property in the version (`<version>${revision}${changelist}</version>`) and refer to it via `<version>${project.version}</version>` in dependencies are supported as well.
+
+As the different steps of the plugin running on different branches, different values for `changelist` may be needed to successfully resolve the dependencies.
+
+To set different values to `changelist` per branch the properties `productionChangelistValue`, `hotfixChangelistValue`, `releaseChangelistValue`, `developmentChangelistValue`, `featureChangelistValue`, `supportChangelistValue` are used.
+
+As example for the `gitflow:hotfix-finish` the following properties may be used (setting `developmentChangelistValue` done explicit for better understanding):
+
+    mvn gitflow:hotfix-finish -DhotfixVersion=x.y.z -DproductionChangelistValue='' -DhotfixChangelistValue='' -DdevelopmentChangelistValue='-SNAPSHOT'
+
 ## Additional goal parameters
 
 The `gitflow:release-finish`, `gitflow:release` and `gitflow:hotfix-finish` goals have `skipTag` parameter. This parameter controls whether the release/hotfix will be tagged in Git.
