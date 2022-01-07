@@ -37,6 +37,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingResult;
 import org.apache.maven.settings.Settings;
+import org.apache.maven.shared.release.policy.version.VersionPolicy;
 import org.codehaus.plexus.components.interactivity.Prompter;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
@@ -195,6 +196,17 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     @Parameter(property = "gitExecutable")
     private String gitExecutable;
 
+    /**
+     * The role-hint for the {@link org.apache.maven.shared.release.policy.version.VersionPolicy}
+     * implementation used to calculate the project versions.
+     * If a policy is set other parameters controlling the generation of version are ignored
+     * (digitsOnlyDevVersion, versionDigitToIncrement).
+     *
+     * @since 1.18.0
+     */
+    @Parameter(property="projectVersionPolicyId")
+    private String projectVersionPolicyId;
+
     /** Maven session. */
     @Parameter(defaultValue = "${session}", readonly = true)
     protected MavenSession mavenSession;
@@ -208,6 +220,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** Maven settings. */
     @Parameter(defaultValue = "${settings}", readonly = true)
     protected Settings settings;
+    @Component
+    protected Map<String,VersionPolicy> versionPolicies;
 
     /**
      * Initializes command line executables.
@@ -1380,4 +1394,16 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     public void setArgLine(String argLine) {
         this.argLine = argLine;
     }
+
+    protected VersionPolicy getVersionPolicy() {
+        if (StringUtils.isNotBlank(projectVersionPolicyId)) {
+            VersionPolicy versionPolicy = versionPolicies.get(projectVersionPolicyId);
+            if (versionPolicy == null) {
+                throw new IllegalArgumentException("No implementation found for projectVersionPolicyId: " + projectVersionPolicyId);
+            }
+            return versionPolicy;
+        }
+        return null;
+    }
+
 }

@@ -162,7 +162,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             final String currentVersion = getCurrentProjectVersion();
 
             // get default hotfix version
-            final String defaultVersion = new GitFlowVersionInfo(currentVersion).hotfixVersion(tychoBuild, hotfixVersionDigitToIncrement);
+            final String defaultVersion = new GitFlowVersionInfo(currentVersion, getVersionPolicy()).hotfixVersion(tychoBuild, hotfixVersionDigitToIncrement);
 
             if (defaultVersion == null) {
                 throw new MojoFailureException(

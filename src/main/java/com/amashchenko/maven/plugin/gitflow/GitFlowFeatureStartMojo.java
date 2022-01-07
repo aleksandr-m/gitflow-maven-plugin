@@ -132,7 +132,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                 // get current project version from pom
                 final String currentVersion = getCurrentProjectVersion();
 
-                final String version = new GitFlowVersionInfo(currentVersion)
+                final String version = new GitFlowVersionInfo(currentVersion, getVersionPolicy())
                         .featureVersion(featureBranchName);
 
                 if (StringUtils.isNotBlank(version)) {
