@@ -70,9 +70,7 @@ public class GitFlowVersionInfo extends DefaultVersionInfo {
             try {
                 VersionPolicyRequest request = new VersionPolicyRequest().setVersion(this.toString());
                 return versionPolicy.getReleaseVersion(request).getVersion();
-            } catch (PolicyException ex) {
-                throw new RuntimeException("Unable to get release version from policy.", ex);
-            } catch (VersionParseException ex) {
+            } catch (PolicyException | VersionParseException ex) {
                 throw new RuntimeException("Unable to get release version from policy.", ex);
             }
         }
@@ -119,9 +117,7 @@ public class GitFlowVersionInfo extends DefaultVersionInfo {
                 else {
                     return versionPolicy.getReleaseVersion(request).getVersion();
                 }
-            } catch (PolicyException ex) {
-                throw new RuntimeException("Unable to get development version from policy.", ex);
-            } catch (VersionParseException ex) {
+            } catch (PolicyException | VersionParseException ex) {
                 throw new RuntimeException("Unable to get development version from policy.", ex);
             }
         }
