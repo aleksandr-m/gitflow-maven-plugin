@@ -19,9 +19,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
@@ -340,7 +342,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         getLog().info("Checking for SNAPSHOT versions in dependencies.");
 
         List<String> snapshots = new ArrayList<>();
-        List<String> builtArtifacts = new ArrayList<>();
+        Set<String> builtArtifacts = new HashSet<>();
 
         List<MavenProject> projects = mavenSession.getProjects();
         for (MavenProject project : projects) {
@@ -353,6 +355,13 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                 String id = d.getGroupId() + ":" + d.getArtifactId() + ":" + d.getVersion();
                 if (!builtArtifacts.contains(id) && ArtifactUtils.isSnapshot(d.getVersion())) {
                     snapshots.add(reloadedProject + " -> " + d);
+                }
+            }
+            MavenProject parent = reloadedProject.getParent();
+            if (parent != null) {
+                String id = parent.getGroupId() + ":" + parent.getArtifactId() + ":" + parent.getVersion();
+                if (!builtArtifacts.contains(id) && ArtifactUtils.isSnapshot(parent.getVersion())) {
+                    snapshots.add(reloadedProject + " -> " + parent);
                 }
             }
         }
