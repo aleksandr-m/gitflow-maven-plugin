@@ -110,8 +110,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                         branches[i] = supportBranches[i];
                     }
                     // add production branch to the list
-                    branches[supportBranches.length] = gitFlowConfig
-                            .getProductionBranch();
+                    branches[supportBranches.length] = gitFlowConfig.getProductionBranch();
 
                     List<String> numberedList = new ArrayList<>();
                     StringBuilder str = new StringBuilder("Branches:")
@@ -125,8 +124,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                     String branchNumber = null;
                     try {
                         while (StringUtils.isBlank(branchNumber)) {
-                            branchNumber = prompter.prompt(str.toString(),
-                                    numberedList);
+                            branchNumber = prompter.prompt(str.toString(), numberedList);
                         }
                     } catch (PrompterException e) {
                         throw new MojoFailureException("hotfix-start", e);
@@ -162,7 +160,8 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             final String currentVersion = getCurrentProjectVersion();
 
             // get default hotfix version
-            final String defaultVersion = new GitFlowVersionInfo(currentVersion, getVersionPolicy()).hotfixVersion(tychoBuild, hotfixVersionDigitToIncrement);
+            final String defaultVersion = new GitFlowVersionInfo(currentVersion, getVersionPolicy()).hotfixVersion(tychoBuild,
+                    hotfixVersionDigitToIncrement);
 
             if (defaultVersion == null) {
                 throw new MojoFailureException(

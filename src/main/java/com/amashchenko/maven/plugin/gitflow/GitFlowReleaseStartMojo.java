@@ -152,8 +152,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             checkUncommittedChanges();
 
             // git for-each-ref --count=1 refs/heads/release/*
-            final String releaseBranch = gitFindBranches(
-                    gitFlowConfig.getReleaseBranchPrefix(), true);
+            final String releaseBranch = gitFindBranches(gitFlowConfig.getReleaseBranchPrefix(), true);
 
             if (StringUtils.isNotBlank(releaseBranch)) {
                 throw new MojoFailureException(
@@ -217,14 +216,12 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
             if (commitDevelopmentVersionAtStart) {
                 // mvn versions:set ...
                 // git commit -a -m ...
-                commitProjectVersion(projectVersion,
-                        commitMessages.getReleaseStartMessage()); 
+                commitProjectVersion(projectVersion, commitMessages.getReleaseStartMessage());
 
                 // git branch release/... develop
                 gitCreateBranch(fullBranchName, startPoint);
 
-                final String nextSnapshotVersion =
-                        getNextSnapshotVersion(releaseVersion);
+                final String nextSnapshotVersion = getNextSnapshotVersion(releaseVersion);
 
                 // mvn versions:set ...
                 // git commit -a -m ...
@@ -238,8 +235,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
                 // mvn versions:set ...
                 // git commit -a -m ...
-                commitProjectVersion(projectVersion,
-                        commitMessages.getReleaseStartMessage());
+                commitProjectVersion(projectVersion, commitMessages.getReleaseStartMessage());
             }
 
             if (installProject) {

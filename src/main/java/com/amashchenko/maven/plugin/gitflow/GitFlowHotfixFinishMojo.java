@@ -164,14 +164,11 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             // support branch hotfix
             String supportBranchName = null;
             boolean supportHotfix = hotfixBranchName
-                    .startsWith(gitFlowConfig.getHotfixBranchPrefix()
-                            + gitFlowConfig.getSupportBranchPrefix());
+                    .startsWith(gitFlowConfig.getHotfixBranchPrefix() + gitFlowConfig.getSupportBranchPrefix());
             // get support branch name w/o version part
             if (supportHotfix) {
-                supportBranchName = hotfixBranchName.substring(
-                        gitFlowConfig.getHotfixBranchPrefix().length());
-                supportBranchName = supportBranchName.substring(0,
-                        supportBranchName.lastIndexOf('/'));
+                supportBranchName = hotfixBranchName.substring(gitFlowConfig.getHotfixBranchPrefix().length());
+                supportBranchName = supportBranchName.substring(0, supportBranchName.lastIndexOf('/'));
             }
 
             // fetch and check remote
@@ -260,8 +257,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
             // check whether release branch exists
             // git for-each-ref --count=1 --format="%(refname:short)"
             // refs/heads/release/*
-            final String releaseBranch = gitFindBranches(
-                    gitFlowConfig.getReleaseBranchPrefix(), true);
+            final String releaseBranch = gitFindBranches(gitFlowConfig.getReleaseBranchPrefix(), true);
 
             if (supportBranchName == null) {
                 // if release branch exists merge hotfix changes into it

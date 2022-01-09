@@ -206,7 +206,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *
      * @since 1.18.0
      */
-    @Parameter(property="projectVersionPolicyId")
+    @Parameter(property = "projectVersionPolicyId")
     private String projectVersionPolicyId;
 
     /** Maven session. */
@@ -222,8 +222,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     /** Maven settings. */
     @Parameter(defaultValue = "${settings}", readonly = true)
     protected Settings settings;
+
     @Component
-    protected Map<String,VersionPolicy> versionPolicies;
+    protected Map<String, VersionPolicy> versionPolicies;
 
     /**
      * Initializes command line executables.
@@ -1414,5 +1415,4 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
         return null;
     }
-
 }

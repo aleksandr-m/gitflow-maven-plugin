@@ -145,8 +145,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                     properties.put("featureName", featureBranchName);
 
                     // git commit -a -m updating versions for feature branch
-                    gitCommit(commitMessages.getFeatureStartMessage(),
-                            properties);
+                    gitCommit(commitMessages.getFeatureStartMessage(), properties);
                 }
             }
 
@@ -156,8 +155,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
             }
 
             if (pushRemote) {
-                gitPush(gitFlowConfig.getFeatureBranchPrefix()
-                        + featureBranchName, false);
+                gitPush(gitFlowConfig.getFeatureBranchPrefix() + featureBranchName, false);
             }
         } catch (CommandLineException | VersionParseException e) {
             throw new MojoFailureException("feature-start", e);

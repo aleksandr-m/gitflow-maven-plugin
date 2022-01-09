@@ -274,8 +274,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             if (!skipTag) {
                 String tagVersion = currentVersion;
                 if ((tychoBuild || useSnapshotInRelease) && ArtifactUtils.isSnapshot(currentVersion)) {
-                    tagVersion = currentVersion.replace("-"
-                            + Artifact.SNAPSHOT_VERSION, "");
+                    tagVersion = currentVersion.replace("-" + Artifact.SNAPSHOT_VERSION, "");
                 }
 
                 messageProperties.put("version", tagVersion);
@@ -327,12 +326,10 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             if (!commitDevelopmentVersionAtStart) {
                 // get next snapshot version
                 final String nextSnapshotVersion;
-                if (!settings.isInteractiveMode()
-                        && StringUtils.isNotBlank(developmentVersion)) {
+                if (!settings.isInteractiveMode() && StringUtils.isNotBlank(developmentVersion)) {
                     nextSnapshotVersion = developmentVersion;
                 } else {
-                    GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(
-                            currentVersion, getVersionPolicy());
+                    GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(currentVersion, getVersionPolicy());
                     if (digitsOnlyDevVersion) {
                         versionInfo = versionInfo.digitsVersionInfo();
                     }
@@ -342,8 +339,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 }
 
                 if (StringUtils.isBlank(nextSnapshotVersion)) {
-                    throw new MojoFailureException(
-                            "Next snapshot version is blank.");
+                    throw new MojoFailureException("Next snapshot version is blank.");
                 }
 
                 // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
