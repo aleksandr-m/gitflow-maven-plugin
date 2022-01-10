@@ -26,7 +26,8 @@ import org.apache.maven.shared.release.versions.VersionParseException;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
- * Git flow {@link VersionInfo} implementation. Adds few convenient methods.
+ * Git flow {@link org.apache.maven.shared.release.versions.VersionInfo}
+ * implementation. Adds few convenient methods.
  * 
  */
 public class GitFlowVersionInfo extends DefaultVersionInfo {
