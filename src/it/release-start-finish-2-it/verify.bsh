@@ -1,0 +1,100 @@
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.StringUtils;
+
+boolean compareFiles(File actualFile, File expectedFile) {
+    String actual = FileUtils.fileRead(actualFile, "UTF-8");
+    String expected = FileUtils.fileRead(expectedFile, "UTF-8");
+
+    actual = actual.replaceAll("\\r?\\n", "");
+    expected = expected.replaceAll("\\r?\\n", "");
+
+    return expected.equals(actual);
+}
+
+try {
+    File gitTag = new File(basedir, ".git/refs/tags/0.0.3");
+    if (!gitTag.exists()) {
+        System.out.println("release-start-finish .git/refs/tags/0.0.3 doesn't exist");
+        return false;
+    }
+
+    File gitReleaseRef = new File(basedir, ".git/refs/heads/release/0.0.3");
+    if (gitReleaseRef.exists()) {
+        System.out.println("release-start-finish .git/refs/heads/release/0.0.3 exists");
+        return false;
+    }
+    File gitDevelopRef = new File(basedir, ".git/refs/heads/develop");
+    if (!gitDevelopRef.exists()) {
+        System.out.println("release-start-finish .git/refs/heads/develop doesn't exist");
+        return false;
+    }
+    File gitMasterRef = new File(basedir, ".git/refs/heads/master");
+    if (!gitMasterRef.exists()) {
+        System.out.println("release-start-finish .git/refs/heads/master doesn't exist");
+        return false;
+    }
+
+    File file = new File(basedir, "pom.xml");
+    File expectedFile = new File(basedir, "expectations/develop/expected-pom.xml");
+    if (!compareFiles(file, expectedFile)) {
+        System.out.println("release-start-finish expected: " + expected + " actual was:" + actual);
+        return false;
+    }
+
+    file = new File(basedir, "withAgregatorAsParent/pom.xml");
+    expectedFile = new File(basedir, "expectations/develop/withAgregatorAsParent/expected-pom.xml");
+    if (!compareFiles(file, expectedFile)) {
+        System.out.println("release-start-finish expected: " + expected + " actual was:" + actual);
+        return false;
+    }
+
+    file = new File(basedir, "withoutAgregatorAsParent/pom.xml");
+    expectedFile = new File(basedir, "expectations/develop/withoutAgregatorAsParent/expected-pom.xml");
+    if (!compareFiles(file, expectedFile)) {
+        System.out.println("release-start-finish expected: " + expected + " actual was:" + actual);
+        return false;
+    }
+
+    file = new File(basedir, "test.txt");
+    expectedFile = new File(basedir, "expectations/develop/expected-test.txt");
+    if (!compareFiles(file, expectedFile)) {
+        System.out.println("release-start-finish expected: " + expected + " actual was:" + actual);
+        return false;
+    }
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " checkout master");
+    p.waitFor();
+
+    file = new File(basedir, "pom.xml");
+    expectedFile = new File(basedir, "expectations/master/expected-pom.xml");
+    if (!compareFiles(file, expectedFile)) {
+        System.out.println("release-start-finish expected: " + expected + " actual was:" + actual);
+        return false;
+    }
+
+    file = new File(basedir, "withAgregatorAsParent/pom.xml");
+    expectedFile = new File(basedir, "expectations/master/withAgregatorAsParent/expected-pom.xml");
+    if (!compareFiles(file, expectedFile)) {
+        System.out.println("release-start-finish expected: " + expected + " actual was:" + actual);
+        return false;
+    }
+
+    file = new File(basedir, "withoutAgregatorAsParent/pom.xml");
+    expectedFile = new File(basedir, "expectations/master/withoutAgregatorAsParent/expected-pom.xml");
+    if (!compareFiles(file, expectedFile)) {
+        System.out.println("release-start-finish expected: " + expected + " actual was:" + actual);
+        return false;
+    }
+
+    file = new File(basedir, "test.txt");
+    expectedFile = new File(basedir, "expectations/master/expected-test.txt");
+    if (!compareFiles(file, expectedFile)) {
+        System.out.println("release-start-finish expected: " + expected + " actual was:" + actual);
+        return false;
+    }
+
+} catch (Exception e) {
+    e.printStackTrace();
+    return false;
+}
+return true;

@@ -18,11 +18,14 @@ package com.amashchenko.maven.plugin.gitflow;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
@@ -316,10 +319,20 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws MojoFailureException
      *             If project loading fails.
      */
-    private MavenProject reloadProject(MavenProject project) throws MojoFailureException {
+    private MavenProject reloadProject(final MavenProject project) throws MojoFailureException {
         try {
-            ProjectBuildingResult result = projectBuilder.build(project.getFile(), mavenSession.getProjectBuildingRequest());
-            return result.getProject();
+            List<ProjectBuildingResult> result = projectBuilder.build(
+                    Collections.singletonList(project.getFile()),
+                    true,
+                    mavenSession.getProjectBuildingRequest());
+
+            for (ProjectBuildingResult projectBuildingResult : result) {
+                MavenProject resultProject = projectBuildingResult.getProject();
+                if (resultProject.isExecutionRoot()) {
+                    return resultProject;
+                }
+            }
+            throw new NoSuchElementException("No reloaded project appears to be the execution root (" + project.getGroupId() + ":" + project.getArtifactId() + ")");
         } catch (Exception e) {
             throw new MojoFailureException("Error re-loading project info", e);
         }
