@@ -1,0 +1,8 @@
+build.log
+expected-development-pom.xml
+expected-production-pom.xml
+expected-development-test.txt
+expected-production-test.txt
+invoker.properties
+init.bsh
+verify.bsh
