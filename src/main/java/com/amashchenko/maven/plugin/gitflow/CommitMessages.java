@@ -46,6 +46,7 @@ public class CommitMessages {
 
     private String tagHotfixMessage;
     private String tagReleaseMessage;
+    private String tagVersionUpdateMessage;
 
     private String updateDevToAvoidConflictsMessage;
     private String updateDevBackPreMergeStateMessage;
@@ -57,6 +58,8 @@ public class CommitMessages {
     private String featureFinishIncrementVersionMessage;
 
     private String supportStartMessage;
+
+    private String versionUpdateMessage;
 
     public CommitMessages() {
         featureStartMessage = System.getProperty("commitMessages.featureStartMessage", "Update versions for feature branch");
@@ -86,6 +89,7 @@ public class CommitMessages {
 
         tagHotfixMessage = System.getProperty("commitMessages.tagHotfixMessage", "Tag hotfix");
         tagReleaseMessage = System.getProperty("commitMessages.tagReleaseMessage", "Tag release");
+        tagVersionUpdateMessage = System.getProperty("commitMessages.tagVersionUpdateMessage", "Tag version update");
 
         updateDevToAvoidConflictsMessage = System.getProperty("commitMessages.updateDevToAvoidConflictsMessage",
                 "Update develop to production version to avoid merge conflicts");
@@ -103,6 +107,8 @@ public class CommitMessages {
                 "Increment feature version");
 
         supportStartMessage = System.getProperty("commitMessages.supportStartMessage", "Update versions for support branch");
+
+        versionUpdateMessage = System.getProperty("commitMessages.versionUpdateMessage", "Update versions");
     }
 
     /**
@@ -462,5 +468,33 @@ public class CommitMessages {
      */
     public void setSupportStartMessage(String supportStartMessage) {
         this.supportStartMessage = supportStartMessage;
+    }
+
+    /**
+     * @return the tagVersionUpdateMessage
+     */
+    public String getTagVersionUpdateMessage() {
+        return tagVersionUpdateMessage;
+    }
+
+    /**
+     * @param tagVersionUpdateMessage the tagVersionUpdateMessage to set
+     */
+    public void setTagVersionUpdateMessage(String tagVersionUpdateMessage) {
+        this.tagVersionUpdateMessage = tagVersionUpdateMessage;
+    }
+
+    /**
+     * @return the versionUpdateMessage
+     */
+    public String getVersionUpdateMessage() {
+        return versionUpdateMessage;
+    }
+
+    /**
+     * @param versionUpdateMessage the versionUpdateMessage to set
+     */
+    public void setVersionUpdateMessage(String versionUpdateMessage) {
+        this.versionUpdateMessage = versionUpdateMessage;
     }
 }
