@@ -154,6 +154,31 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     throw new MojoFailureException("Hotfix branch with name '" + branch + "' doesn't exist. Cannot finish hotfix.");
                 }
                 hotfixBranchName = branch;
+            } else if (StringUtils.isBlank(hotfixVersion)) {
+                // git for-each-ref --format='%(refname:short)' refs/heads/hotfix/*
+                hotfixBranchName = gitFindBranches(gitFlowConfig.getHotfixBranchPrefix(), false).trim();
+                
+                if (StringUtils.isBlank(hotfixBranchName)) {
+                    if (fetchRemote) {
+                        hotfixBranchName = gitFetchAndFindRemoteBranches(gitFlowConfig.getOrigin(),
+                                gitFlowConfig.getHotfixBranchPrefix(), false).trim();
+                        if (StringUtils.isBlank(hotfixBranchName)) {
+                            throw new MojoFailureException("There is no remote or local hotfix branch.");
+                        }
+
+                        // remove remote name with slash from branch name
+                        hotfixBranchName = hotfixBranchName.substring(gitFlowConfig.getOrigin().length() + 1);
+                        
+                        gitCreateAndCheckout(hotfixBranchName, gitFlowConfig.getOrigin() + "/" + hotfixBranchName);
+                    } else {
+                        throw new MojoFailureException("There is no hotfix branch.");
+                    }
+                }
+                
+                if (StringUtils.countMatches(hotfixBranchName, gitFlowConfig.getHotfixBranchPrefix()) > 1) {
+                    throw new MojoFailureException(
+                            "More than one remote hotfix branch exists. Cannot finish hotfix. Define branch name to finish hotfix.");
+                }
             }
 
             if (StringUtils.isBlank(hotfixBranchName)) {
