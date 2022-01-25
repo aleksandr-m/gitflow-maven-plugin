@@ -167,6 +167,17 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipReleaseMergeProdBranch", defaultValue = "false")
     private boolean skipReleaseMergeProdBranch = false;
 
+    /**
+     * Controls which branch is merged to develop branch. If set to
+     * <code>true</code> then release branch will be merged to develop. If set to
+     * <code>false</code> and tag is present ({@link #skipTag} is set to
+     * <code>false</code>) then tag will be merged. If there is no tag then
+     * production branch will be merged to develop.
+     *
+     */
+    @Parameter(property = "noBackMerge", defaultValue = "false")
+    private boolean noBackMerge = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -271,12 +282,10 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             // get current project version from pom
             final String currentVersion = getCurrentProjectVersion();
 
+            final String tagVersion = (tychoBuild || useSnapshotInRelease) && ArtifactUtils.isSnapshot(currentVersion)
+                    ? currentVersion.replace("-" + Artifact.SNAPSHOT_VERSION, "")
+                    : currentVersion;
             if (!skipTag) {
-                String tagVersion = currentVersion;
-                if ((tychoBuild || useSnapshotInRelease) && ArtifactUtils.isSnapshot(currentVersion)) {
-                    tagVersion = currentVersion.replace("-" + Artifact.SNAPSHOT_VERSION, "");
-                }
-
                 messageProperties.put("version", tagVersion);
 
                 // git tag -a ...
@@ -303,8 +312,15 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                     gitCommit(commitMessages.getUpdateDevToAvoidConflictsMessage());
                 }
 
-                // merge branch master into develop
-                gitMerge(releaseBranch, releaseRebase, releaseMergeNoFF, false,
+                final String refToMerge;
+                if (noBackMerge) {
+                    refToMerge = releaseBranch;
+                } else if (!skipTag) {
+                    refToMerge = gitFlowConfig.getVersionTagPrefix() + tagVersion;
+                } else {
+                    refToMerge = gitFlowConfig.getProductionBranch();
+                }
+                gitMerge(refToMerge, releaseRebase, releaseMergeNoFF, false,
                         commitMessages.getReleaseFinishDevMergeMessage(), messageProperties);
 
                 if (commitDevelopmentVersionAtStart && useSnapshotInRelease) {
