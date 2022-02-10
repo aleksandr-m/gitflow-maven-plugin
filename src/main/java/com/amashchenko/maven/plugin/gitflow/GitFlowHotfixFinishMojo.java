@@ -128,6 +128,17 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipMergeDevBranch", defaultValue = "false")
     private boolean skipMergeDevBranch = false;
 
+    /**
+     * Controls which branch is merged to develop branch. If set to
+     * <code>true</code> then hotfix branch will be merged to develop. If set to
+     * <code>false</code> and tag is present ({@link #skipTag} is set to
+     * <code>false</code>) then tag will be merged. If there is no tag then
+     * production branch will be merged to develop.
+     *
+     */
+    @Parameter(property = "noBackMergeHotfix", defaultValue = "false")
+    private boolean noBackMergeHotfix = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -229,13 +240,10 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
             final String currentVersion = getCurrentProjectVersion();
 
+            final String tagVersion = (tychoBuild || useSnapshotInHotfix) && ArtifactUtils.isSnapshot(currentVersion)
+                    ? currentVersion.replace("-" + Artifact.SNAPSHOT_VERSION, "")
+                    : currentVersion;
             if (!skipTag) {
-                String tagVersion = currentVersion;
-                if ((tychoBuild || useSnapshotInHotfix) && ArtifactUtils.isSnapshot(tagVersion)) {
-                    tagVersion = tagVersion
-                            .replace("-" + Artifact.SNAPSHOT_VERSION, "");
-                }
-
                 Map<String, String> properties = new HashMap<>();
                 properties.put("version", tagVersion);
 
@@ -297,9 +305,15 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
                         messageProperties.put("version", currentVersion);
 
-                        // git merge --no-ff hotfix/...
-                        gitMergeNoff(hotfixBranchName, commitMessages.getHotfixFinishDevMergeMessage(),
-                                messageProperties);
+                        final String refToMerge;
+                        if (skipMergeProdBranch || noBackMergeHotfix) {
+                            refToMerge = hotfixBranchName;
+                        } else if (!skipTag) {
+                            refToMerge = gitFlowConfig.getVersionTagPrefix() + tagVersion;
+                        } else {
+                            refToMerge = gitFlowConfig.getProductionBranch();
+                        }
+                        gitMergeNoff(refToMerge, commitMessages.getHotfixFinishDevMergeMessage(), messageProperties);
 
                         // which version to increment
                         GitFlowVersionInfo hotfixVersionInfo = new GitFlowVersionInfo(
