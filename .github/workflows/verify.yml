@@ -24,3 +24,9 @@ jobs:
 
       - name: Maven verify
         run: mvn -B verify -Prun-its
+
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: it-build-logs
+          path: target/it/*/*.log
