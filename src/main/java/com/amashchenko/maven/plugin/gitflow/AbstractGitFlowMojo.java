@@ -53,12 +53,18 @@ import org.codehaus.plexus.util.cli.Commandline;
  * 
  */
 public abstract class AbstractGitFlowMojo extends AbstractMojo {
-    /** A full name of the versions-maven-plugin set goal. */
-    private static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "org.codehaus.mojo:versions-maven-plugin:set";
-    /** A full name of the versions-maven-plugin set-property goal. */
-    private static final String VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL = "org.codehaus.mojo:versions-maven-plugin:set-property";
-    /** Name of the tycho-versions-plugin set-version goal. */
-    private static final String TYCHO_VERSIONS_PLUGIN_SET_GOAL = "org.eclipse.tycho:tycho-versions-plugin:set-version";
+    /** Group and artifact id of the versions-maven-plugin. */
+    private static final String VERSIONS_MAVEN_PLUGIN = "org.codehaus.mojo:versions-maven-plugin";
+    /** The versions-maven-plugin set goal. */
+    private static final String VERSIONS_MAVEN_PLUGIN_SET_GOAL = "set";
+    /** The versions-maven-plugin set-property goal. */
+    private static final String VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL = "set-property";
+
+    /** Group and artifact id of the tycho-versions-plugin. */
+    private static final String TYCHO_VERSIONS_PLUGIN = "org.eclipse.tycho:tycho-versions-plugin";
+    /** The tycho-versions-plugin set-version goal. */
+    private static final String TYCHO_VERSIONS_PLUGIN_SET_GOAL = "set-version";
+
     /** Name of the property needed to have reproducible builds. */
     private static final String REPRODUCIBLE_BUILDS_PROPERTY = "project.build.outputTimestamp";
 
@@ -179,6 +185,18 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     @Parameter(property = "updateOutputTimestamp", defaultValue = "true")
     private boolean updateOutputTimestamp = true;
+
+    /**
+     * Version of versions-maven-plugin to use.
+     */
+    @Parameter(property = "versionsMavenPluginVersion", defaultValue = "2.8.1")
+    private String versionsMavenPluginVersion = "2.8.1";
+
+    /**
+     * Version of tycho-versions-plugin to use.
+     */
+    @Parameter(property = "tychoVersionsPluginVersion", defaultValue = "0.24.0")
+    private String tychoVersionsPluginVersion = "0.24.0";
 
     /**
      * Options to pass to Git push command using <code>--push-option</code>.
@@ -1140,7 +1158,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                 getLog().info("Updating property '" + versionProperty + "' to '" + version + "'.");
             }
 
-            executeMvnCommand(TYCHO_VERSIONS_PLUGIN_SET_GOAL, prop, newVersion, "-Dtycho.mode=maven");
+            executeMvnCommand(TYCHO_VERSIONS_PLUGIN + ":" + tychoVersionsPluginVersion + ":" + TYCHO_VERSIONS_PLUGIN_SET_GOAL, prop,
+                    newVersion, "-Dtycho.mode=maven");
         } else {
             boolean runCommand = false;
             List<String> args = new ArrayList<>();
@@ -1148,7 +1167,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             args.add(newVersion);
             if (!skipUpdateVersion) {
                 runCommand = true;
-                args.add(VERSIONS_MAVEN_PLUGIN_SET_GOAL);
+                args.add(VERSIONS_MAVEN_PLUGIN + ":" + versionsMavenPluginVersion + ":" + VERSIONS_MAVEN_PLUGIN_SET_GOAL);
                 args.add(grp);
                 args.add(art);
             }
@@ -1157,7 +1176,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                 runCommand = true;
                 getLog().info("Updating property '" + versionProperty + "' to '" + version + "'.");
 
-                args.add(VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL);
+                args.add(VERSIONS_MAVEN_PLUGIN + ":" + versionsMavenPluginVersion + ":" + VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL);
                 args.add("-Dproperty=" + versionProperty);
             }
             if (runCommand) {
@@ -1178,7 +1197,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
                         getLog().info("Updating property '" + REPRODUCIBLE_BUILDS_PROPERTY + "' to '" + timestamp + "'.");
 
-                        executeMvnCommand(VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL, "-DgenerateBackupPoms=false",
+                        executeMvnCommand(
+                                VERSIONS_MAVEN_PLUGIN + ":" + versionsMavenPluginVersion + ":" + VERSIONS_MAVEN_PLUGIN_SET_PROPERTY_GOAL,
+                                "-DgenerateBackupPoms=false",
                                 "-Dproperty=" + REPRODUCIBLE_BUILDS_PROPERTY, "-DnewVersion=" + timestamp);
                     }
                 }
