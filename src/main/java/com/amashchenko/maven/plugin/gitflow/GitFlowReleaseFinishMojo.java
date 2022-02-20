@@ -168,12 +168,13 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     private boolean skipReleaseMergeProdBranch = false;
 
     /**
-     * Controls which branch is merged to develop branch. If set to
-     * <code>true</code> then release branch will be merged to develop. If set to
-     * <code>false</code> and tag is present ({@link #skipTag} is set to
+     * Controls which branch is merged to development branch. If set to
+     * <code>true</code> then release branch will be merged to development branch.
+     * If set to <code>false</code> and tag is present ({@link #skipTag} is set to
      * <code>false</code>) then tag will be merged. If there is no tag then
-     * production branch will be merged to develop.
+     * production branch will be merged to development branch.
      *
+     * @since 1.18.0
      */
     @Parameter(property = "noBackMerge", defaultValue = "false")
     private boolean noBackMerge = false;

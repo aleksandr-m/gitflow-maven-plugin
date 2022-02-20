@@ -33,12 +33,14 @@ import org.codehaus.plexus.util.cli.CommandLineException;
  * Updates version in release or support branch, optionally tagging and pushing
  * it to the remote repository.
  * 
+ * @since 1.18.0
  */
 @Mojo(name = "version-update", aggregator = true)
 public class GitFlowVersionUpdateMojo extends AbstractGitFlowMojo {
     /**
      * Whether to push to the remote.
      * 
+     * @since 1.18.0
      */
     @Parameter(property = "pushRemote", defaultValue = "false")
     private boolean pushRemote;
@@ -47,6 +49,7 @@ public class GitFlowVersionUpdateMojo extends AbstractGitFlowMojo {
      * Branch to start update in non-interactive mode. Release branch or one of the
      * support branches.
      * 
+     * @since 1.18.0
      */
     @Parameter(property = "fromBranch")
     private String fromBranch;
@@ -54,6 +57,7 @@ public class GitFlowVersionUpdateMojo extends AbstractGitFlowMojo {
     /**
      * The version to use in non-interactive mode.
      * 
+     * @since 1.18.0
      */
     @Parameter(property = "updateVersion")
     private String updateVersion;
@@ -61,6 +65,7 @@ public class GitFlowVersionUpdateMojo extends AbstractGitFlowMojo {
     /**
      * Which digit to increment in the next version. Starts from zero.
      *
+     * @since 1.18.0
      */
     @Parameter(property = "updateVersionDigitToIncrement")
     private Integer updateVersionDigitToIncrement;
@@ -68,6 +73,7 @@ public class GitFlowVersionUpdateMojo extends AbstractGitFlowMojo {
     /**
      * Whether to skip tagging the release in Git.
      * 
+     * @since 1.18.0
      */
     @Parameter(property = "skipTag", defaultValue = "false")
     private boolean skipTag = false;
@@ -75,6 +81,7 @@ public class GitFlowVersionUpdateMojo extends AbstractGitFlowMojo {
     /**
      * Whether to make a GPG-signed tag.
      *
+     * @since 1.18.0
      */
     @Parameter(property = "gpgSignTag", defaultValue = "false")
     private boolean gpgSignTag = false;

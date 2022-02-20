@@ -23,7 +23,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.17.0</version>
+                <version>1.18.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -42,6 +42,7 @@ The plugin is available from Maven Central.
 - `gitflow:hotfix-start` - Starts a hotfix branch and updates version(s) to hotfix version.
 - `gitflow:hotfix-finish` - Merges a hotfix branch.
 - `gitflow:support-start` - Starts a support branch from the production tag.
+- `gitflow:version-update` - Updates version in release or support branch, optionally tagging and pushing it to the remote repository.
 - `gitflow:help` - Displays help information.
 
 
@@ -61,9 +62,16 @@ To configure this plugin to use single branch model, such as GitHub Flow, just s
 
 That's it!
 
+
 # Maven Wrapper support
 
 The plugin will automatically use Maven Wrapper for internal Maven goals if plugin is started with the wrapper.
+
+
+# Internal Maven plugins
+
+The `versions-maven-plugin` and `tycho-versions-plugin` are used internally to update versions and properties of the project. To change versions of internal plugins use `versionsMavenPluginVersion` and `tychoVersionsPluginVersion` properties respectively.
+
 
 # Eclipse Plugins build with Tycho
 
@@ -182,6 +190,7 @@ Since `1.2.1` commit messages can be changed in plugin's configuration section i
 
             <tagHotfixMessage>Tag hotfix</tagHotfixMessage>
             <tagReleaseMessage>Tag release</tagReleaseMessage>
+            <tagVersionUpdateMessage>Tag version update</tagVersionUpdateMessage>
 
             <!-- Migration Note: This was called <updateDevToAvoidConflitsMessage> in version 1.11.0, but has been deprecated in favour of the correctly spelt one below. -->
             <updateDevToAvoidConflictsMessage>Update develop to production version to avoid merge conflicts</updateDevToAvoidConflictsMessage>
@@ -189,6 +198,13 @@ Since `1.2.1` commit messages can be changed in plugin's configuration section i
             
             <updateReleaseToAvoidConflictsMessage>Update release to hotfix version to avoid merge conflicts</updateReleaseToAvoidConflictsMessage>
             <updateReleaseBackPreMergeStateMessage>Update release version back to pre-merge state</updateReleaseBackPreMergeStateMessage>
+            
+            <updateFeatureBackMessage>Update feature branch back to feature version</updateFeatureBackMessage>
+            <featureFinishIncrementVersionMessage>Increment feature version</featureFinishIncrementVersionMessage>
+            
+            <supportStartMessage>Update versions for support branch</supportStartMessage>
+            
+            <versionUpdateMessage>Update versions</versionUpdateMessage>
         </commitMessages>
     </configuration>
 
@@ -240,14 +256,6 @@ The default value is `false` (i.e. the project will be tested before merging bra
 
 All `release` goals have `allowSnapshots` parameter which controls whether SNAPSHOT dependencies are allowed. The default value is `false` (i.e. build fails if there SNAPSHOT dependency in project).
 
-The `gitflow:release-finish` and `gitflow:release` goals have `digitsOnlyDevVersion` parameter which will remove qualifiers from the next development version if set to `true`.
-For example, if the release version is `1.0.0-Final` then development version will be `1.0.1-SNAPSHOT`.
-The default value is `false` (i.e. qualifiers will be preserved in next development version).
-
-The `gitflow:release-finish` and `gitflow:release` goals have `versionDigitToIncrement` parameter which controls which digit to increment in the next development version. Starts from zero.
-For example, if the release version is `1.2.3.4` and `versionDigitToIncrement` is set to `1` then the next development version will be `1.3.0.0-SNAPSHOT`.
-If not set or set to not valid value defaults to increment last digit in the version.
-
 The `gitflow:release-start` and `gitflow:release-finish` have `commitDevelopmentVersionAtStart` parameter which controls whether the next development version is set and committed at start or after finish.
 By default the value is `false` which means that the next development version is set on the development branch after the release branch has been merged onto the development branch when finishing the release.
 This has the benefit of being able to easily cancel the release process simply by deleting the release branch.
@@ -276,7 +284,21 @@ The `gitflow:hotfix-finish` goal supports the parameter `skipMergeDevBranch` whi
 
 The `gitflow:hotfix-finish` goal supports the parameter `skipMergeProdBranch` which prevents merging the hotfix branch into the production branch and deletes the hotfix branch leaving only the tagged commit. Useful, along with `skipMergeDevBranch`, to allow hotfixes to very old code that are not applicable to current development.
 
+The `gitflow:release-finish` and `gitflow:hofix-finish` goals have `noBackMerge` and `noBackMergeHotfix` parameters respectively. They control which branch is merged to development branch. If set to `true` then release or hotfix branch will be merged to development branch. If set to `false` and tag is present (`skipTag` parameter is set to `false`) then tag will be merged. If there is no tag then production branch will be merged to development branch.
+
+### Versioning
+
+The `gitflow:release-finish` and `gitflow:release` goals have `digitsOnlyDevVersion` parameter which will remove qualifiers from the next development version if set to `true`.
+For example, if the release version is `1.0.0-Final` then development version will be `1.0.1-SNAPSHOT`.
+The default value is `false` (i.e. qualifiers will be preserved in next development version).
+
+The `gitflow:release-finish` and `gitflow:release` goals have `versionDigitToIncrement` parameter which controls which digit to increment in the next development version. Starts from zero.
+For example, if the release version is `1.2.3.4` and `versionDigitToIncrement` is set to `1` then the next development version will be `1.3.0.0-SNAPSHOT`.
+If not set or set to not valid value defaults to increment last digit in the version.
+
 The `gitflow:hotfix-start` goal has `hotfixVersionDigitToIncrement` parameter which controls which digit to increment in the hotfix version. Starts from zero.
+
+Versioninig can be controlled by using [Maven version policy](https://maven.apache.org/maven-release/maven-release-api/apidocs/org/apache/maven/shared/release/policy/version/VersionPolicy.html) implementation. Create appropriate implementation and add it as dependency to the project, use `projectVersionPolicyId` parameter to set policy id to use. If policy is set then other parameters controlling the generation of version are ignored (i.e. `digitsOnlyDevVersion`, `versionDigitToIncrement`).
 
 Version update of all modules ignoring groupId and artifactId can be forced by setting `versionsForceUpdate` parameter to `true`. The default value is `false`.
 
@@ -290,6 +312,8 @@ At the end of the `-finish` goals development or production and development bran
 At the end of the `-start` goals newly created branch (release / feature / hotfix) can be pushed to the remote. This can be achieved by setting `pushRemote` parameter to `true`.
 
 The default remote name is `origin`. It can be customized with `<gitFlowConfig><origin>custom_origin</origin></gitFlowConfig>` configuration in pom.xml.
+
+Git [push-options](https://git-scm.com/docs/git-push#Documentation/git-push.txt--oltoptiongt) can be added to push command with the `gitPushOptions` parameter. Multiple options can be added separated with a space e.g. `-DgitPushOptions="merge_request.create merge_request.target=develop merge_request.label='Super feature'"`.
 
 ### Rebase, Merge, Fast Forward, Squash
 

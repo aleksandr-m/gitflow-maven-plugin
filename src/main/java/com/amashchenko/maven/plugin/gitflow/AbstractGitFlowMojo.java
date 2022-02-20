@@ -187,13 +187,29 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private boolean updateOutputTimestamp = true;
 
     /**
+     * The role-hint for the
+     * {@link org.apache.maven.shared.release.policy.version.VersionPolicy}
+     * implementation used to calculate the project versions. If a policy is set
+     * other parameters controlling the generation of version are ignored
+     * (digitsOnlyDevVersion, versionDigitToIncrement).
+     *
+     * @since 1.18.0
+     */
+    @Parameter(property = "projectVersionPolicyId")
+    private String projectVersionPolicyId;
+
+    /**
      * Version of versions-maven-plugin to use.
+     * 
+     * @since 1.18.0
      */
     @Parameter(property = "versionsMavenPluginVersion", defaultValue = "2.8.1")
     private String versionsMavenPluginVersion = "2.8.1";
 
     /**
      * Version of tycho-versions-plugin to use.
+     * 
+     * @since 1.18.0
      */
     @Parameter(property = "tychoVersionsPluginVersion", defaultValue = "0.24.0")
     private String tychoVersionsPluginVersion = "0.24.0";
@@ -203,6 +219,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * Multiple options can be added separated with a space e.g.
      * <code>-DgitPushOptions="merge_request.create merge_request.target=develop
      * merge_request.label='Super feature'"</code>
+     * 
+     * @since 1.18.0
      */
     @Parameter(property = "gitPushOptions")
     private String gitPushOptions;
@@ -217,17 +235,6 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     @Parameter(property = "gitExecutable")
     private String gitExecutable;
-
-    /**
-     * The role-hint for the {@link org.apache.maven.shared.release.policy.version.VersionPolicy}
-     * implementation used to calculate the project versions.
-     * If a policy is set other parameters controlling the generation of version are ignored
-     * (digitsOnlyDevVersion, versionDigitToIncrement).
-     *
-     * @since 1.18.0
-     */
-    @Parameter(property = "projectVersionPolicyId")
-    private String projectVersionPolicyId;
 
     /** Maven session. */
     @Parameter(defaultValue = "${session}", readonly = true)
