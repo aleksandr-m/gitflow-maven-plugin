@@ -1382,6 +1382,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             throw new MojoFailureException(errorStr);
         }
 
+        if (verbose && StringUtils.isNotBlank(errorStr)) {
+            getLog().warn(errorStr);
+        }
+
         return new CommandResult(exitCode, outStr, errorStr);
     }
 
