@@ -77,7 +77,7 @@ The `versions-maven-plugin` and `tycho-versions-plugin` are used internally to u
 If your project consists of multiple modules with and without parent-child relationships, you have to supply additional arguments if you want to update all module versions. In case of the `versions-maven-plugin`, there is [`processAllModules`](https://www.mojohaus.org/versions-maven-plugin/set-mojo.html#processAllModules), which can be supplied as follows:
 
 ```
-mvn <goal> -DargLine='-DprocessAllModules'
+mvn gitflow:<goal> -DargLine='-DprocessAllModules'
 ```
 
 
