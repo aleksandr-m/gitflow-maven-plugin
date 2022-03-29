@@ -72,6 +72,14 @@ The plugin will automatically use Maven Wrapper for internal Maven goals if plug
 
 The `versions-maven-plugin` and `tycho-versions-plugin` are used internally to update versions and properties of the project. To change versions of internal plugins use `versionsMavenPluginVersion` and `tychoVersionsPluginVersion` properties respectively.
 
+### Handling multi-module projects
+
+If your project consists of multiple modules with and without parent-child relationships, you have to supply additional arguments if you want to update all module versions. In case of the `versions-maven-plugin`, there is [`processAllModules`](https://www.mojohaus.org/versions-maven-plugin/set-mojo.html#processAllModules), which can be supplied as follows:
+
+```
+mvn <goal> -DargLine='-DprocessAllModules'
+```
+
 
 # Eclipse Plugins build with Tycho
 
