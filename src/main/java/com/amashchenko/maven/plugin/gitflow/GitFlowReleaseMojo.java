@@ -167,6 +167,10 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             // check uncommitted changes
             checkUncommittedChanges();
 
+            if (fetchRemote) {
+                gitFetchRemote();
+            }
+
             // git for-each-ref --count=1 refs/heads/release/*
             final String releaseBranch = gitFindBranches(
                     gitFlowConfig.getReleaseBranchPrefix(), true);

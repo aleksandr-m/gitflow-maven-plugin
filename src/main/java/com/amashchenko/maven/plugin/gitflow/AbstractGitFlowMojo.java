@@ -1045,7 +1045,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * @throws CommandLineException
      *             If command line execution fails.
      */
-    private boolean gitFetchRemote() throws MojoFailureException, CommandLineException {
+    protected boolean gitFetchRemote() throws MojoFailureException, CommandLineException {
         return gitFetchRemote("");
     }
 
