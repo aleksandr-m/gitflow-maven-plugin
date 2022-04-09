@@ -356,6 +356,16 @@ E.g. `mvn gitflow:release-finish -DpostReleaseGoals=deploy` will run `mvn deploy
 
 The `gitflow:hotfix-finish` goal has `preHotfixGoals` and `postHotfixGoals` parameters which can be used to run defined Maven goals before and after the hotfix respectively.
 
+### Activating custom Maven profiles
+
+The `profiles` parameter is avaliable for all maven commands executed.
+
+The `mvn gitflow:feature-finish` goal has `preFeatureFinishProfiles` and `postFeatureFinishProfiles` parameters, which will be activated for the corresponding goals.
+
+The `mvn gitflow:hotfix-finish` goal has `preHotfixProfiles` and `postHotfixProfiles` parameters, which will be activated for the corresponding goals.
+
+The `mvn gitflow:release-finish` and `mvn gitflow:release` goal both have `preReleaseProfiles` and `postReleaseProfiles` parameters, which will be activated for the corresponding goals.
+
 # Non-interactive Mode
 
 Maven can be run in non-interactive (batch) mode. By using non-interactive mode goals can be run in continuous integration environment.

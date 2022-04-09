@@ -136,12 +136,29 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     private String preReleaseGoals;
 
     /**
+     * Maven profiles to activate in the release branch before merging into the
+     * production branch.
+     *
+     * @since 1.20.0
+     */
+    @Parameter(property = "preReleaseProfiles")
+    private String preReleaseProfiles;
+
+    /**
      * Maven goals to execute in the production branch after the release.
      *
      * @since 1.8.0
      */
     @Parameter(property = "postReleaseGoals")
     private String postReleaseGoals;
+
+    /**
+     * Maven profiles to activate in the production branch after the release.
+     *
+     * @since 1.20.0
+     */
+    @Parameter(property = "postReleaseProfiles")
+    private String postReleaseProfiles;
 
     /**
      * Whether to make a GPG-signed tag.
@@ -182,7 +199,8 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        validateConfiguration(preReleaseGoals, postReleaseGoals);
+        validateConfiguration(preReleaseGoals, preReleaseProfiles,
+            postReleaseGoals, postReleaseProfiles);
 
         try {
             // check uncommitted changes
@@ -243,7 +261,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
             // maven goals before merge
             if (StringUtils.isNotBlank(preReleaseGoals)) {
-                mvnRun(preReleaseGoals);
+                mvnRun(preReleaseGoals, preReleaseProfiles);
             }
 
             String currentReleaseVersion = getCurrentProjectVersion();
@@ -285,7 +303,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
 
             // maven goals after merge
             if (StringUtils.isNotBlank(postReleaseGoals)) {
-                mvnRun(postReleaseGoals);
+                mvnRun(postReleaseGoals, postReleaseProfiles);
             }
 
             if (notSameProdDevName()) {

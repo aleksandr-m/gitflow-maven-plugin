@@ -71,12 +71,29 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     private String preHotfixGoals;
 
     /**
+     * Maven profiles to activate in the hotfix branch before merging into the
+     * production or support branch.
+     *
+     * @since 1.20.0
+     */
+    @Parameter(property = "preHotfixProfiles")
+    private String preHotfixProfiles;
+
+    /**
      * Maven goals to execute in the release or support branch after the hotfix.
      *
      * @since 1.8.0
      */
     @Parameter(property = "postHotfixGoals")
     private String postHotfixGoals;
+
+    /**
+     * Maven profiles to activate in the release or support branch after the hotfix.
+     *
+     * @since 1.20.0
+     */
+    @Parameter(property = "postHotfixProfiles")
+    private String postHotfixProfiles;
 
     /**
      * Hotfix version to use in non-interactive mode.
@@ -143,7 +160,8 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        validateConfiguration(preHotfixGoals, postHotfixGoals);
+        validateConfiguration(preHotfixGoals, preHotfixProfiles,
+            postHotfixGoals, postHotfixProfiles);
 
         try {
             // check uncommitted changes
@@ -220,7 +238,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
             // maven goals before merge
             if (StringUtils.isNotBlank(preHotfixGoals)) {
-                mvnRun(preHotfixGoals);
+                mvnRun(preHotfixGoals, preHotfixProfiles);
             }
 
             String currentHotfixVersion = getCurrentProjectVersion();
@@ -270,7 +288,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
             // maven goals after merge
             if (StringUtils.isNotBlank(postHotfixGoals)) {
-                mvnRun(postHotfixGoals);
+                mvnRun(postHotfixGoals, postHotfixProfiles);
             }
 
             // check whether release branch exists
