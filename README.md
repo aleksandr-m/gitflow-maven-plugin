@@ -119,6 +119,9 @@ The `gitflow:release`, `gitflow:release-finish` and `gitflow:hotfix-finish` goal
 
 All goals have `gpgSignCommit` parameter. Set it to `true` to sign commits with configured personal key. The default value is `false`.
 
+### Updating submodules before commit
+
+All goals have `updateSubmodulesBeforeCommit` parameter. Set it to `true` to run `git submodule update` before the plugin commits any changes. The default value is `true`.
 
 # Support for Reproducible Builds
 

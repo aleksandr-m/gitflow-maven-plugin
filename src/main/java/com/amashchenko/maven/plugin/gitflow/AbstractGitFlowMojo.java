@@ -144,6 +144,14 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private boolean gpgSignCommit = false;
 
     /**
+     * Whether to update submodules before commit.
+     *
+     * @since 1.19.0
+     */
+    @Parameter(property = "updateSubmodulesBeforeCommit", defaultValue = "true")
+    private boolean updateSubmodulesBeforeCommit = true;
+
+    /**
      * Whether to set -DgroupId='*' -DartifactId='*' when calling
      * versions-maven-plugin.
      * 
@@ -795,6 +803,11 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
 
         message = replaceProperties(message, messageProperties);
+
+        if (updateSubmodulesBeforeCommit) {
+            getLog().info("Updating submodules before commit.");
+            executeGitCommand("submodule", "update");
+        }
 
         if (gpgSignCommit) {
             getLog().info("Committing changes. GPG-signed.");
