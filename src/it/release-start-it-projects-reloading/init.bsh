@@ -1,0 +1,44 @@
+import org.codehaus.plexus.util.FileUtils;
+
+try {
+    new File(basedir, "gitignorefile").renameTo(new File(basedir, ".gitignore"));
+
+    Process p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " init");
+    p.waitFor();
+
+    Process p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " config user.email 'a@a.aa'");
+    p.waitFor();
+    Process p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " config user.name 'a'");
+    p.waitFor();
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " add .");
+    p.waitFor();
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " commit -m init");
+    p.waitFor();
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " branch develop");
+    p.waitFor();
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " checkout master");
+    p.waitFor();
+
+    new File(basedir, "child1/child1-pom.xml").renameTo(new File(basedir, "child1/pom.xml"));
+
+    File pomfile = new File(basedir, "pom.xml");
+    String pomfilestr = FileUtils.fileRead(pomfile, "UTF-8");
+    pomfilestr = pomfilestr.replace("<!--", "");
+    pomfilestr = pomfilestr.replace("-->", "");
+    FileUtils.fileWrite(basedir + "/pom.xml", "UTF-8", pomfilestr);
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " add .");
+    p.waitFor();
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " commit -m add_child_module");
+    p.waitFor();
+
+} catch (Exception e) {
+    e.printStackTrace();
+    return false;
+}
+return true;

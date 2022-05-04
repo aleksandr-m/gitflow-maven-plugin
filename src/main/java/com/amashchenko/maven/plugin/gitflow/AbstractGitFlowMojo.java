@@ -336,30 +336,47 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
-     * Reloads project info from file
+     * Reloads projects info from file.
      * 
      * @param project
-     * @return
+     * @return Reloaded Maven projects.
      * @throws MojoFailureException
      *             If project loading fails.
      */
-    private MavenProject reloadProject(final MavenProject project) throws MojoFailureException {
+    private List<MavenProject> reloadProjects(final MavenProject project) throws MojoFailureException {
         try {
             List<ProjectBuildingResult> result = projectBuilder.build(
                     Collections.singletonList(project.getFile()),
                     true,
                     mavenSession.getProjectBuildingRequest());
 
+            List<MavenProject> projects = new ArrayList<>();
             for (ProjectBuildingResult projectBuildingResult : result) {
-                MavenProject resultProject = projectBuildingResult.getProject();
-                if (resultProject.isExecutionRoot()) {
-                    return resultProject;
-                }
+                projects.add(projectBuildingResult.getProject());
             }
-            throw new NoSuchElementException("No reloaded project appears to be the execution root (" + project.getGroupId() + ":" + project.getArtifactId() + ")");
+            return projects;
         } catch (Exception e) {
             throw new MojoFailureException("Error re-loading project info", e);
         }
+    }
+
+    /**
+     * Reloads project info from file.
+     * 
+     * @param project
+     * @return Maven project which is the execution root.
+     * @throws MojoFailureException
+     *             If project loading fails.
+     */
+    private MavenProject reloadProject(final MavenProject project) throws MojoFailureException {
+        List<MavenProject> projects = reloadProjects(project);
+        for (MavenProject resultProject : projects) {
+            if (resultProject.isExecutionRoot()) {
+                return resultProject;
+            }
+        }
+        throw new NoSuchElementException(
+                "No reloaded project appears to be the execution root (" + project.getGroupId() + ":" + project.getArtifactId() + ")");
     }
 
     /**
@@ -396,24 +413,24 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         List<String> snapshots = new ArrayList<>();
         Set<String> builtArtifacts = new HashSet<>();
 
-        List<MavenProject> projects = mavenSession.getProjects();
+        List<MavenProject> projects = reloadProjects(mavenSession.getCurrentProject());
         for (MavenProject project : projects) {
-            final MavenProject reloadedProject = reloadProject(project);
+            builtArtifacts.add(project.getGroupId() + ":" + project.getArtifactId() + ":" + project.getVersion());
+        }
 
-            builtArtifacts.add(reloadedProject.getGroupId() + ":" + reloadedProject.getArtifactId() + ":" + reloadedProject.getVersion());
-
-            List<Dependency> dependencies = reloadedProject.getDependencies();
+        for (MavenProject project : projects) {
+            List<Dependency> dependencies = project.getDependencies();
             for (Dependency d : dependencies) {
                 String id = d.getGroupId() + ":" + d.getArtifactId() + ":" + d.getVersion();
                 if (!builtArtifacts.contains(id) && ArtifactUtils.isSnapshot(d.getVersion())) {
-                    snapshots.add(reloadedProject + " -> " + d);
+                    snapshots.add(project + " -> " + d);
                 }
             }
-            MavenProject parent = reloadedProject.getParent();
+            MavenProject parent = project.getParent();
             if (parent != null) {
                 String id = parent.getGroupId() + ":" + parent.getArtifactId() + ":" + parent.getVersion();
                 if (!builtArtifacts.contains(id) && ArtifactUtils.isSnapshot(parent.getVersion())) {
-                    snapshots.add(reloadedProject + " -> " + parent);
+                    snapshots.add(project + " -> " + parent);
                 }
             }
         }
