@@ -177,19 +177,10 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             }
 
             if (fetchRemote) {
-                // checkout from remote if doesn't exist
-                gitFetchRemoteAndCreate(gitFlowConfig.getDevelopmentBranch());
-
-                // fetch and check remote
-                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
+                gitFetchRemoteAndCompareCreate(gitFlowConfig.getDevelopmentBranch());
 
                 if (notSameProdDevName()) {
-                    // checkout from remote if doesn't exist
-                    gitFetchRemoteAndCreate(gitFlowConfig.getProductionBranch());
-
-                    // fetch and check remote
-                    gitFetchRemoteAndCompare(gitFlowConfig
-                            .getProductionBranch());
+                    gitFetchRemoteAndCompareCreate(gitFlowConfig.getProductionBranch());
                 }
             }
 

@@ -152,7 +152,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
             // fetch and check remote
             if (fetchRemote) {
-                gitFetchRemoteAndCompare(branchName);
+                gitFetchRemoteAndCompareCreate(branchName);
             }
 
             // get current project version from pom

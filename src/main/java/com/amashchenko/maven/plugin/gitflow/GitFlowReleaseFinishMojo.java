@@ -189,12 +189,11 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             checkUncommittedChanges();
 
             // git for-each-ref --format='%(refname:short)' refs/heads/release/*
-            String releaseBranch = gitFindBranches(gitFlowConfig.getReleaseBranchPrefix(), false).trim();
+            String releaseBranch = gitFindBranches(gitFlowConfig.getReleaseBranchPrefix(), false);
 
             if (StringUtils.isBlank(releaseBranch)) {
                 if (fetchRemote) {
-                    releaseBranch = gitFetchAndFindRemoteBranches(gitFlowConfig.getOrigin(),
-                            gitFlowConfig.getReleaseBranchPrefix(), false).trim();
+                    releaseBranch = gitFetchAndFindRemoteBranches(gitFlowConfig.getReleaseBranchPrefix(), false);
                     if (StringUtils.isBlank(releaseBranch)) {
                         throw new MojoFailureException("There is no remote or local release branch.");
                     }
@@ -225,22 +224,12 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (fetchRemote) {
-                // fetch and check remote
-                gitFetchRemoteAndCompare(releaseBranch);
+                gitFetchRemoteAndCompareCreate(releaseBranch);
 
-                // checkout from remote if doesn't exist
-                gitFetchRemoteAndCreate(gitFlowConfig.getDevelopmentBranch());
-
-                // fetch and check remote
-                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
+                gitFetchRemoteAndCompareCreate(gitFlowConfig.getDevelopmentBranch());
 
                 if (notSameProdDevName()) {
-                    // checkout from remote if doesn't exist
-                    gitFetchRemoteAndCreate(gitFlowConfig.getProductionBranch());
-
-                    // fetch and check remote
-                    gitFetchRemoteAndCompare(gitFlowConfig
-                            .getProductionBranch());
+                    gitFetchRemoteAndCompareCreate(gitFlowConfig.getProductionBranch());
                 }
             }
 

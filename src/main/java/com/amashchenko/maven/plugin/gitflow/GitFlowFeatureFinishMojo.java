@@ -142,9 +142,9 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
             // fetch and check remote
             if (fetchRemote) {
-                gitFetchRemoteAndCompare(featureBranchName);
+                gitFetchRemoteAndCompareCreate(featureBranchName);
 
-                gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
+                gitFetchRemoteAndCompareCreate(gitFlowConfig.getDevelopmentBranch());
             }
 
             if (!skipTestProject) {

@@ -185,18 +185,15 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
 
             // fetch and check remote
             if (fetchRemote) {
-                gitFetchRemoteAndCompare(hotfixBranchName);
+                gitFetchRemoteAndCompareCreate(hotfixBranchName);
 
                 if (supportBranchName != null) {
-                    gitFetchRemoteAndCreate(supportBranchName);
-                    gitFetchRemoteAndCompare(supportBranchName);
+                    gitFetchRemoteAndCompareCreate(supportBranchName);
                 } else {
                     if (notSameProdDevName()) {
-                        gitFetchRemoteAndCreate(gitFlowConfig.getDevelopmentBranch());
-                        gitFetchRemoteAndCompare(gitFlowConfig.getDevelopmentBranch());
+                        gitFetchRemoteAndCompareCreate(gitFlowConfig.getDevelopmentBranch());
                     }
-                    gitFetchRemoteAndCreate(gitFlowConfig.getProductionBranch());
-                    gitFetchRemoteAndCompare(gitFlowConfig.getProductionBranch());
+                    gitFetchRemoteAndCompareCreate(gitFlowConfig.getProductionBranch());
                 }
             }
 
