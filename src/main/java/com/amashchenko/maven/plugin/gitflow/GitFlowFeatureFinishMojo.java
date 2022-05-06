@@ -147,10 +147,10 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
                 gitFetchRemoteAndCompareCreate(gitFlowConfig.getDevelopmentBranch());
             }
 
-            if (!skipTestProject) {
-                // git checkout feature/...
-                gitCheckout(featureBranchName);
+            // git checkout feature/...
+            gitCheckout(featureBranchName);
 
+            if (!skipTestProject) {
                 // mvn clean test
                 mvnCleanTest();
             }
