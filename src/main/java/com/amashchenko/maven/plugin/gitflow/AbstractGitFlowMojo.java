@@ -990,9 +990,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *             If command line execution fails.
      */
     protected void gitFetchRemoteAndCompareCreate(final String branchName) throws MojoFailureException, CommandLineException {
-        final boolean fetchOk = gitFetchRemote();
+        final boolean remoteBranchExists = StringUtils.isNotBlank(gitFetchAndFindRemoteBranches(branchName, true));
         if (gitCheckBranchExists(branchName)) {
-            if (fetchOk) {
+            if (remoteBranchExists) {
                 getLog().info(
                         "Comparing local branch '" + branchName + "' with remote '" + gitFlowConfig.getOrigin() + "/" + branchName + "'.");
                 String revlistout = executeGitCommandReturn("rev-list", "--left-right", "--count",
