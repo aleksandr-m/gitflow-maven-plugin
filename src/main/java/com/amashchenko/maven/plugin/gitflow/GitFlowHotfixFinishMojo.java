@@ -362,6 +362,11 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                     }
                 }
 
+                // push tag
+                if (!skipTag && skipMergeDevBranch && skipMergeProdBranch && StringUtils.isBlank(releaseBranch)) {
+                    gitPush(gitFlowConfig.getVersionTagPrefix() + tagVersion, false);
+                }
+
                 if (!keepBranch) {
                     gitPushDelete(hotfixBranchName);
                 }
