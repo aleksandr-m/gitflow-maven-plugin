@@ -194,6 +194,19 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                         gitFetchRemoteAndCompareCreate(gitFlowConfig.getDevelopmentBranch());
                     }
                     gitFetchRemoteAndCompareCreate(gitFlowConfig.getProductionBranch());
+
+                    // release branch
+                    String remoteReleases = gitFetchAndFindRemoteBranches(gitFlowConfig.getReleaseBranchPrefix(), false);
+                    if (StringUtils.isNotBlank(remoteReleases)) {
+                        // remove remote name with slash from branch name
+                        String remoteRelease = remoteReleases.substring(gitFlowConfig.getOrigin().length() + 1);
+
+                        if (StringUtils.countMatches(remoteRelease, gitFlowConfig.getReleaseBranchPrefix()) > 1) {
+                            throw new MojoFailureException("More than one remote release branch exists. Cannot finish hotfix.");
+                        }
+
+                        gitCreateBranch(remoteRelease, remoteReleases);
+                    }
                 }
             }
 
