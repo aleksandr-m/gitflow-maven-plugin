@@ -99,6 +99,15 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     private boolean digitsOnlyDevVersion = false;
 
     /**
+     * If present, apply this strategy: valid values: ours, theirs, ....
+     * Any valid git STRATEGY: https://git-scm.com/docs/git-merge#_merge_strategies
+     *
+     * @since 1.18.1
+     */
+    @Parameter(property = "mergeStrategy")
+    private String mergeStrategy = null;
+
+    /**
      * Development version to use instead of the default next development
      * version in non interactive mode.
      *
@@ -310,7 +319,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 } else {
                     refToMerge = gitFlowConfig.getProductionBranch();
                 }
-                gitMerge(refToMerge, releaseRebase, releaseMergeNoFF, false,
+                gitMerge(refToMerge, mergeStrategy, releaseRebase, releaseMergeNoFF, false,
                         commitMessages.getReleaseFinishDevMergeMessage(), messageProperties);
 
                 if (commitDevelopmentVersionAtStart && useSnapshotInRelease) {
