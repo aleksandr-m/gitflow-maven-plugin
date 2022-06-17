@@ -31,9 +31,11 @@ jobs:
           name: it-build-logs
           path: target/it/*/*.log
 
+      - name: print target
+        run: cd target/site/ && ls -lR
       - name: Foresight Coverage Report Uploader
         if: always()
         uses: actions/upload-artifact@v2
         with:
           name: coverage-artifact
-          path: target/site/jacoco/jaoco.xml
+          path: target/site/jacoco/*.xml
