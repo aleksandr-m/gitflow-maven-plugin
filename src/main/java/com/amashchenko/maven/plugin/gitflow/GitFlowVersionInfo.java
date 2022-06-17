@@ -63,6 +63,10 @@ public class GitFlowVersionInfo extends DefaultVersionInfo {
         assert version.equals(info.toString());
     }
 
+    private static void helloWorld() {
+        System.out.println("Hello World!");
+    }
+
     @Override
     public String getReleaseVersionString() {
         if (versionPolicy != null) {
