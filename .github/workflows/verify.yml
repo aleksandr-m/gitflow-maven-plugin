@@ -4,7 +4,7 @@ jobs:
   verify:
     strategy:
       matrix:
-        platform: [ubuntu-latest, macos-latest, windows-latest]
+        platform: [ubuntu-latest]
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Check out repository
@@ -36,4 +36,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: coverage-artifact
-          path: target/site/jacoco/*.xml
+          path: target/site/jacoco/jaoco.xml
