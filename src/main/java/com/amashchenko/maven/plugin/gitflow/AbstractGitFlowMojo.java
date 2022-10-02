@@ -43,6 +43,7 @@ import org.apache.maven.project.ProjectBuildingResult;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.release.policy.version.VersionPolicy;
 import org.codehaus.plexus.components.interactivity.Prompter;
+import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
@@ -82,6 +83,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private final Commandline cmdGit = new Commandline();
     /** Command line for Maven executable. */
     private final Commandline cmdMvn = new Commandline();
+
+    /** Whether .gitmodules file exists in project. */
+    private final boolean gitModulesExists;
 
     /** Git flow configuration. */
     @Parameter(defaultValue = "${gitFlowConfig}")
@@ -226,6 +230,15 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private String gitPushOptions;
 
     /**
+     * Explicitly enable or disable executing submodule update before commit. By
+     * default plugin tries to automatically determine if update of the Git
+     * submodules is needed.
+     * 
+     */
+    @Parameter(property = "updateGitSubmodules")
+    private Boolean updateGitSubmodules;
+
+    /**
      * The path to the Maven executable. Defaults to "mvn".
      */
     @Parameter(property = "mvnExecutable")
@@ -252,6 +265,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
     @Component
     protected Map<String, VersionPolicy> versionPolicies;
+
+    public AbstractGitFlowMojo() {
+        gitModulesExists = FileUtils.fileExists(".gitmodules");
+    }
 
     /**
      * Initializes command line executables.
@@ -807,6 +824,11 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     protected void gitCommit(String message, Map<String, String> messageProperties)
             throws MojoFailureException, CommandLineException {
+        if ((gitModulesExists && updateGitSubmodules == null) || Boolean.TRUE.equals(updateGitSubmodules)) {
+            getLog().info("Updating git submodules before commit.");
+            executeGitCommand("submodule", "update");
+        }
+
         if (StringUtils.isNotBlank(commitMessagePrefix)) {
             message = commitMessagePrefix + message;
         }
