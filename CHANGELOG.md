@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.19.0 (2022-10-13)
+
+* Fixed snapshot checking with up-to-date project info - [#345](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/345)
+* Improved remote branch fetching comparing and checking out
+* Added ability to update git submodules before commit - [#348](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/348)
+* Added tag push on hotfix if it isn't pushed with the branch - [#349](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/349)
+* Added fetching of remote release branch on hotfix-finish goal - [#318](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/318)
+* Added more logs for verbose mode - [#331](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/331)
+
 ## v1.18.0 (2022-02-20)
 
 ### Breaking changes

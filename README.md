@@ -23,7 +23,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.18.0</version>
+                <version>1.19.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -79,6 +79,12 @@ If your project consists of multiple modules with and without parent-child relat
 ```
 mvn gitflow:<goal> -DargLine='-DprocessAllModules'
 ```
+
+
+# Git Submodules
+
+The plugin looks for the `.gitmodules` file and if it exists the `git submodule update` command will be executed before each Git commit. This is needed to avoid leaving working copy in dirty state which can happen when switching between branches.
+To explicitly control whether Git submodules will be updated before commit the `updateGitSubmodules` parameter can be used. Setting it to `true` will enable Git submodules update and `false` will disable it even if `.gitmodules` file exists. The default value is not set, meaning the plugin tries to automatically determine if update is needed.
 
 
 # Eclipse Plugins build with Tycho

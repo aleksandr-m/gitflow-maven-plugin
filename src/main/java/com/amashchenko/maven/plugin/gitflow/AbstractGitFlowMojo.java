@@ -230,10 +230,11 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     private String gitPushOptions;
 
     /**
-     * Explicitly enable or disable executing submodule update before commit. By
+     * Explicitly enable or disable executing Git submodule update before commit. By
      * default plugin tries to automatically determine if update of the Git
      * submodules is needed.
      * 
+     * @since 1.19.0
      */
     @Parameter(property = "updateGitSubmodules")
     private Boolean updateGitSubmodules;
