@@ -1,4 +1,4 @@
-<!-- 
+<!--
 /*
  * Copyright 2014-2022 Aleksandr Mashchenko.
  *
@@ -33,7 +33,7 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
-    </licenses> 
+    </licenses>
 
     <developers>
         <developer>
@@ -240,7 +240,7 @@
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-interactivity-api</artifactId>
-            <version>1.0-alpha-6</version>
+            <version>1.1</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -248,12 +248,6 @@
                     <groupId>org.codehaus.plexus</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-project</artifactId>
-            <version>3.0-alpha-2</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.release</groupId>
