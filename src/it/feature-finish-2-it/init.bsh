@@ -1,3 +1,5 @@
+import org.codehaus.plexus.util.FileUtils;
+
 try {
     new File(basedir, "gitignorefile").renameTo(new File(basedir, ".gitignore"));
 
@@ -19,6 +21,17 @@ try {
     p.waitFor();
 
     p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " checkout -b develop");
+    p.waitFor();
+
+    File pomfile = new File(basedir, "pom.xml");
+    String pomfilestr = FileUtils.fileRead(pomfile, "UTF-8");
+    pomfilestr = pomfilestr.replaceAll("0.0.3-test-SNAPSHOT", "0.0.3-SNAPSHOT");
+    FileUtils.fileWrite(basedir + "/pom.xml", "UTF-8", pomfilestr);
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " add pom.xml");
+    p.waitFor();
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " commit -m set-dev-version");
     p.waitFor();
 
 } catch (Exception e) {
