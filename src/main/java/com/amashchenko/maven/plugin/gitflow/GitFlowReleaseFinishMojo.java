@@ -160,6 +160,14 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     private boolean useSnapshotInRelease;
 
     /**
+     * Whether to skip merging into the development branch.
+     *
+     * @since 1.20.0
+     */
+    @Parameter(property = "skipMergeDevBranch", defaultValue = "false")
+    private boolean skipMergeDevBranch = false;
+
+    /**
      * Whether to skip merging release into the production branch.
      *
      * @since 1.15.0
@@ -172,7 +180,8 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
      * <code>true</code> then release branch will be merged to development branch.
      * If set to <code>false</code> and tag is present ({@link #skipTag} is set to
      * <code>false</code>) then tag will be merged. If there is no tag then
-     * production branch will be merged to development branch.
+     * production branch will be merged to development branch. If ({@link #skipMergeDevBranch}
+     * is set to <code>true</code>, nothing is merged in the development branch.
      *
      * @since 1.18.0
      */
@@ -288,7 +297,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 mvnRun(postReleaseGoals);
             }
 
-            if (notSameProdDevName()) {
+            if (notSameProdDevName() && !skipMergeDevBranch) {
                 // git checkout develop
                 gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
