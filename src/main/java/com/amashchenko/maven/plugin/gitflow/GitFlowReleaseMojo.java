@@ -15,9 +15,6 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -27,9 +24,12 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The git flow release mojo.
- * 
+ *
  * @since 1.2.0
  */
 @Mojo(name = "release", aggregator = true)
@@ -41,7 +41,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to skip calling Maven test goal before releasing.
-     * 
+     *
      * @since 1.0.5
      */
     @Parameter(property = "skipTestProject", defaultValue = "false")
@@ -49,7 +49,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to allow SNAPSHOT versions in dependencies.
-     * 
+     *
      * @since 1.2.2
      */
     @Parameter(property = "allowSnapshots", defaultValue = "false")
@@ -58,7 +58,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     /**
      * Whether to rebase branch or merge. If <code>true</code> then rebase will
      * be performed.
-     * 
+     *
      * @since 1.2.3
      */
     @Parameter(property = "releaseRebase", defaultValue = "false")
@@ -66,7 +66,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to use <code>--no-ff</code> option when merging.
-     * 
+     *
      * @since 1.2.3
      */
     @Parameter(property = "releaseMergeNoFF", defaultValue = "true")
@@ -74,7 +74,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to push to the remote.
-     * 
+     *
      * @since 1.3.0
      */
     @Parameter(property = "pushRemote", defaultValue = "true")
@@ -83,7 +83,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     /**
      * Release version to use instead of the default next release version in non
      * interactive mode.
-     * 
+     *
      * @since 1.3.1
      */
     @Parameter(property = "releaseVersion", defaultValue = "")
@@ -91,7 +91,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to use <code>--ff-only</code> option when merging.
-     * 
+     *
      * @since 1.4.0
      */
     @Parameter(property = "releaseMergeFFOnly", defaultValue = "false")
@@ -99,7 +99,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to remove qualifiers from the next development version.
-     * 
+     *
      * @since 1.6.0
      */
     @Parameter(property = "digitsOnlyDevVersion", defaultValue = "false")
@@ -108,7 +108,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     /**
      * Development version to use instead of the default next development
      * version in non interactive mode.
-     * 
+     *
      * @since 1.6.0
      */
     @Parameter(property = "developmentVersion", defaultValue = "")
@@ -117,7 +117,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     /**
      * Which digit to increment in the next development version. Starts from
      * zero.
-     * 
+     *
      * @since 1.6.0
      */
     @Parameter(property = "versionDigitToIncrement")
@@ -125,7 +125,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
     /**
      * Maven goals to execute before the release.
-     * 
+     *
      * @since 1.8.0
      */
     @Parameter(property = "preReleaseGoals")
@@ -133,7 +133,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
     /**
      * Maven goals to execute after the release.
-     * 
+     *
      * @since 1.8.0
      */
     @Parameter(property = "postReleaseGoals")
@@ -141,7 +141,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to make a GPG-signed tag.
-     * 
+     *
      * @since 1.9.0
      */
     @Parameter(property = "gpgSignTag", defaultValue = "false")
@@ -223,8 +223,8 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                         version = prompter.prompt("What is release version? ["
                                 + defaultVersion + "]");
 
-                        if (!"".equals(version)
-                                && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
+                        if (StringUtils.isNotEmpty(version)
+                            && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
                             getLog().info("The version is not valid.");
                             version = null;
                         }
@@ -287,6 +287,17 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             if (notSameProdDevName()) {
                 // git checkout develop
                 gitCheckout(gitFlowConfig.getDevelopmentBranch());
+
+                // merge back to develop
+                final String refToMerge;
+                if (!skipTag) {
+                    refToMerge = gitFlowConfig.getVersionTagPrefix() + version;
+                } else {
+                    refToMerge = gitFlowConfig.getProductionBranch();
+                }
+                gitMerge(refToMerge, releaseRebase, releaseMergeNoFF, false,
+                    commitMessages.getReleaseFinishDevMergeMessage(), messageProperties);
+
             }
 
             // get next snapshot version
