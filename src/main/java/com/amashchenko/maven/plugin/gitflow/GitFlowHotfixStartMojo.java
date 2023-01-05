@@ -15,6 +15,11 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -26,21 +31,16 @@ import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * The git flow hotfix start mojo.
- *
+ * 
  */
 @Mojo(name = "hotfix-start", aggregator = true)
 public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to push to the remote.
-     *
+     * 
      * @since 1.6.0
      */
     @Parameter(property = "pushRemote", defaultValue = "false")
@@ -49,7 +49,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
     /**
      * Branch to start hotfix in non-interactive mode. Production branch or one of
      * the support branches.
-     *
+     * 
      * @since 1.9.0
      */
     @Parameter(property = "fromBranch")
@@ -57,7 +57,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
     /**
      * Hotfix version to use in non-interactive mode.
-     *
+     * 
      * @since 1.9.0
      */
     @Parameter(property = "hotfixVersion")
@@ -65,7 +65,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to use snapshot in hotfix.
-     *
+     * 
      * @since 1.10.0
      */
     @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
@@ -172,7 +172,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                     while (version == null) {
                         version = prompter.prompt("What is the hotfix version? [" + defaultVersion + "]");
 
-                        if (StringUtils.isNotEmpty(version) && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
+                        if (!"".equals(version) && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
                             getLog().info("The version is not valid.");
                             version = null;
                         }

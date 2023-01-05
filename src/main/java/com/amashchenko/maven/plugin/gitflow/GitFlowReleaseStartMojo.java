@@ -15,6 +15,9 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -26,12 +29,9 @@ import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * The git flow release start mojo.
- *
+ * 
  */
 @Mojo(name = "release-start", aggregator = true)
 public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
@@ -46,7 +46,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
      * Note: By itself the default releaseBranchPrefix is not a valid branch
      * name. You must change it when setting sameBranchName to <code>true</code>
      * .
-     *
+     * 
      * @since 1.2.0
      */
     @Parameter(property = "sameBranchName", defaultValue = "false")
@@ -54,7 +54,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to allow SNAPSHOT versions in dependencies.
-     *
+     * 
      * @since 1.2.2
      */
     @Parameter(property = "allowSnapshots", defaultValue = "false")
@@ -63,7 +63,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     /**
      * Release version to use instead of the default next release version in non
      * interactive mode.
-     *
+     * 
      * @since 1.3.1
      */
     @Parameter(property = "releaseVersion", defaultValue = "")
@@ -81,7 +81,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
      * Whether to commit development version when starting the release (vs when
      * finishing the release which is the default). Has effect only when there
      * are separate development and production branches.
-     *
+     * 
      * @since 1.7.0
      */
     @Parameter(property = "commitDevelopmentVersionAtStart", defaultValue = "false")
@@ -115,7 +115,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
     /**
      * Start a release branch from this commit (SHA).
-     *
+     * 
      * @since 1.7.0
      */
     @Parameter(property = "fromCommit")
@@ -123,7 +123,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to use snapshot in release.
-     *
+     * 
      * @since 1.10.0
      */
     @Parameter(property = "useSnapshotInRelease", defaultValue = "false")
@@ -133,7 +133,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
      * Name of the created release branch.<br>
      * The effective branch name will be a composite of this branch name and the
      * <code>releaseBranchPrefix</code>.
-     *
+     * 
      * @since 1.14.0
      */
     @Parameter(property = "branchName")
@@ -300,8 +300,8 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
                     version = prompter.prompt("What is release version? ["
                             + defaultVersion + "]");
 
-                    if (StringUtils.isNotEmpty(version)
-                        && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
+                    if (!"".equals(version)
+                            && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
                         getLog().info("The version is not valid.");
                         version = null;
                     }

@@ -15,6 +15,11 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -24,22 +29,17 @@ import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Updates version in release or support branch, optionally tagging and pushing
  * it to the remote repository.
- *
+ * 
  * @since 1.18.0
  */
 @Mojo(name = "version-update", aggregator = true)
 public class GitFlowVersionUpdateMojo extends AbstractGitFlowMojo {
     /**
      * Whether to push to the remote.
-     *
+     * 
      * @since 1.18.0
      */
     @Parameter(property = "pushRemote", defaultValue = "false")
@@ -48,7 +48,7 @@ public class GitFlowVersionUpdateMojo extends AbstractGitFlowMojo {
     /**
      * Branch to start update in non-interactive mode. Release branch or one of the
      * support branches.
-     *
+     * 
      * @since 1.18.0
      */
     @Parameter(property = "fromBranch")
@@ -56,7 +56,7 @@ public class GitFlowVersionUpdateMojo extends AbstractGitFlowMojo {
 
     /**
      * The version to use in non-interactive mode.
-     *
+     * 
      * @since 1.18.0
      */
     @Parameter(property = "updateVersion")
@@ -72,7 +72,7 @@ public class GitFlowVersionUpdateMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to skip tagging the release in Git.
-     *
+     * 
      * @since 1.18.0
      */
     @Parameter(property = "skipTag", defaultValue = "false")
@@ -182,7 +182,7 @@ public class GitFlowVersionUpdateMojo extends AbstractGitFlowMojo {
                     while (version == null) {
                         version = prompter.prompt("What is the update version? [" + defaultVersion + "]");
 
-                        if (StringUtils.isNotEmpty(version) && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
+                        if (!"".equals(version) && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
                             getLog().info("The version is not valid.");
                             version = null;
                         }
