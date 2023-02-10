@@ -287,6 +287,17 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             if (notSameProdDevName()) {
                 // git checkout develop
                 gitCheckout(gitFlowConfig.getDevelopmentBranch());
+
+                // merge back to develop
+                final String refToMerge;
+                if (!skipTag) {
+                    refToMerge = gitFlowConfig.getVersionTagPrefix() + version;
+                } else {
+                    refToMerge = gitFlowConfig.getProductionBranch();
+                }
+                gitMerge(refToMerge, releaseRebase, releaseMergeNoFF, false,
+                    commitMessages.getReleaseFinishDevMergeMessage(), messageProperties);
+
             }
 
             // get next snapshot version
