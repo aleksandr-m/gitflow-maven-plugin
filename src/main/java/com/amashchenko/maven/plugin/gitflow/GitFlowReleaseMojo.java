@@ -155,6 +155,17 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
     @Parameter(property = "skipReleaseMergeProdBranch", defaultValue = "false")
     private boolean skipReleaseMergeProdBranch = false;
 
+    /**
+     * Controls which branch is merged to development branch. If set to
+     * <code>true</code> then merge will be skipped. If set to <code>false</code>
+     * and tag is present ({@link #skipTag} is set to <code>false</code>) then tag
+     * will be merged. If there is no tag then production branch will be merged to
+     * development branch.
+     *
+     */
+    @Parameter(property = "noBackMerge", defaultValue = "false")
+    private boolean noBackMerge = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -288,16 +299,17 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 // git checkout develop
                 gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
-                // merge back to develop
-                final String refToMerge;
-                if (!skipTag) {
-                    refToMerge = gitFlowConfig.getVersionTagPrefix() + version;
-                } else {
-                    refToMerge = gitFlowConfig.getProductionBranch();
+                if (!noBackMerge) {
+                    // merge back to develop
+                    final String refToMerge;
+                    if (!skipTag) {
+                        refToMerge = gitFlowConfig.getVersionTagPrefix() + version;
+                    } else {
+                        refToMerge = gitFlowConfig.getProductionBranch();
+                    }
+                    gitMerge(refToMerge, releaseRebase, releaseMergeNoFF, false, commitMessages.getReleaseFinishDevMergeMessage(),
+                            messageProperties);
                 }
-                gitMerge(refToMerge, releaseRebase, releaseMergeNoFF, false,
-                    commitMessages.getReleaseFinishDevMergeMessage(), messageProperties);
-
             }
 
             // get next snapshot version
