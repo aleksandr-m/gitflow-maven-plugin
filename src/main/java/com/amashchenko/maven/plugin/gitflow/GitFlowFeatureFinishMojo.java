@@ -151,7 +151,6 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             gitCheckout(featureBranchName);
 
             if (!skipTestProject) {
-                // mvn clean test
                 mvnCleanTest();
             }
 
@@ -184,7 +183,6 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
             final String version = keptFeatureVersion.replaceFirst("-" + featName, "");
             if (keptFeatureVersion.contains("-" + featName)) {
-                // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(version);
 
                 Map<String, String> properties = new HashMap<>();
@@ -217,7 +215,6 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
             }
 
             if (installProject) {
-                // mvn clean install
                 mvnCleanInstall();
             }
 
@@ -245,10 +242,8 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
             if (!keepBranch) {
                 if (featureSquash) {
-                    // git branch -D feature/...
                     gitBranchDeleteForce(featureBranchName);
                 } else {
-                    // git branch -d feature/...
                     gitBranchDelete(featureBranchName);
                 }
             }
@@ -258,7 +253,6 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     }
 
     private String promptBranchName() throws MojoFailureException, CommandLineException {
-        // git for-each-ref --format='%(refname:short)' refs/heads/feature/*
         final String featureBranches = gitFindBranches(gitFlowConfig.getFeatureBranchPrefix(), false);
 
         final String currentBranch = gitCurrentBranch();

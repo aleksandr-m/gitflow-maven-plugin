@@ -110,7 +110,7 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
 
             featureBranchName = StringUtils.deleteWhitespace(featureBranchName);
 
-            // git for-each-ref refs/heads/feature/...
+            // check branch exists
             final boolean featureBranchExists = gitCheckBranchExists(
                     gitFlowConfig.getFeatureBranchPrefix() + featureBranchName);
 
@@ -132,21 +132,17 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
                         .featureVersion(featureBranchName);
 
                 if (StringUtils.isNotBlank(version)) {
-                    // mvn versions:set -DnewVersion=...
-                    // -DgenerateBackupPoms=false
                     mvnSetVersions(version);
 
                     Map<String, String> properties = new HashMap<>();
                     properties.put("version", version);
                     properties.put("featureName", featureBranchName);
 
-                    // git commit -a -m updating versions for feature branch
                     gitCommit(commitMessages.getFeatureStartMessage(), properties);
                 }
             }
 
             if (installProject) {
-                // mvn clean install
                 mvnCleanInstall();
             }
 

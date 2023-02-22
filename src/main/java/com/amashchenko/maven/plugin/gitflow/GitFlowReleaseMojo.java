@@ -178,13 +178,10 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             // check uncommitted changes
             checkUncommittedChanges();
 
-            // git for-each-ref --count=1 refs/heads/release/*
-            final String releaseBranch = gitFindBranches(
-                    gitFlowConfig.getReleaseBranchPrefix(), true);
+            final String releaseBranch = gitFindBranches(gitFlowConfig.getReleaseBranchPrefix(), true);
 
             if (StringUtils.isNotBlank(releaseBranch)) {
-                throw new MojoFailureException(
-                        "Release branch already exists. Cannot start release.");
+                throw new MojoFailureException("Release branch already exists. Cannot start release.");
             }
 
             if (fetchRemote) {
@@ -195,9 +192,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 }
             }
 
-            // need to be in develop to check snapshots and to get correct
-            // project version
-            // git checkout develop
+            // need to be in develop to check snapshots and to get correct project version
             gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
             // check snapshots dependencies
@@ -206,7 +201,6 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             }
 
             if (!skipTestProject) {
-                // mvn clean test
                 mvnCleanTest();
             }
 
@@ -223,16 +217,14 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             }
 
             if (defaultVersion == null) {
-                throw new MojoFailureException(
-                        "Cannot get default project version.");
+                throw new MojoFailureException("Cannot get default project version.");
             }
 
             String version = null;
             if (settings.isInteractiveMode()) {
                 try {
                     while (version == null) {
-                        version = prompter.prompt("What is release version? ["
-                                + defaultVersion + "]");
+                        version = prompter.prompt("What is release version? [" + defaultVersion + "]");
 
                         if (!"".equals(version)
                                 && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
@@ -262,7 +254,6 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
             // execute if version changed
             if (!version.equals(currentVersion)) {
-                // mvn set version
                 mvnSetVersions(version);
 
                 // git commit -a -m updating versions for release
@@ -270,7 +261,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             }
 
             if (!skipReleaseMergeProdBranch && notSameProdDevName()) {
-                // git checkout master
+                // git checkout production
                 gitCheckout(gitFlowConfig.getProductionBranch());
 
                 gitMerge(gitFlowConfig.getDevelopmentBranch(), releaseRebase,
@@ -314,8 +305,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
             // get next snapshot version
             final String nextSnapshotVersion;
-            if (!settings.isInteractiveMode()
-                    && StringUtils.isNotBlank(developmentVersion)) {
+            if (!settings.isInteractiveMode() && StringUtils.isNotBlank(developmentVersion)) {
                 nextSnapshotVersion = developmentVersion;
             } else {
                 GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(version, getVersionPolicy());
@@ -323,13 +313,11 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                     versionInfo = versionInfo.digitsVersionInfo();
                 }
 
-                nextSnapshotVersion = versionInfo
-                        .nextSnapshotVersion(versionDigitToIncrement);
+                nextSnapshotVersion = versionInfo.nextSnapshotVersion(versionDigitToIncrement);
             }
 
             if (StringUtils.isBlank(nextSnapshotVersion)) {
-                throw new MojoFailureException(
-                        "Next snapshot version is blank.");
+                throw new MojoFailureException("Next snapshot version is blank.");
             }
 
             // mvn set version
@@ -341,7 +329,6 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
             gitCommit(commitMessages.getReleaseFinishMessage(), messageProperties);
 
             if (installProject) {
-                // mvn clean install
                 mvnCleanInstall();
             }
 

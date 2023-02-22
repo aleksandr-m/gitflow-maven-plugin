@@ -91,8 +91,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
                 }
 
                 try {
-                    tag = prompter.prompt("Choose tag to start support branch",
-                            Arrays.asList(tagsStr.split("\\r?\\n")));
+                    tag = prompter.prompt("Choose tag to start support branch", Arrays.asList(tagsStr.split("\\r?\\n")));
                 } catch (PrompterException e) {
                     throw new MojoFailureException("support-start", e);
                 }
@@ -116,7 +115,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
                 branchName = supportBranchName;
             }
 
-            // git for-each-ref refs/heads/support/...
+            // check branch exists
             final boolean supportBranchExists = gitCheckBranchExists(gitFlowConfig.getSupportBranchPrefix() + branchName);
 
             if (supportBranchExists) {
@@ -141,7 +140,6 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
             }
 
             if (installProject) {
-                // mvn clean install
                 mvnCleanInstall();
             }
 

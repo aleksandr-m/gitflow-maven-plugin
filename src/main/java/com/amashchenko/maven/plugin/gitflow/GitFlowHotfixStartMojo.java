@@ -113,8 +113,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                     branches[supportBranches.length] = gitFlowConfig.getProductionBranch();
 
                     List<String> numberedList = new ArrayList<>();
-                    StringBuilder str = new StringBuilder("Branches:")
-                            .append(LS);
+                    StringBuilder str = new StringBuilder("Branches:").append(LS);
                     for (int i = 0; i < branches.length; i++) {
                         str.append((i + 1) + ". " + branches[i] + LS);
                         numberedList.add(String.valueOf(i + 1));
@@ -209,7 +208,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                 throw new MojoFailureException("Hotfix branch with that name already exists. Cannot start hotfix.");
             }
 
-            // git checkout -b hotfix/... master
+            // git checkout -b hotfix/... ...
             gitCreateAndCheckout(hotfixBranchName, branchName);
 
             // execute if version changed
@@ -226,18 +225,15 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
                                     + " It is better to define it in the project's pom file.");
                 }
 
-                // mvn versions:set -DnewVersion=... -DgenerateBackupPoms=false
                 mvnSetVersions(projectVersion);
 
                 Map<String, String> properties = new HashMap<>();
                 properties.put("version", projectVersion);
 
-                // git commit -a -m updating versions for hotfix
                 gitCommit(commitMessages.getHotfixStartMessage(), properties);
             }
 
             if (installProject) {
-                // mvn clean install
                 mvnCleanInstall();
             }
 
