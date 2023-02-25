@@ -1,7 +1,9 @@
+import org.codehaus.plexus.util.FileUtils;
+
 try {
     new File(basedir, "gitignorefile").renameTo(new File(basedir, ".gitignore"));
 
-    Process p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " init");
+    Process p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " init --initial-branch=develop");
     p.waitFor();
 
     Process p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " config user.email 'a@a.aa'");
@@ -15,10 +17,18 @@ try {
     p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " commit -m init");
     p.waitFor();
 
-    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " branch feature/test");
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " checkout -b feature/test");
     p.waitFor();
 
-    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " checkout -b develop");
+    File pomfile = new File(basedir, "pom.xml");
+    String pomfilestr = FileUtils.fileRead(pomfile, "UTF-8");
+    pomfilestr = pomfilestr.replaceAll("0.0.3-SNAPSHOT", "0.0.3-test-SNAPSHOT");
+    FileUtils.fileWrite(basedir + "/pom.xml", "UTF-8", pomfilestr);
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " add pom.xml");
+    p.waitFor();
+
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " commit -m \"Update versions for feature branch\"");
     p.waitFor();
 
 } catch (Exception e) {

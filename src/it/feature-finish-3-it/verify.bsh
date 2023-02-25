@@ -7,6 +7,16 @@ try {
         return false;
     }
 
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " rev-parse --abbrev-ref HEAD");
+    BufferedReader stdout = new BufferedReader(new InputStreamReader(p.getInputStream()));
+    p.waitFor();
+    branch = stdout.readLine();
+
+    if(!branch.equals("develop")) {
+        System.out.println("feature-finish expected to finish on branch develop but branch was: " + branch);
+        return false;
+    }
+
     File file = new File(basedir, "pom.xml");
     File expectedFile = new File(basedir, "expected-pom.xml");
 
