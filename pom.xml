@@ -204,6 +204,7 @@
                             <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
                             <preBuildHookScript>init</preBuildHookScript>
                             <postBuildHookScript>verify</postBuildHookScript>
+                            <streamLogsOnFailures>true</streamLogsOnFailures>
                         </configuration>
                         <executions>
                             <execution>
