@@ -192,12 +192,12 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         validateConfiguration(preReleaseGoals, postReleaseGoals);
-
+        String releaseBranch = null;
         try {
             // check uncommitted changes
             checkUncommittedChanges();
 
-           if StringUtils.isNotBlank(releaseBranchName){
+            if (StringUtils.isNotBlank(releaseBranchName)) {
                 if (!releaseBranchName.startsWith(gitFlowConfig.getReleaseBranchPrefix())) {
                     throw new MojoFailureException("The releaseBranchName parameter doesn't start with release branch prefix.");
                 }
@@ -205,9 +205,9 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                     throw new MojoFailureException("Release branch with name '" + releaseBranchName + "' doesn't exist. Cannot finish release.");
                 }
                 releaseBranch = releaseBranchName;
-           }else {           
-            
-                String releaseBranch = gitFindBranches(gitFlowConfig.getReleaseBranchPrefix(), false);
+            } else {
+
+                releaseBranch = gitFindBranches(gitFlowConfig.getReleaseBranchPrefix(), false);
 
                 if (StringUtils.isBlank(releaseBranch)) {
                     if (fetchRemote) {
@@ -229,10 +229,10 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                     }
                 }
                 if (StringUtils.countMatches(releaseBranch, gitFlowConfig.getReleaseBranchPrefix()) > 1) {
-               
+
                     throw new MojoFailureException("More than one release branch exists. Cannot finish release.");
                 }
-           }
+            }
             // check snapshots dependencies
             if (!allowSnapshots) {
                 gitCheckout(releaseBranch);
