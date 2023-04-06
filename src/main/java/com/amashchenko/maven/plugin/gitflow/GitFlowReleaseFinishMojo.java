@@ -179,7 +179,16 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "noBackMerge", defaultValue = "false")
     private boolean noBackMerge = false;
 
-    /** {@inheritDoc} */
+    /**  Release branch to use in non-interactive mode. Must start with releasae branch
+     * prefix. The releaseBranchName parameter will be used if there are multiple release Branches in the Repository   */
+    @Parameter(property = "releaseBranchName")
+    private String releaseBranchName;
+
+    /**
+     * Whether to make a GPG-signed tag.
+     *
+     * 
+     */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         validateConfiguration(preReleaseGoals, postReleaseGoals);
@@ -188,31 +197,42 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
             // check uncommitted changes
             checkUncommittedChanges();
 
-            String releaseBranch = gitFindBranches(gitFlowConfig.getReleaseBranchPrefix(), false);
-
-            if (StringUtils.isBlank(releaseBranch)) {
-                if (fetchRemote) {
-                    releaseBranch = gitFetchAndFindRemoteBranches(gitFlowConfig.getReleaseBranchPrefix(), false);
-                    if (StringUtils.isBlank(releaseBranch)) {
-                        throw new MojoFailureException("There is no remote or local release branch.");
-                    }
-
-                    // remove remote name with slash from branch name
-                    releaseBranch = releaseBranch.substring(gitFlowConfig.getOrigin().length() + 1);
-
-                    if (StringUtils.countMatches(releaseBranch, gitFlowConfig.getReleaseBranchPrefix()) > 1) {
-                        throw new MojoFailureException("More than one remote release branch exists. Cannot finish release.");
-                    }
-
-                    gitCreateAndCheckout(releaseBranch, gitFlowConfig.getOrigin() + "/" + releaseBranch);
-                } else {
-                    throw new MojoFailureException("There is no release branch.");
+           if StringUtils.isNotBlank(releaseBranchName){
+                if (!releaseBranchName.startsWith(gitFlowConfig.getReleaseBranchPrefix())) {
+                    throw new MojoFailureException("The releaseBranchName parameter doesn't start with release branch prefix.");
                 }
-            }
-            if (StringUtils.countMatches(releaseBranch, gitFlowConfig.getReleaseBranchPrefix()) > 1) {
-                throw new MojoFailureException("More than one release branch exists. Cannot finish release.");
-            }
+                if (!gitCheckBranchExists(releaseBranchName)) {
+                    throw new MojoFailureException("Release branch with name '" + releaseBranchName + "' doesn't exist. Cannot finish release.");
+                }
+                releaseBranch = releaseBranchName;
+           }else {           
+            
+                String releaseBranch = gitFindBranches(gitFlowConfig.getReleaseBranchPrefix(), false);
 
+                if (StringUtils.isBlank(releaseBranch)) {
+                    if (fetchRemote) {
+                        releaseBranch = gitFetchAndFindRemoteBranches(gitFlowConfig.getReleaseBranchPrefix(), false);
+                        if (StringUtils.isBlank(releaseBranch)) {
+                            throw new MojoFailureException("There is no remote or local release branch.");
+                        }
+
+                        // remove remote name with slash from branch name
+                        releaseBranch = releaseBranch.substring(gitFlowConfig.getOrigin().length() + 1);
+
+                        if (StringUtils.countMatches(releaseBranch, gitFlowConfig.getReleaseBranchPrefix()) > 1) {
+                            throw new MojoFailureException("More than one remote release branch exists. And the parameter releaseBranchName is not set. Cannot finish release.");
+                        }
+
+                        gitCreateAndCheckout(releaseBranch, gitFlowConfig.getOrigin() + "/" + releaseBranch);
+                    } else {
+                        throw new MojoFailureException("There is no release branch.");
+                    }
+                }
+                if (StringUtils.countMatches(releaseBranch, gitFlowConfig.getReleaseBranchPrefix()) > 1) {
+               
+                    throw new MojoFailureException("More than one release branch exists. Cannot finish release.");
+                }
+           }
             // check snapshots dependencies
             if (!allowSnapshots) {
                 gitCheckout(releaseBranch);
