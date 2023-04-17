@@ -1342,9 +1342,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
         if (failOnError && exitCode != SUCCESS_EXIT_CODE) {
             // not all commands print errors to error stream
-            if (StringUtils.isBlank(errorStr) && StringUtils.isNotBlank(outStr)) {
-                errorStr = outStr;
-            }
+            errorStr += LS + outStr;
 
             throw new MojoFailureException(errorStr);
         }
