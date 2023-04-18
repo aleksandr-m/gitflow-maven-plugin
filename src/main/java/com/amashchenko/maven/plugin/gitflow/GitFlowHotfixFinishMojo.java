@@ -156,13 +156,13 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                 if (!hotfixBranch.startsWith(gitFlowConfig.getHotfixBranchPrefix())) {
                     throw new MojoFailureException("The hotfixBranch parameter doesn't start with hotfix branch prefix.");
                 }
-                if (!gitCheckBranchExists(hotfixBranch)) {
+                if (!gitCheckRemoteBranchExists(hotfixBranch)) {
                     throw new MojoFailureException("Hotfix branch with name '" + hotfixBranch + "' doesn't exist. Cannot finish hotfix.");
                 }
                 hotfixBranchName = hotfixBranch;
             } else if (StringUtils.isNotBlank(hotfixVersion)) {
                 final String branch = gitFlowConfig.getHotfixBranchPrefix() + hotfixVersion;
-                if (!gitCheckBranchExists(branch)) {
+                if (!gitCheckRemoteBranchExists(branch)) {
                     throw new MojoFailureException("Hotfix branch with name '" + branch + "' doesn't exist. Cannot finish hotfix.");
                 }
                 hotfixBranchName = branch;
