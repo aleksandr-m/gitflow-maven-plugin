@@ -686,6 +686,22 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         CommandResult commandResult = executeGitCommandExitCode("show-ref", "--verify", "--quiet", "refs/heads/" + branchName);
         return commandResult.getExitCode() == SUCCESS_EXIT_CODE;
     }
+    /**
+     * Checks if local branch with given name exists.
+     *
+     * @param branchName
+     *            Name of the branch to check.
+     * @return <code>true</code> if local branch exists, <code>false</code>
+     *         otherwise.
+     * @throws MojoFailureException
+     *             Shouldn't happen, actually.
+     * @throws CommandLineException
+     *             If command line execution fails.
+     */
+    protected boolean gitCheckRemoteBranchExists(final String branchName) throws MojoFailureException, CommandLineException {
+        CommandResult commandResult = executeGitCommandExitCode("show-ref", "--verify", "--quiet", "refs/remotes/origin/" + branchName);
+        return commandResult.getExitCode() == SUCCESS_EXIT_CODE;
+    }
 
     /**
      * Checks if local tag with given name exists.

@@ -201,7 +201,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 if (!releaseBranchName.startsWith(gitFlowConfig.getReleaseBranchPrefix())) {
                     throw new MojoFailureException("The releaseBranchName parameter doesn't start with release branch prefix.");
                 }
-                if (!gitCheckBranchExists(releaseBranchName)) {
+                if (!gitCheckRemoteBranchExists(releaseBranchName)) {
                     throw new MojoFailureException("Release branch with name '" + releaseBranchName + "' doesn't exist. Cannot finish release.");
                 }
                 releaseBranch = releaseBranchName;
