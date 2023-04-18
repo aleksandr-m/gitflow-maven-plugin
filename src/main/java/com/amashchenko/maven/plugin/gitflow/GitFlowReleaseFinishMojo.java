@@ -180,15 +180,11 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     private boolean noBackMerge = false;
 
     /**  Release branch to use in non-interactive mode. Must start with releasae branch
-     * prefix. The releaseBranchName parameter will be used if there are multiple release Branches in the Repository   */
+     * prefix. The releaseBranchName parameter will be used if there are multiple release Branches in the Repository   
+     * */
     @Parameter(property = "releaseBranchName")
     private String releaseBranchName;
 
-    /**
-     * Whether to make a GPG-signed tag.
-     *
-     * 
-     */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         validateConfiguration(preReleaseGoals, postReleaseGoals);
