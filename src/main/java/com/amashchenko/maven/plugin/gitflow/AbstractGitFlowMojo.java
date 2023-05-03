@@ -44,6 +44,7 @@ import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.release.policy.version.VersionPolicy;
 import org.codehaus.plexus.components.interactivity.Prompter;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
@@ -546,7 +547,12 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private void gitSetConfig(final String name, String value) throws MojoFailureException, CommandLineException {
         if (value == null || value.isEmpty()) {
-            value = "\"\"";
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                value = "\"\"";
+            }
+            else {
+                value = "";
+            }
         }
 
         // ignore error exit codes
@@ -636,7 +642,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *             If command line execution fails.
      */
     protected String gitFindLastTag() throws MojoFailureException, CommandLineException {
-        String tag = executeGitCommandReturn("for-each-ref", "--sort=\"-version:refname\"", "--sort=-taggerdate",
+        String tag = executeGitCommandReturn("for-each-ref", "--sort=-version:refname", "--sort=-taggerdate",
                 "--count=1", "--format=\"%(refname:short)\"", "refs/tags/");
         // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
         tag = removeQuotes(tag);
