@@ -15,27 +15,16 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import org.apache.maven.plugin.MojoFailureException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.maven.plugin.MojoFailureException;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
-@RunWith(Parameterized.class)
 public class ValidateConfigurationTest {
-    private final String argLine;
-    private final boolean expected;
 
-    public ValidateConfigurationTest(String argLine, boolean expected) {
-        this.argLine = argLine;
-        this.expected = expected;
-    }
-
-    @Parameters(name = "{0}->{1}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] { { "-X -e", true },
                         { "-DsomeArg1=true", true }, { null, true },
@@ -46,8 +35,9 @@ public class ValidateConfigurationTest {
                         { "-DsomeArg  ; clean", false } });
     }
 
-    @Test
-    public void testValidateConfiguration() throws Exception {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testValidateConfiguration(String argLine, boolean expected) throws Exception {
         GitFlowReleaseStartMojo mojo = new GitFlowReleaseStartMojo();
         mojo.setArgLine(argLine);
 
@@ -55,7 +45,7 @@ public class ValidateConfigurationTest {
             mojo.validateConfiguration();
         } catch (MojoFailureException e) {
             if (expected) {
-                Assert.fail();
+                Assertions.fail();
             }
         }
     }
