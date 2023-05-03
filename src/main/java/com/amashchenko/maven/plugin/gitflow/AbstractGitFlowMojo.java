@@ -18,6 +18,7 @@ package com.amashchenko.maven.plugin.gitflow;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
@@ -854,12 +856,12 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected void gitMerge(final String branchName, boolean rebase, boolean noff, boolean ffonly, String message,
             Map<String, String> messageProperties)
             throws MojoFailureException, CommandLineException {
-        String sign = "";
+        String sign = null;
         if (gpgSignCommit) {
             sign = "-S";
         }
-        String msgParam = "";
-        String msg = "";
+        String msgParam = null;
+        String msg = null;
         if (StringUtils.isNotBlank(message)) {
             if (StringUtils.isNotBlank(commitMessagePrefix)) {
                 message = commitMessagePrefix + message;
@@ -1129,15 +1131,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         getLog().info("Updating version(s) to '" + version + "'.");
 
         String newVersion = "-DnewVersion=" + version;
-        String grp = "";
-        String art = "";
-        if (versionsForceUpdate) {
-            grp = "-DgroupId=";
-            art = "-DartifactId=";
-        }
 
         if (tychoBuild) {
-            String prop = "";
+            String prop = null;
             if (StringUtils.isNotBlank(versionProperty)) {
                 prop = "-Dproperties=" + versionProperty;
                 getLog().info("Updating property '" + versionProperty + "' to '" + version + "'.");
@@ -1153,8 +1149,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             if (!skipUpdateVersion) {
                 runCommand = true;
                 args.add(VERSIONS_MAVEN_PLUGIN + ":" + versionsMavenPluginVersion + ":" + VERSIONS_MAVEN_PLUGIN_SET_GOAL);
-                args.add(grp);
-                args.add(art);
+                if (versionsForceUpdate) {
+                    args.add("-DgroupId=");
+                    args.add("-DartifactId=");
+                }
             }
 
             if (StringUtils.isNotBlank(versionProperty)) {
@@ -1330,7 +1328,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
 
         cmd.clearArgs();
-        cmd.addArguments(args);
+        String[] nonNullArgs = Arrays.stream(args).filter(Objects::nonNull).toArray(String[]::new);
+        cmd.addArguments(nonNullArgs);
 
         if (StringUtils.isNotBlank(argStr)) {
             cmd.createArg().setLine(argStr);
