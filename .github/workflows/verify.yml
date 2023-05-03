@@ -34,5 +34,5 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: it-build-logs
+          name: ${{ runner.os }}-it-build-logs
           path: target/it/*/*.log

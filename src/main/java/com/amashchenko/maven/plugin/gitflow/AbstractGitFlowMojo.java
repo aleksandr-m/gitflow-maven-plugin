@@ -1344,7 +1344,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             // not all commands print errors to error stream
             errorStr += LS + outStr;
 
-            throw new MojoFailureException(errorStr);
+            throw new MojoFailureException("Failed cmd ["+cmd.getExecutable()+"] with args [" + Arrays.toString(cmd.getArguments()) + "], bad exit code [" + exitCode +"]. Out: [" + errorStr+ "]");
         }
 
         if (verbose && StringUtils.isNotBlank(errorStr)) {
