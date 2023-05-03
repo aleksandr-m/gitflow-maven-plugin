@@ -206,16 +206,16 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * 
      * @since 1.18.0
      */
-    @Parameter(property = "versionsMavenPluginVersion", defaultValue = "2.8.1")
-    private String versionsMavenPluginVersion = "2.8.1";
+    @Parameter(property = "versionsMavenPluginVersion", defaultValue = "2.14.2")
+    private String versionsMavenPluginVersion = "2.24.2";
 
     /**
      * Version of tycho-versions-plugin to use.
      * 
      * @since 1.18.0
      */
-    @Parameter(property = "tychoVersionsPluginVersion", defaultValue = "0.24.0")
-    private String tychoVersionsPluginVersion = "0.24.0";
+    @Parameter(property = "tychoVersionsPluginVersion", defaultValue = "1.7.0")
+    private String tychoVersionsPluginVersion = "1.7.0";
 
     /**
      * Options to pass to Git push command using <code>--push-option</code>.
