@@ -209,8 +209,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * 
      * @since 1.18.0
      */
-    @Parameter(property = "versionsMavenPluginVersion", defaultValue = "2.14.2")
-    private String versionsMavenPluginVersion = "2.24.2";
+    @Parameter(property = "versionsMavenPluginVersion", defaultValue = "2.15.0")
+    private String versionsMavenPluginVersion = "2.25.0";
 
     /**
      * Version of tycho-versions-plugin to use.
