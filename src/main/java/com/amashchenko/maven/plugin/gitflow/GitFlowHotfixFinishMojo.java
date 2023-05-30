@@ -204,7 +204,7 @@ public class GitFlowHotfixFinishMojo extends AbstractGitFlowMojo {
                             throw new MojoFailureException("More than one remote release branch exists. Cannot finish hotfix.");
                         }
 
-                        gitCreateBranch(remoteRelease, remoteReleases);
+                        gitFetchRemoteAndCompareCreate(remoteRelease);
                     }
                 }
             }
