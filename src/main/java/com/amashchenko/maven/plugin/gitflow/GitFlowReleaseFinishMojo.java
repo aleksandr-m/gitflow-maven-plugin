@@ -179,6 +179,13 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     @Parameter(property = "noBackMerge", defaultValue = "false")
     private boolean noBackMerge = false;
 
+    /**
+     * Whether to skip merging release into the development branch.
+     *
+     */
+    @Parameter(property = "skipReleaseMergeDevBranch", defaultValue = "false")
+    private boolean skipReleaseMergeDevBranch = false;
+
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -284,7 +291,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 mvnRun(postReleaseGoals);
             }
 
-            if (notSameProdDevName()) {
+            if (notSameProdDevName() && !skipReleaseMergeDevBranch) {
                 // git checkout develop
                 gitCheckout(gitFlowConfig.getDevelopmentBranch());
 
@@ -325,7 +332,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 commitDevelopmentVersionAtStart = false;
             }
 
-            if (!commitDevelopmentVersionAtStart) {
+            if (!commitDevelopmentVersionAtStart && !skipReleaseMergeDevBranch) {
                 // get next snapshot version
                 final String nextSnapshotVersion;
                 if (!settings.isInteractiveMode() && StringUtils.isNotBlank(developmentVersion)) {
