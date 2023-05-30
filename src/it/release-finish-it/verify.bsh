@@ -23,6 +23,9 @@ try {
         return false;
     }
 
+    p = Runtime.getRuntime().exec("git --git-dir=" + basedir + "/.git --work-tree=" + basedir + " checkout develop");
+    p.waitFor();
+
     File file = new File(basedir, "pom.xml");
     File expectedFile = new File(basedir, "expected-development-pom.xml");
 
@@ -33,7 +36,7 @@ try {
     expected = expected.replaceAll("\\r?\\n", "");
 
     if (!expected.equals(actual)) {
-        System.out.println("release-finish expected: " + expected + " actual was:" + actual);
+        System.out.println("release-finish development pom expected: " + expected + " actual was:" + actual);
         return false;
     }
 
@@ -50,7 +53,7 @@ try {
     expected = expected.replaceAll("\\r?\\n", "");
 
     if (!expected.equals(actual)) {
-        System.out.println("release-finish expected: " + expected + " actual was:" + actual);
+        System.out.println("release-finish production pom expected: " + expected + " actual was:" + actual);
         return false;
     }
 
