@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.20.0 (2023-06-01)
+
+* Fixed creation of the release branch in `hotfix-finish` goal - [#391](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/391)
+* Improved console error logs - [#383](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/383)
+* Added option to skip merging into development branch in `release-finish` goal - [#237](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/237)
+* Added back merge to `release` goal - [#375](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/375)
+* Updated dependencies - [#365](https://github.com/aleksandr-m/gitflow-maven-plugin/pull/365)
+
 ## v1.19.0 (2022-10-13)
 
 * Fixed snapshot checking with up-to-date project info - [#345](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/345)

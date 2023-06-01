@@ -182,6 +182,7 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
     /**
      * Whether to skip merging release into the development branch.
      *
+     * @since 1.20.0
      */
     @Parameter(property = "skipReleaseMergeDevBranch", defaultValue = "false")
     private boolean skipReleaseMergeDevBranch = false;

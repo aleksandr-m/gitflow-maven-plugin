@@ -162,6 +162,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
      * will be merged. If there is no tag then production branch will be merged to
      * development branch.
      *
+     * @since 1.20.0
      */
     @Parameter(property = "noBackMerge", defaultValue = "false")
     private boolean noBackMerge = false;
