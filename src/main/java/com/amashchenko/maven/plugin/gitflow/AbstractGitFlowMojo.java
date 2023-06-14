@@ -560,14 +560,14 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *            Branch name to find.
      * @param firstMatch
      *            Return first match.
-     * @return Branch names which matches <code>refs/heads/{branchName}*</code>. 
+     * @return Branch names which matches <code>refs/heads/{branchName}*</code>.
      * @throws MojoFailureException
      *             If command line execution returns false code.
      * @throws CommandLineException
      *             If command line execution fails.
      */
     protected String gitFindBranches(final String branchName, final boolean firstMatch) throws MojoFailureException, CommandLineException {
-        return gitFindBranches("refs/remotes/origin/", branchName, firstMatch);
+        return gitFindBranches("refs/heads/", branchName, firstMatch);
     }
 
     /**
@@ -683,7 +683,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *             If command line execution fails.
      */
     protected boolean gitCheckBranchExists(final String branchName) throws MojoFailureException, CommandLineException {
-        CommandResult commandResult = executeGitCommandExitCode("show-ref", "--verify", "--quiet", "refs/remotes/origin/" + branchName);
+        CommandResult commandResult = executeGitCommandExitCode("show-ref", "--verify", "--quiet", "refs/heads/" + branchName);
         return commandResult.getExitCode() == SUCCESS_EXIT_CODE;
     }
 
