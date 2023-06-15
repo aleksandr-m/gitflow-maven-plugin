@@ -687,7 +687,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         return commandResult.getExitCode() == SUCCESS_EXIT_CODE;
     }
     /**
-     * Checks if local branch with given name exists.
+     * Checks if remote branch with given name exists.
      *
      * @param branchName
      *            Name of the branch to check.

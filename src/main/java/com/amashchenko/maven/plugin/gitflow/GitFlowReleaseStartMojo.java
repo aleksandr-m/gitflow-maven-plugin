@@ -138,14 +138,6 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
      */
     @Parameter(property = "branchName")
     private String branchName;
-
-    /**
-     * Whether to allow multiple release branches.
-     * 
-     */
-    @Parameter(property = "allowMultipleReleaseBranches", defaultValue = "true")
-    private boolean allowMultipleReleaseBranches;
-
     /** {@inheritDoc} */
     
     @Override
@@ -161,7 +153,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
             final String releaseBranch = gitFindBranches(gitFlowConfig.getReleaseBranchPrefix(), true);
 
-            if (StringUtils.isNotBlank(releaseBranch) && !allowMultipleReleaseBranches ) {
+            if (StringUtils.isNotBlank(releaseBranch)) {
                 throw new MojoFailureException("Release branch already exists. Cannot start release.");
             }
 
