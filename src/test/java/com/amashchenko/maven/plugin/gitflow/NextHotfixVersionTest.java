@@ -18,11 +18,9 @@ package com.amashchenko.maven.plugin.gitflow;
 import java.util.Arrays;
 import java.util.Collection;
 
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-
 
 public class NextHotfixVersionTest {
 

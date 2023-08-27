@@ -20,8 +20,6 @@ import org.apache.maven.shared.release.versions.VersionParseException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 public class GitFlowVersionInfoTest {
     @Test
     public void testCreating() throws Exception {
