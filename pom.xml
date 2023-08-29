@@ -30,7 +30,7 @@
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -72,7 +72,7 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-plugin-plugin</artifactId>
+                <artifactId>maven-plugin-report-plugin</artifactId>
                 <version>${maven-plugin-plugin.version}</version>
             </plugin>
             <plugin>
@@ -82,7 +82,7 @@
                 <reportSets>
                     <reportSet>
                         <reports>
-                            <report>license</report>
+                            <report>licenses</report>
                             <report>scm</report>
                         </reports>
                     </reportSet>

@@ -6,7 +6,7 @@
 
 The Maven plugin that supports various Git workflows, including Vincent Driessen's [successful Git branching model](https://nvie.com/posts/a-successful-git-branching-model/) and [GitHub Flow](https://guides.github.com/introduction/flow/).
 
-Currently a Java implementation of Git version control system [JGit](https://www.eclipse.org/jgit/) doesn't support [`.gitattributes`](https://git-scm.com/book/en/Customizing-Git-Git-Attributes).
+Currently a Java implementation of Git version control system [JGit](https://eclipse.dev/jgit/) doesn't support [`.gitattributes`](https://git-scm.com/book/en/Customizing-Git-Git-Attributes).
 
 This plugin runs Git and Maven commands from the command line ensuring that all Git features work properly.
 
