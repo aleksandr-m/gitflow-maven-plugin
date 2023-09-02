@@ -30,7 +30,7 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
  * The git flow feature finish mojo.
- * 
+ *
  */
 @Mojo(name = "feature-finish", aggregator = true)
 public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
@@ -41,7 +41,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to skip calling Maven test goal before merging the branch.
-     * 
+     *
      * @since 1.0.5
      */
     @Parameter(property = "skipTestProject", defaultValue = "false")
@@ -50,7 +50,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     /**
      * Whether to squash feature branch commits into a single commit upon
      * merging.
-     * 
+     *
      * @since 1.2.3
      */
     @Parameter(property = "featureSquash", defaultValue = "false")
@@ -58,7 +58,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to push to the remote.
-     * 
+     *
      * @since 1.3.0
      */
     @Parameter(property = "pushRemote", defaultValue = "true")
@@ -66,7 +66,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
     /**
      * Feature name, without feature branch prefix, to use in non-interactive mode.
-     * 
+     *
      * @since 1.9.0
      */
     @Parameter(property = "featureName")
@@ -76,7 +76,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
      * Feature branch to use in non-interactive mode. Must start with feature branch
      * prefix. The featureBranch parameter will be used instead of
      * {@link #featureName} if both are set.
-     * 
+     *
      * @since 1.16.0
      */
     @Parameter(property = "featureBranch")
@@ -92,12 +92,29 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     private String preFeatureFinishGoals;
 
     /**
+     * Maven profiles to activate in the feature branch before merging into the
+     * development branch.
+     *
+     * @since 1.20.0
+     */
+    @Parameter(property = "preFeatureFinishProfiles")
+    private String preFeatureFinishProfiles;
+
+    /**
      * Maven goals to execute in the development branch after merging a feature.
      *
      * @since 1.13.0
      */
     @Parameter(property = "postFeatureFinishGoals")
     private String postFeatureFinishGoals;
+
+    /**
+     * Maven profiles to activate in the development branch after merging a feature.
+     *
+     * @since 1.20.0
+     */
+    @Parameter(property = "postFeatureFinishProfiles")
+    private String postFeatureFinishProfiles;
 
     /**
      * Whether to increment the version during feature-finish goal.
@@ -110,7 +127,8 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
     /** {@inheritDoc} */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        validateConfiguration(preFeatureFinishGoals, postFeatureFinishGoals);
+        validateConfiguration(preFeatureFinishGoals, preFeatureFinishProfiles,
+            postFeatureFinishGoals, postFeatureFinishProfiles);
 
         try {
             // check uncommitted changes
@@ -156,7 +174,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
             // maven goals before merge
             if (StringUtils.isNotBlank(preFeatureFinishGoals)) {
-                mvnRun(preFeatureFinishGoals);
+                mvnRun(preFeatureFinishGoals, preFeatureFinishProfiles);
             }
 
             String featureVersion = getCurrentProjectVersion();
@@ -211,7 +229,7 @@ public class GitFlowFeatureFinishMojo extends AbstractGitFlowMojo {
 
             // maven goals after merge
             if (StringUtils.isNotBlank(postFeatureFinishGoals)) {
-                mvnRun(postFeatureFinishGoals);
+                mvnRun(postFeatureFinishGoals, postFeatureFinishProfiles);
             }
 
             if (installProject) {
