@@ -25,7 +25,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.release.versions.VersionParseException;
-import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
@@ -278,19 +277,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
         String version = null;
         if (settings.isInteractiveMode()) {
-            try {
-                while (version == null) {
-                    version = prompter.prompt("What is release version? [" + defaultVersion + "]");
-
-                    if (!"".equals(version)
-                            && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
-                        getLog().info("The version is not valid.");
-                        version = null;
-                    }
-                }
-            } catch (PrompterException e) {
-                throw new MojoFailureException("release-start", e);
-            }
+            version = prompter.prompt("What is release version? [" + defaultVersion + "]", this::validVersion);
         } else {
             version = releaseVersion;
         }

@@ -44,13 +44,14 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingResult;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.release.policy.version.VersionPolicy;
-import org.codehaus.plexus.components.interactivity.Prompter;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
+
+import com.amashchenko.maven.plugin.gitflow.prompter.GitFlowPrompter;
 
 /**
  * Abstract git flow mojo.
@@ -261,7 +262,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     
     /** Default prompter. */
     @Component
-    protected Prompter prompter;
+    protected GitFlowPrompter prompter;
     /** Maven settings. */
     @Parameter(defaultValue = "${settings}", readonly = true)
     protected Settings settings;
@@ -471,6 +472,26 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected boolean validBranchName(final String branchName) throws MojoFailureException, CommandLineException {
         CommandResult res = executeGitCommandExitCode("check-ref-format", "--allow-onelevel", branchName);
         return res.getExitCode() == SUCCESS_EXIT_CODE;
+    }
+
+    /**
+     * Checks if version is valid.
+     * 
+     * @param version
+     *            Version to validate.
+     * @return <code>true</code> when version is valid, <code>false</code>
+     *         otherwise.
+     * @throws MojoFailureException
+     *             Shouldn't happen, actually.
+     * @throws CommandLineException
+     *             If command line execution fails.
+     */
+    protected boolean validVersion(final String version) throws MojoFailureException, CommandLineException {
+        boolean valid = "".equals(version) || (GitFlowVersionInfo.isValidVersion(version) && validBranchName(version));
+        if (!valid) {
+            getLog().info("The version is not valid.");
+        }
+        return valid;
     }
 
     /**
