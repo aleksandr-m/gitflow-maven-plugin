@@ -24,7 +24,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
@@ -162,6 +161,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
      * will be merged. If there is no tag then production branch will be merged to
      * development branch.
      *
+     * @since 1.20.0
      */
     @Parameter(property = "noBackMerge", defaultValue = "false")
     private boolean noBackMerge = false;
@@ -222,19 +222,7 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
 
             String version = null;
             if (settings.isInteractiveMode()) {
-                try {
-                    while (version == null) {
-                        version = prompter.prompt("What is release version? [" + defaultVersion + "]");
-
-                        if (!"".equals(version)
-                                && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
-                            getLog().info("The version is not valid.");
-                            version = null;
-                        }
-                    }
-                } catch (PrompterException e) {
-                    throw new MojoFailureException("release", e);
-                }
+                version = prompter.prompt("What is release version? [" + defaultVersion + "]", this::validVersion);
             } else {
                 version = releaseVersion;
             }

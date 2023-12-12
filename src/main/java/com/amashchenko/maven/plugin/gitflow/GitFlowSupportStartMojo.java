@@ -25,7 +25,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
@@ -90,11 +89,7 @@ public class GitFlowSupportStartMojo extends AbstractGitFlowMojo {
                     throw new MojoFailureException("There are no tags.");
                 }
 
-                try {
-                    tag = prompter.prompt("Choose tag to start support branch", Arrays.asList(tagsStr.split("\\r?\\n")));
-                } catch (PrompterException e) {
-                    throw new MojoFailureException("support-start", e);
-                }
+                tag = prompter.prompt("Choose tag to start support branch", Arrays.asList(tagsStr.split("\\r?\\n")));
             } else if (StringUtils.isNotBlank(tagName)) {
                 if (gitCheckTagExists(tagName)) {
                     tag = tagName;

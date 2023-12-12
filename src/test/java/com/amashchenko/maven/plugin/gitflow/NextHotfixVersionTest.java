@@ -18,25 +18,12 @@ package com.amashchenko.maven.plugin.gitflow;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
 public class NextHotfixVersionTest {
-    private final String version;
-    private final Integer index;
-    private final String expectedVersion;
 
-    public NextHotfixVersionTest(final String version, final Integer index, final String expectedVersion) {
-        this.version = version;
-        this.index = index;
-        this.expectedVersion = expectedVersion;
-    }
-
-    @Parameters(name = "{0}-({1})->{2}")
     public static Collection<Object[]> data() {
         return Arrays
                 .asList(new Object[][] {
@@ -61,8 +48,9 @@ public class NextHotfixVersionTest {
                                 { "2.3.4", 1, "2.4.0" } });
     }
 
-    @Test
-    public void testNextSnapshotVersion() throws Exception {
-        Assert.assertEquals(expectedVersion, new GitFlowVersionInfo(version, null).hotfixVersion(false, index));
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testNextSnapshotVersion(final String version, final Integer index, final String expectedVersion) throws Exception {
+        Assertions.assertEquals(expectedVersion, new GitFlowVersionInfo(version, null).hotfixVersion(false, index));
     }
 }

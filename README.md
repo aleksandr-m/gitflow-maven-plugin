@@ -6,7 +6,7 @@
 
 The Maven plugin that supports various Git workflows, including Vincent Driessen's [successful Git branching model](https://nvie.com/posts/a-successful-git-branching-model/) and [GitHub Flow](https://guides.github.com/introduction/flow/).
 
-Currently a Java implementation of Git version control system [JGit](https://github.com/eclipse/jgit) doesn't support [`.gitattributes`](https://git-scm.com/book/en/Customizing-Git-Git-Attributes).
+Currently a Java implementation of Git version control system [JGit](https://eclipse.dev/jgit/) doesn't support [`.gitattributes`](https://git-scm.com/book/en/Customizing-Git-Git-Attributes).
 
 This plugin runs Git and Maven commands from the command line ensuring that all Git features work properly.
 
@@ -23,7 +23,7 @@ The plugin is available from Maven Central.
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.19.0</version>
+                <version>1.20.0</version>
                 <configuration>
                     <!-- optional configuration -->
                 </configuration>
@@ -289,7 +289,9 @@ The `gitflow:release-start` goal has `fromCommit` parameter which allows to star
 The `gitflow:release-start` and `gitflow:release-finish` goals have `useSnapshotInRelease` parameter which allows to start the release with SNAPSHOT version and finish it without this value in project version. By default the value is `false`.
 For example, if the release version  is `1.0.2` and `useSnapshotInRelease` is set to `true` and using `gitflow:release-start` goal then the release version will be `1.0.2-SNAPSHOT` and when finishing the release with `gitflow:release-finish` goal, the release version will be `1.0.2`
 
-The `gitflow:release` and `gitflow:release-start` goals have `skipReleaseMergeProdBranch` parameter which prevents merging the release branch into the production branch. The default value is `false`.
+The `gitflow:release` and `gitflow:release-finish` goals have `skipReleaseMergeProdBranch` parameter which prevents merging the release branch into the production branch. The default value is `false`.
+
+The `gitflow:release-finish` goal has `skipReleaseMergeDevBranch` parameter which prevents merging the release branch into the development branch. The default value is `false`.
 
 The `gitflow:hotfix-start` and `gitflow:hotfix-finish` goals have `useSnapshotInHotfix` parameter which allows to start the hotfix with SNAPSHOT version and finish it without this value in the version. By default the value is `false`.
 For example, if the hotfix version  is `1.0.2.1` and `useSnapshotInHotfix` is set to `true` and using `gitflow:hotfix-start` goal then the hotfix version will be `1.0.2.1-SNAPSHOT` and when finishing the release with `gitflow:hotfix-finish` goal, the release version will be `1.0.2.1`
@@ -298,7 +300,9 @@ The `gitflow:hotfix-finish` goal supports the parameter `skipMergeDevBranch` whi
 
 The `gitflow:hotfix-finish` goal supports the parameter `skipMergeProdBranch` which prevents merging the hotfix branch into the production branch and deletes the hotfix branch leaving only the tagged commit. Useful, along with `skipMergeDevBranch`, to allow hotfixes to very old code that are not applicable to current development.
 
-The `gitflow:release-finish` and `gitflow:hofix-finish` goals have `noBackMerge` and `noBackMergeHotfix` parameters respectively. They control which branch is merged to development branch. If set to `true` then release or hotfix branch will be merged to development branch. If set to `false` and tag is present (`skipTag` parameter is set to `false`) then tag will be merged. If there is no tag then production branch will be merged to development branch.
+The `gitflow:release-finish` and `gitflow:hotfix-finish` goals have `noBackMerge` and `noBackMergeHotfix` parameters respectively. They control which branch is merged to development branch. If set to `true` then release or hotfix branch will be merged to development branch. If set to `false` and tag is present (`skipTag` parameter is set to `false`) then tag will be merged. If there is no tag then production branch will be merged to development branch.
+
+The `gitflow:release` goal has `noBackMerge` parameter, which controls which branch is merged to development branch. If set to `true` then merge will be skipped. If set to `false` and tag is present (`skipTag` is set to `false`) then tag will be merged. If there is no tag then production branch will be merged to development branch.
 
 ### Versioning
 

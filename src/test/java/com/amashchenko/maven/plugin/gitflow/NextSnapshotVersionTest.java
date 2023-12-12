@@ -15,29 +15,14 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
-@RunWith(Parameterized.class)
 public class NextSnapshotVersionTest {
-    private final String version;
-    private final Integer index;
-    private final String expectedVersion;
-
-    public NextSnapshotVersionTest(final String version, final Integer index,
-            final String expectedVersion) {
-        this.version = version;
-        this.index = index;
-        this.expectedVersion = expectedVersion;
-    }
-
-    @Parameters
     public static Collection<Object[]> data() {
         return Arrays
                 .asList(new Object[][] {
@@ -64,9 +49,11 @@ public class NextSnapshotVersionTest {
                                 { "2.3.4", 1, "2.4.0-SNAPSHOT" } });
     }
 
-    @Test
-    public void testNextSnapshotVersion() throws Exception {
-        Assert.assertEquals(expectedVersion,
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testNextSnapshotVersion(final String version, final Integer index,
+                                        final String expectedVersion) throws Exception {
+        Assertions.assertEquals(expectedVersion,
                 new GitFlowVersionInfo(version, null).nextSnapshotVersion(index));
     }
 }

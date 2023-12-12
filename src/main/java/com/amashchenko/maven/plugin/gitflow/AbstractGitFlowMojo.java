@@ -15,9 +15,11 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -25,11 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
@@ -42,12 +44,14 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingResult;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.release.policy.version.VersionPolicy;
-import org.codehaus.plexus.components.interactivity.Prompter;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
+
+import com.amashchenko.maven.plugin.gitflow.prompter.GitFlowPrompter;
 
 /**
  * Abstract git flow mojo.
@@ -206,16 +210,16 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      * 
      * @since 1.18.0
      */
-    @Parameter(property = "versionsMavenPluginVersion", defaultValue = "2.8.1")
-    private String versionsMavenPluginVersion = "2.8.1";
+    @Parameter(property = "versionsMavenPluginVersion", defaultValue = "2.16.0")
+    private String versionsMavenPluginVersion = "2.16.0";
 
     /**
      * Version of tycho-versions-plugin to use.
      * 
      * @since 1.18.0
      */
-    @Parameter(property = "tychoVersionsPluginVersion", defaultValue = "0.24.0")
-    private String tychoVersionsPluginVersion = "0.24.0";
+    @Parameter(property = "tychoVersionsPluginVersion", defaultValue = "1.7.0")
+    private String tychoVersionsPluginVersion = "1.7.0";
 
     /**
      * Options to pass to Git push command using <code>--push-option</code>.
@@ -258,7 +262,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     
     /** Default prompter. */
     @Component
-    protected Prompter prompter;
+    protected GitFlowPrompter prompter;
     /** Maven settings. */
     @Parameter(defaultValue = "${settings}", readonly = true)
     protected Settings settings;
@@ -281,7 +285,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
                 final boolean wrapper = javaCommand.startsWith("org.apache.maven.wrapper.MavenWrapperMain");
 
                 if (wrapper) {
-                    mvnExecutable = "." + SystemUtils.FILE_SEPARATOR + "mvnw";
+                    mvnExecutable = "." + File.separator + "mvnw";
                 } else {
                     mvnExecutable = "mvn";
                 }
@@ -471,6 +475,26 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     }
 
     /**
+     * Checks if version is valid.
+     * 
+     * @param version
+     *            Version to validate.
+     * @return <code>true</code> when version is valid, <code>false</code>
+     *         otherwise.
+     * @throws MojoFailureException
+     *             Shouldn't happen, actually.
+     * @throws CommandLineException
+     *             If command line execution fails.
+     */
+    protected boolean validVersion(final String version) throws MojoFailureException, CommandLineException {
+        boolean valid = "".equals(version) || (GitFlowVersionInfo.isValidVersion(version) && validBranchName(version));
+        if (!valid) {
+            getLog().info("The version is not valid.");
+        }
+        return valid;
+    }
+
+    /**
      * Executes git commands to check for uncommitted changes.
      * 
      * @return <code>true</code> when there are uncommitted changes,
@@ -546,7 +570,12 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private void gitSetConfig(final String name, String value) throws MojoFailureException, CommandLineException {
         if (value == null || value.isEmpty()) {
-            value = "\"\"";
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                value = "\"\"";
+            }
+            else {
+                value = "";
+            }
         }
 
         // ignore error exit codes
@@ -636,7 +665,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *             If command line execution fails.
      */
     protected String gitFindLastTag() throws MojoFailureException, CommandLineException {
-        String tag = executeGitCommandReturn("for-each-ref", "--sort=\"-version:refname\"", "--sort=-taggerdate",
+        String tag = executeGitCommandReturn("for-each-ref", "--sort=-version:refname", "--sort=-taggerdate",
                 "--count=1", "--format=\"%(refname:short)\"", "refs/tags/");
         // https://github.com/aleksandr-m/gitflow-maven-plugin/issues/3
         tag = removeQuotes(tag);
@@ -848,12 +877,12 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
     protected void gitMerge(final String branchName, boolean rebase, boolean noff, boolean ffonly, String message,
             Map<String, String> messageProperties)
             throws MojoFailureException, CommandLineException {
-        String sign = "";
+        String sign = null;
         if (gpgSignCommit) {
             sign = "-S";
         }
-        String msgParam = "";
-        String msg = "";
+        String msgParam = null;
+        String msg = null;
         if (StringUtils.isNotBlank(message)) {
             if (StringUtils.isNotBlank(commitMessagePrefix)) {
                 message = commitMessagePrefix + message;
@@ -1123,15 +1152,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         getLog().info("Updating version(s) to '" + version + "'.");
 
         String newVersion = "-DnewVersion=" + version;
-        String grp = "";
-        String art = "";
-        if (versionsForceUpdate) {
-            grp = "-DgroupId=";
-            art = "-DartifactId=";
-        }
 
         if (tychoBuild) {
-            String prop = "";
+            String prop = null;
             if (StringUtils.isNotBlank(versionProperty)) {
                 prop = "-Dproperties=" + versionProperty;
                 getLog().info("Updating property '" + versionProperty + "' to '" + version + "'.");
@@ -1147,8 +1170,10 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
             if (!skipUpdateVersion) {
                 runCommand = true;
                 args.add(VERSIONS_MAVEN_PLUGIN + ":" + versionsMavenPluginVersion + ":" + VERSIONS_MAVEN_PLUGIN_SET_GOAL);
-                args.add(grp);
-                args.add(art);
+                if (versionsForceUpdate) {
+                    args.add("-DgroupId=");
+                    args.add("-DartifactId=");
+                }
             }
 
             if (StringUtils.isNotBlank(versionProperty)) {
@@ -1324,7 +1349,8 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
         }
 
         cmd.clearArgs();
-        cmd.addArguments(args);
+        String[] nonNullArgs = Arrays.stream(args).filter(Objects::nonNull).toArray(String[]::new);
+        cmd.addArguments(nonNullArgs);
 
         if (StringUtils.isNotBlank(argStr)) {
             cmd.createArg().setLine(argStr);
@@ -1342,11 +1368,9 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
 
         if (failOnError && exitCode != SUCCESS_EXIT_CODE) {
             // not all commands print errors to error stream
-            if (StringUtils.isBlank(errorStr) && StringUtils.isNotBlank(outStr)) {
-                errorStr = outStr;
-            }
+            errorStr += LS + outStr;
 
-            throw new MojoFailureException(errorStr);
+            throw new MojoFailureException("Failed cmd ["+cmd.getExecutable()+"] with args [" + Arrays.toString(cmd.getArguments()) + "], bad exit code [" + exitCode +"]. Out: [" + errorStr+ "]");
         }
 
         if (verbose && StringUtils.isNotBlank(errorStr)) {

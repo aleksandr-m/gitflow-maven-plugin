@@ -23,7 +23,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.release.versions.VersionParseException;
-import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
@@ -87,18 +86,8 @@ public class GitFlowFeatureStartMojo extends AbstractGitFlowMojo {
 
             String featureBranchName = null;
             if (settings.isInteractiveMode()) {
-                try {
-                    while (StringUtils.isBlank(featureBranchName)) {
-                        featureBranchName = prompter
-                                .prompt("What is a name of feature branch? " + gitFlowConfig.getFeatureBranchPrefix());
-
-                        if (!validateBranchName(featureBranchName, featureNamePattern, false)) {
-                            featureBranchName = null;
-                        }
-                    }
-                } catch (PrompterException e) {
-                    throw new MojoFailureException("feature-start", e);
-                }
+                featureBranchName = prompter.prompt("What is a name of feature branch? " + gitFlowConfig.getFeatureBranchPrefix(),
+                        res -> StringUtils.isNotBlank(res) && validateBranchName(res, featureNamePattern, false));
             } else {
                 validateBranchName(featureName, featureNamePattern, true);
                 featureBranchName = featureName;

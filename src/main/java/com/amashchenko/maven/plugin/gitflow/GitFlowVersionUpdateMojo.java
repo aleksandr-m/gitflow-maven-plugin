@@ -15,9 +15,7 @@
  */
 package com.amashchenko.maven.plugin.gitflow;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -25,7 +23,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.release.versions.VersionParseException;
-import org.codehaus.plexus.components.interactivity.PrompterException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 
@@ -125,27 +122,7 @@ public class GitFlowVersionUpdateMojo extends AbstractGitFlowMojo {
                         branches[supportBranches.length] = releaseBranch;
                     }
 
-                    List<String> numberedList = new ArrayList<>();
-                    StringBuilder str = new StringBuilder("Branches:").append(LS);
-                    for (int i = 0; i < branches.length; i++) {
-                        str.append((i + 1) + ". " + branches[i] + LS);
-                        numberedList.add(String.valueOf(i + 1));
-                    }
-                    str.append("Choose branch to update");
-
-                    String branchNumber = null;
-                    try {
-                        while (StringUtils.isBlank(branchNumber)) {
-                            branchNumber = prompter.prompt(str.toString(), numberedList);
-                        }
-                    } catch (PrompterException e) {
-                        throw new MojoFailureException("version-update", e);
-                    }
-
-                    if (branchNumber != null) {
-                        int num = Integer.parseInt(branchNumber);
-                        branchName = branches[num - 1];
-                    }
+                    branchName = prompter.prompt(branches, null, "Branches:", "Choose branch to update");
                 }
             } else if (StringUtils.isNotBlank(fromBranch)) {
                 if (fromBranch.equals(releaseBranch) || contains(supportBranches, fromBranch)) {
@@ -178,18 +155,7 @@ public class GitFlowVersionUpdateMojo extends AbstractGitFlowMojo {
 
             String version = null;
             if (settings.isInteractiveMode()) {
-                try {
-                    while (version == null) {
-                        version = prompter.prompt("What is the update version? [" + defaultVersion + "]");
-
-                        if (!"".equals(version) && (!GitFlowVersionInfo.isValidVersion(version) || !validBranchName(version))) {
-                            getLog().info("The version is not valid.");
-                            version = null;
-                        }
-                    }
-                } catch (PrompterException e) {
-                    throw new MojoFailureException("version-update", e);
-                }
+                version = prompter.prompt("What is the update version? [" + defaultVersion + "]", this::validVersion);
             } else {
                 if (StringUtils.isNotBlank(updateVersion)
                         && (!GitFlowVersionInfo.isValidVersion(updateVersion) || !validBranchName(updateVersion))) {
