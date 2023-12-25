@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.21.0 (2023-12-25)
+
+* Updated Java minimum version to 8 - [#369](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/369)
+* Added console prompter wrapper
+
 ## v1.20.0 (2023-06-01)
 
 * Fixed creation of the release branch in `hotfix-finish` goal - [#391](https://github.com/aleksandr-m/gitflow-maven-plugin/issues/391)
