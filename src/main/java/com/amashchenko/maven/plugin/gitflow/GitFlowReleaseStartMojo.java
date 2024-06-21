@@ -95,8 +95,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
     private boolean digitsOnlyDevVersion = false;
 
     /**
-     * Development version to use instead of the default next development
-     * version in non interactive mode.
+     * Development version to use instead of the default next development version.
      *
      * @since 1.7.0
      */
@@ -242,7 +241,7 @@ public class GitFlowReleaseStartMojo extends AbstractGitFlowMojo {
 
     private String getNextSnapshotVersion(String currentVersion) throws MojoFailureException, VersionParseException {
         final String nextSnapshotVersion;
-        if (!settings.isInteractiveMode() && StringUtils.isNotBlank(developmentVersion)) {
+        if (StringUtils.isNotBlank(developmentVersion)) {
             nextSnapshotVersion = developmentVersion;
         } else {
             GitFlowVersionInfo versionInfo = new GitFlowVersionInfo(currentVersion, getVersionPolicy());
