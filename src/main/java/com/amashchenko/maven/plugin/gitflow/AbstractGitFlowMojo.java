@@ -1315,7 +1315,28 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      */
     private void executeMvnCommand(final String... args)
             throws CommandLineException, MojoFailureException {
-        executeCommand(cmdMvn, true, argLine, args);
+
+        final List<String> argLines = new ArrayList<String>();
+
+        if (StringUtils.isBlank(this.argLine)
+                || !this.argLine.contains("-gs")) {
+            argLines.add("-gs");
+            argLines.add(this.mavenSession.getRequest()
+                    .getGlobalSettingsFile()
+                    .getAbsolutePath());
+        }
+        if (StringUtils.isBlank(this.argLine)
+                || !this.argLine.contains("-s")) {
+            argLines.add("-s");
+            argLines.add(this.mavenSession.getRequest()
+                    .getUserSettingsFile()
+                    .getAbsolutePath());
+        }
+        if (StringUtils.isNotBlank(this.argLine)) {
+            argLines.add(this.argLine);
+        }
+
+        executeCommand(cmdMvn, true, StringUtils.join(argLines.toArray(), " "), args);
     }
 
     /**
