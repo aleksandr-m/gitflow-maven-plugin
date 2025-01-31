@@ -30,14 +30,14 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 
 /**
  * The git flow hotfix start mojo.
- * 
+ *
  */
 @Mojo(name = "hotfix-start", aggregator = true)
 public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to push to the remote.
-     * 
+     *
      * @since 1.6.0
      */
     @Parameter(property = "pushRemote", defaultValue = "false")
@@ -46,7 +46,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
     /**
      * Branch to start hotfix in non-interactive mode. Production branch or one of
      * the support branches.
-     * 
+     *
      * @since 1.9.0
      */
     @Parameter(property = "fromBranch")
@@ -54,7 +54,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
     /**
      * Hotfix version to use in non-interactive mode.
-     * 
+     *
      * @since 1.9.0
      */
     @Parameter(property = "hotfixVersion")
@@ -62,7 +62,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
     /**
      * Whether to use snapshot in hotfix.
-     * 
+     *
      * @since 1.10.0
      */
     @Parameter(property = "useSnapshotInHotfix", defaultValue = "false")
@@ -177,6 +177,8 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             // git checkout -b hotfix/... ...
             gitCreateAndCheckout(hotfixBranchName, branchName);
 
+            Map<String, String> properties = new HashMap<>();
+            properties.put("version", version);
             // execute if version changed
             if (!version.equals(currentVersion)) {
                 String projectVersion = version;
@@ -193,7 +195,6 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
 
                 mvnSetVersions(projectVersion);
 
-                Map<String, String> properties = new HashMap<>();
                 properties.put("version", projectVersion);
 
                 gitCommit(commitMessages.getHotfixStartMessage(), properties);
@@ -204,7 +205,7 @@ public class GitFlowHotfixStartMojo extends AbstractGitFlowMojo {
             }
 
             if (pushRemote) {
-                gitPush(hotfixBranchName, false);
+                gitPush(hotfixBranchName, false, properties);
             }
         } catch (CommandLineException | VersionParseException e) {
             throw new MojoFailureException("hotfix-start", e);
