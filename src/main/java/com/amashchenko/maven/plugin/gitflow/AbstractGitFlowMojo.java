@@ -795,7 +795,7 @@ public abstract class AbstractGitFlowMojo extends AbstractMojo {
      *            is a string to replace with.
      * @return Message with replaced properties.
      */
-    private String replaceProperties(String message, Map<String, String> map) {
+    protected String replaceProperties(String message, Map<String, String> map) {
         if (map != null) {
             for (Entry<String, String> entr : map.entrySet()) {
                 message = StringUtils.replace(message, "@{" + entr.getKey() + "}", entr.getValue());

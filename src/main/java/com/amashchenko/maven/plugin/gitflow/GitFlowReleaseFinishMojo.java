@@ -244,15 +244,15 @@ public class GitFlowReleaseFinishMojo extends AbstractGitFlowMojo {
                 mvnCleanTest();
             }
 
-            // maven goals before merge
-            if (StringUtils.isNotBlank(preReleaseGoals)) {
-                mvnRun(preReleaseGoals);
-            }
-
             String currentReleaseVersion = getCurrentProjectVersion();
 
             Map<String, String> messageProperties = new HashMap<>();
             messageProperties.put("version", currentReleaseVersion);
+
+            // maven goals before merge
+            if (StringUtils.isNotBlank(preReleaseGoals)) {
+                mvnRun(replaceProperties(preReleaseGoals, messageProperties));
+            }
 
             if (useSnapshotInRelease && ArtifactUtils.isSnapshot(currentReleaseVersion)) {
                 String commitVersion = currentReleaseVersion.replace("-" + Artifact.SNAPSHOT_VERSION, "");
