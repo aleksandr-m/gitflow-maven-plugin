@@ -231,13 +231,13 @@ public class GitFlowReleaseMojo extends AbstractGitFlowMojo {
                 version = defaultVersion;
             }
 
-            // maven goals before release
-            if (StringUtils.isNotBlank(preReleaseGoals)) {
-                mvnRun(preReleaseGoals);
-            }
-
             Map<String, String> messageProperties = new HashMap<>();
             messageProperties.put("version", version);
+
+            // maven goals before release
+            if (StringUtils.isNotBlank(preReleaseGoals)) {
+                mvnRun(replaceProperties(preReleaseGoals, messageProperties));
+            }
 
             // execute if version changed
             if (!version.equals(currentVersion)) {
