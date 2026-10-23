@@ -41,12 +41,14 @@ public class ValidateConfigurationTest {
         GitFlowReleaseStartMojo mojo = new GitFlowReleaseStartMojo();
         mojo.setArgLine(argLine);
 
-        try {
-            mojo.validateConfiguration();
-        } catch (MojoFailureException e) {
-            if (expected) {
-                Assertions.fail();
-            }
+        if (expected) {
+            Assertions.assertDoesNotThrow(() -> {
+                mojo.validateConfiguration();
+            });
+        } else {
+            Assertions.assertThrows(MojoFailureException.class, () -> {
+                mojo.validateConfiguration();
+            });
         }
     }
 }
